@@ -4,6 +4,9 @@
 // Compile using:
 // nvcc -m64 -arch=sm_20 -lboost_program_options -llikely -lcosmo gpuxi.cu -o gpuxi
 
+// Example usage:
+// time -p ./gpuxi -i /Users/daniel/Cosmo/LyAlpha/cosmo/build/delta.dat --verbose
+
 #include "cosmo/cosmo.h"
 #include "likely/likely.h"
 
@@ -26,22 +29,21 @@ struct DataStruct {
     float x, y, z, d, w;
 };
 
-__global__ void histo_kernel(DataStruct *b1, DataStruct *b2, long size, float *dsum, float *wsum, int nbins, bool diag) {
+__global__ void histo_kernel(DataStruct *b1, DataStruct *b2, long size, float *dsum, float *wsum, 
+float min, float max, int nbins, int maxbins, bool diag) {
     // Temp histogram is dynamically allocated
     extern __shared__ float shared[];
     float *tempd = (float*) &shared[0];
-    float *tempw = (float*) &shared[nbins];
+    float *tempw = (float*) &shared[maxbins];
     tempd[threadIdx.x] = 0; 
     tempw[threadIdx.x] = 0;
     __syncthreads();
 
     unsigned long i = threadIdx.x + blockIdx.x * blockDim.x; 
+    unsigned long offset = blockDim.x * gridDim.x;
 
-    //printf("%lu\n",i);
+    float spacing = (max-min)/nbins;
 
-    int offset = blockDim.x * gridDim.x;
-
-    float separation;
     while (i < size) {
         float xi = b1[i].x;
         float yi = b1[i].y;
@@ -53,15 +55,18 @@ __global__ void histo_kernel(DataStruct *b1, DataStruct *b2, long size, float *d
             float dy = yi - b2[j].y;
             float dz = zi - b2[j].z;
 
-            separation = std::sqrt(dx*dx+dy*dy+dz*dz);
+            float separation = std::sqrt(dx*dx+dy*dy+dz*dz);
+            float wgt = wi*b2[j].w;
             int index;
-            if(separation <= 0 || separation >= 200){
-                index = 255;
+            if(separation < min){
+                index = 0;
+            }
+            else if(separation >= max) {
+                index = nbins+1;
             }
             else {
-                index = (int) (separation);
+                index = floor((separation-min)/spacing)+1;
             }
-            float wgt = wi*b2[j].w;
             if(diag && j <= i) wgt = 0;
             atomicAdd(&tempd[index], wgt*di*b2[j].d);
             atomicAdd(&tempw[index], wgt);
@@ -75,13 +80,14 @@ __global__ void histo_kernel(DataStruct *b1, DataStruct *b2, long size, float *d
     atomicAdd(&(wsum[threadIdx.x]), tempw[threadIdx.x]);
 }
 
-void bruteGPU(std::vector<std::vector<double> > const &columns, lk::BinnedGrid const &grid, bool rmu,
-double x1min, double x1max, double x2min, double x2max, std::vector<double> &xi) {
+void bruteGPU(std::vector<std::vector<double> > const &columns, double min, double max, 
+int nbins, std::vector<double> &xi, long chunksize) {
 
-    int chunksize = 1000;
-    long nrows = columns[0].size()/250;
+    long nrows = columns[0].size();
 
-    int nchunks = nrows / chunksize;
+    assert(nrows % chunksize == 0);
+
+    int nchunks = nrows / chunksize;// / chunksize;
 
     std::cout << "nchunks: " << nchunks << std::endl;
     std::cout << "chunksize: " << chunksize << std::endl;
@@ -109,11 +115,13 @@ double x1min, double x1max, double x2min, double x2max, std::vector<double> &xi)
 
     int nhistbins = threadsPerBlock;
 
+    assert(nhistbins >= nbins+2);
+
     float dsum[nhistbins];
     float wsum[nhistbins];
 
-    std::vector<double> tempxi(50,0);
-    std::vector<double> counts(50,0);
+    std::vector<double> tempxi(nbins,0);
+    std::vector<double> counts(nbins,0);
 
     // allocate memory on the GPU for the file's data
     DataStruct *dev_b1, *dev_b2;
@@ -125,45 +133,52 @@ double x1min, double x1max, double x2min, double x2max, std::vector<double> &xi)
     HANDLE_ERROR( cudaMalloc( (void**)&dev_dsum, nhistbins * sizeof( float ) ) );
     HANDLE_ERROR( cudaMalloc( (void**)&dev_wsum, nhistbins * sizeof( float ) ) );
 
-    double totalcounts = 0;
+    long totalcounts = 0;
 
     cudaEvent_t start, stop;
     HANDLE_ERROR( cudaEventCreate( &start ) );
     HANDLE_ERROR( cudaEventCreate( &stop ) );
 
-    std::cout << "shared memory per block: " << 2*threadsPerBlock*sizeof(float)/1024. << " KB" << std::endl;
+    long sharedMemoryPerBlock = 2*threadsPerBlock*sizeof(float);
+
+    std::cout << "Shared memory per block: " << sharedMemoryPerBlock/1024. << " KB" << std::endl;
 
     double totalElapsedTime = 0;
     for(int ichunk = 0; ichunk < nchunks; ++ichunk) {
         
         HANDLE_ERROR( cudaEventRecord( start, 0 ) );
 
-        for(int jchunk = ichunk; jchunk < nchunks; ++jchunk) {
+        for(int jchunk = 0; jchunk <= ichunk; ++jchunk) {
 
-            HANDLE_ERROR( cudaMemcpy( dev_b1, &data[ichunk*chunksize], chunksize * sizeof(DataStruct), cudaMemcpyHostToDevice ) );
-            HANDLE_ERROR( cudaMemcpy( dev_b2, &data[jchunk*chunksize], chunksize * sizeof(DataStruct), cudaMemcpyHostToDevice ) );
+            //std::cout << "Starting chunk (" << ichunk << "," << jchunk << ")..." << std::endl;
+
+            HANDLE_ERROR( cudaMemcpy( dev_b1, &data[ichunk*chunksize], 
+                chunksize * sizeof(DataStruct), cudaMemcpyHostToDevice ) );
+            HANDLE_ERROR( cudaMemcpy( dev_b2, &data[jchunk*chunksize], 
+                chunksize * sizeof(DataStruct), cudaMemcpyHostToDevice ) );
             HANDLE_ERROR( cudaMemset( dev_dsum, 0, nhistbins * sizeof( float ) ) );
             HANDLE_ERROR( cudaMemset( dev_wsum, 0, nhistbins * sizeof( float ) ) );
         
-            histo_kernel<<<blocks,
-                           threadsPerBlock,
-                           2*threadsPerBlock*sizeof(float)>>>( dev_b1, dev_b2, chunksize, dev_dsum, dev_wsum, nhistbins, ichunk == jchunk);
-
-            //std::cout << "size of dsum: " << sizeof(dsum) << " B" << std::endl;
+            histo_kernel<<<blocks, threadsPerBlock, sharedMemoryPerBlock>>>(dev_b1, dev_b2, 
+                chunksize, dev_dsum, dev_wsum, min, max, nbins, nhistbins, ichunk == jchunk);
 
             HANDLE_ERROR( cudaMemcpy( dsum, dev_dsum, nhistbins * sizeof( float ), cudaMemcpyDeviceToHost ) );
             HANDLE_ERROR( cudaMemcpy( wsum, dev_wsum, nhistbins * sizeof( float ), cudaMemcpyDeviceToHost ) );
 
-            // Check results
+            long chunkcounts = 0;
+            // Save results from chunk
+            //std::cout << wsum[0] << " " << wsum[nbins+1] << std::endl;
             for(int i = 0; i < nhistbins; ++i) {
-                //dsum[i] += wsum[i];
-                //std::cout << "dsum[" << i << "] = " << wsum[i] << std::endl;
-                totalcounts += wsum[i];
-                if(i < 200) {
-                    tempxi[i/4] += dsum[i];
-                    counts[i/4] += wsum[i];
+                chunkcounts += wsum[i];
+                if (i <= nbins && i > 0) {
+                    //std::cout << i-1 << " " << dsum[i] << std::endl;
+                    tempxi[i-1] += dsum[i];
+                    counts[i-1] += wsum[i];
                 }
             }
+            totalcounts += chunkcounts;
+
+            //std::cout << "Chunk (" << ichunk << "," << jchunk << ") counts: " << chunkcounts << std::endl;
 
             cudaDeviceSynchronize();
 
@@ -177,15 +192,17 @@ double x1min, double x1max, double x2min, double x2max, std::vector<double> &xi)
         printf( "Time to generate (%d):  %3.1f ms\n", ichunk, elapsedTime );
     }
 
-    std::cout << "Total elapsed time: " << totalElapsedTime << std::endl;
+    std::cout << "Total elapsed time: " << totalElapsedTime << " ms" << std::endl;
 
-    for(int i = 0; i < 50; ++i) {
+    long usedcounts = 0;
+    for(int i = 0; i < nbins; ++i) {
+        usedcounts += counts[i];
         if(counts[i] > 0) tempxi[i] /= counts[i];
     }
 
     tempxi.swap(xi);
 
-    std::cout << "Total counts: " << totalcounts/1000. << " s" << std::endl;
+    std::cout << "used " << usedcounts << " of " << totalcounts << " pairs." << std::endl;
 
     // Free host and device memory
     HANDLE_ERROR( cudaEventDestroy( start ) );
@@ -194,8 +211,6 @@ double x1min, double x1max, double x2min, double x2max, std::vector<double> &xi)
     cudaFree( dev_wsum );
     cudaFree( dev_b1 ); 
     cudaFree( dev_b2 ); 
-    //free( buffer );
-
     free(data);
 
 }
@@ -204,6 +219,7 @@ int main(int argc, char **argv) {
 
     // Configure command-line option processing
     std::string infile,outfile,axis1,axis2;
+    long chunksize;
     po::options_description cli("Correlation function estimator");
     cli.add_options()
         ("help,h", "Prints this info and exits.")
@@ -217,6 +233,8 @@ int main(int argc, char **argv) {
         ("axis2", po::value<std::string>(&axis2)->default_value("[0:200]*50"),
             "Axis-2 binning")
         ("rmu", "Use (r,mu) binning instead of (rP,rT) binning")
+        ("chunksize", po::value<long>(&chunksize)->default_value(4096),
+            "Number of chunks to split the dataset into.")
         ;
 
     // do the command line parsing now
@@ -233,7 +251,7 @@ int main(int argc, char **argv) {
         std::cout << cli << std::endl;
         return 1;
     }
-    bool verbose(vm.count("verbose")),rmu(vm.count("rmu")),useCPU(vm.count("cpu"));
+    bool verbose(vm.count("verbose")),rmu(vm.count("rmu"));
 
     // Read the input file
     if(0 == infile.length()) {
@@ -262,7 +280,9 @@ int main(int argc, char **argv) {
         double x1min(bins1->getBinLowEdge(0)), x1max(bins1->getBinHighEdge(bins1->getNBins()-1));
         double x2min(bins2->getBinLowEdge(0)), x2max(bins2->getBinHighEdge(bins2->getNBins()-1));
         lk::BinnedGrid grid(bins1,bins2);
-        bruteGPU(columns,grid,rmu,x1min,x1max,x2min,x2max,xi);
+        int x1nbins = bins1->getNBins();
+
+        bruteGPU(columns,x1min,x1max,x1nbins,xi,chunksize);
     }
     catch(std::exception const &e) {
         std::cerr << "Error while running the estimator: " << e.what() << std::endl;

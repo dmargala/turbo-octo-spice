@@ -35,8 +35,11 @@ float min, float max, int nbins, int maxbins, bool diag) {
     extern __shared__ float shared[];
     float *tempd = (float*) &shared[0];
     float *tempw = (float*) &shared[maxbins];
+    // Initialize histogram bins to 0
     tempd[threadIdx.x] = 0; 
     tempw[threadIdx.x] = 0;
+    // Need to sync threads up to make sure we don't start accumulating data in an
+    // uninitialized bin
     __syncthreads();
 
     unsigned long i = threadIdx.x + blockIdx.x * blockDim.x; 
@@ -44,6 +47,7 @@ float min, float max, int nbins, int maxbins, bool diag) {
 
     float spacing = (max-min)/nbins;
 
+    // This is a thread branching condition, will need to sync threads after this loop
     while (i < size) {
         float xi = b1[i].x;
         float yi = b1[i].y;
@@ -68,6 +72,7 @@ float min, float max, int nbins, int maxbins, bool diag) {
                 index = floor((separation-min)/spacing)+1;
             }
             if(diag && j <= i) wgt = 0;
+            // Notice that this index is not the same as the thread index!
             atomicAdd(&tempd[index], wgt*di*b2[j].d);
             atomicAdd(&tempw[index], wgt);
         }
@@ -107,14 +112,36 @@ int nbins, std::vector<double> &xi, long chunksize) {
     // Look up device properties
     cudaDeviceProp prop;
     HANDLE_ERROR( cudaGetDeviceProperties( &prop, 0 ) );
-    int blocks = 2*prop.multiProcessorCount; 
-    int threadsPerBlock = 256;
 
-    std::cout << "num blocks: " << blocks << std::endl;
-    std::cout << "threadsPerBlock: " << threadsPerBlock << std::endl;
+    // Lookup warpsize
+    int warpSize = prop.warpSize;
+    std::cout << "warp size: " << warpSize << std::endl;
+
+    // Calculate how many threads per block to use
+    int maxThreadsPerBlock = prop.maxThreadsPerBlock;
+    int nWarpsPerBlock = 8;
+    int threadsPerBlock = nWarpsPerBlock*warpSize;
+    assert(threadsPerBlock < maxThreadsPerBlock);
+    std::cout << "threadsPerBlock (used/max): " << threadsPerBlock << "/" << maxThreadsPerBlock << std::endl;
+
+    // Check memory requirmenets
+    long maxSharedMemoryPerBlock = prop.sharedMemPerBlock;
+    long sharedMemoryPerBlock = 2*threadsPerBlock*sizeof(float);
+    assert(sharedMemoryPerBlock <=  maxSharedMemoryPerBlock);
+    std::cout << "Shared memory per block (used/max): " << sharedMemoryPerBlock << "/" << maxSharedMemoryPerBlock << std::endl;
+    
+    // Determine number of blocks to use
+    int limitBlocksDueToSMem = maxSharedMemoryPerBlock / sharedMemoryPerBlock;
+    int limitBlocksDueToWarps = threadsPerBlock / warpSize;
+    int blocksPerMP = std::min(limitBlocksDueToSMem, limitBlocksDueToWarps);
+
+    std::cout << "Active thread blocks per MP: " << blocksPerMP << std::endl;
+    int blocks = blocksPerMP*prop.multiProcessorCount;
+    std::cout << "Num blocks: " << blocks << std::endl;
+    std::cout << "Total shared memory (used/max): " << sharedMemoryPerBlock*blocks << "/" << maxSharedMemoryPerBlock << std::endl;
 
     int nhistbins = threadsPerBlock;
-
+    
     assert(nhistbins >= nbins+2);
 
     float dsum[nhistbins];
@@ -133,16 +160,11 @@ int nbins, std::vector<double> &xi, long chunksize) {
     HANDLE_ERROR( cudaMalloc( (void**)&dev_dsum, nhistbins * sizeof( float ) ) );
     HANDLE_ERROR( cudaMalloc( (void**)&dev_wsum, nhistbins * sizeof( float ) ) );
 
-    long totalcounts = 0;
-
     cudaEvent_t start, stop;
     HANDLE_ERROR( cudaEventCreate( &start ) );
     HANDLE_ERROR( cudaEventCreate( &stop ) );
 
-    long sharedMemoryPerBlock = 2*threadsPerBlock*sizeof(float);
-
-    std::cout << "Shared memory per block: " << sharedMemoryPerBlock/1024. << " KB" << std::endl;
-
+    long totalcounts = 0;
     double totalElapsedTime = 0;
     for(int ichunk = 0; ichunk < nchunks; ++ichunk) {
         

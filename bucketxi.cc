@@ -30,6 +30,9 @@ double x1min, double x1max, double x2min, double x2max, std::vector<double> &xi,
 
     std::map<int,std::vector<int> > buckets;
 
+    int totalbuckets = bucketgrid.getNBinsTotal();
+    std::cout << "Total number of buckets: " << totalbuckets << std::endl;
+
     std::vector<double> position(3);
     for(int i = 0; i < n; ++i) {
         position[0] = columns[0][i];
@@ -46,21 +49,26 @@ double x1min, double x1max, double x2min, double x2max, std::vector<double> &xi,
 
     int nbuckets = buckets.size();
     std::cout << "We have " << nbuckets << " buckets" << std::endl;
-    std::vector<double> separation(2);
 
-    std::map<int,std::vector<int> >::iterator iter;
-    for(iter = buckets.begin(); iter != buckets.end(); ++iter) {
-        std::vector<int> bucket = iter->second;  
-        int npoints = bucket.size();
-        for(int iBucket = 0; iBucket < npoints-1; ++iBucket) {
-            int i = bucket[iBucket];
-            double xi = columns[0][i];
-            double yi = columns[1][i];
-            double zi = columns[2][i];
-            double di = columns[3][i];
-            double wi = columns[4][i];
-            for(int jBucket = iBucket+1; jBucket < npoints; ++jBucket) {
-                int j = bucket[jBucket];
+    std::vector<double> separation(2);
+    std::vector<int> bucket;
+    std::vector<int> binNeighbors;
+    for(int i = 0; i < n-1; ++i){
+        double xi = columns[0][i];
+        double yi = columns[1][i];
+        double zi = columns[2][i];
+        double di = columns[3][i];
+        double wi = columns[4][i];
+        position[0] = xi;
+        position[1] = yi;
+        position[2] = zi;
+        bucketgrid.getBinNeighbors(bucketgrid.getIndex(position), binNeighbors);
+        for(int neighbor = 0; neighbor < binNeighbors.size(); ++neighbor){
+            //std::cout << binNeighbors[neighbor] << std::endl;
+            bucket = buckets[binNeighbors[neighbor]];
+            for(int bucketIndex = 0; bucketIndex < bucket.size(); ++bucketIndex){
+                int j = bucket[bucketIndex];
+                if (j <= i) continue;
                 double dx = xi - columns[0][j];
                 double dy = yi - columns[1][j];
                 double dz = zi - columns[2][j];
@@ -83,7 +91,7 @@ double x1min, double x1max, double x2min, double x2max, std::vector<double> &xi,
                     nused++;
                 }
                 catch(lk::RuntimeError const &e) {
-                    std::cerr << "no bin found for i,j = " << i << ',' << j << std::endl;
+                    std::cerr << "no xi bin found for i,j = " << i << ',' << j << std::endl;
                     // std::cerr << ".. separation = (" << separation[0] <<  "," << separation[1] << ")" << std::endl;
                     // std::cerr << ".. (dx,dy,dz) = (" << dx << "," << dy << "," << dz << ")" << std::endl;
                 }

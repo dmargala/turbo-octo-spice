@@ -85,14 +85,25 @@ float min, float max, int nbins, int maxbins, bool diag) {
     atomicAdd(&(wsum[threadIdx.x]), tempw[threadIdx.x]);
 }
 
-void bruteGPU(std::vector<std::vector<double> > const &columns, double min, double max, 
+void bruteGPU(std::vector<std::vector<double> > &columns, double min, double max, 
 int nbins, std::vector<double> &xi, long chunksize) {
 
     long nrows = columns[0].size();
-
+    int nremainder = nrows % chunksize;
+    if (nremainder > 0) {
+        int npad = chunksize - nremainder;
+        for(int i = 0; i < npad; ++i){
+            columns[0].push_back(0);
+            columns[1].push_back(0);
+            columns[2].push_back(0);
+            columns[3].push_back(0);
+            columns[4].push_back(0);
+        }
+        nrows = columns[0].size();
+    }
     assert(nrows % chunksize == 0);
 
-    int nchunks = nrows / chunksize;// / chunksize;
+    int nchunks = nrows / chunksize;
 
     std::cout << "nchunks: " << nchunks << std::endl;
     std::cout << "chunksize: " << chunksize << std::endl;

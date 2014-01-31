@@ -8,6 +8,7 @@
 
 #include "boost/program_options.hpp"
 #include "boost/format.hpp"
+#include "boost/foreach.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -20,7 +21,6 @@ namespace lk = likely;
 
 void bucketXi(std::vector<std::vector<double> > const &columns, lk::BinnedGrid const &grid, bool rmu,
 double x1min, double x1max, double x2min, double x2max, std::vector<double> &xi, lk::BinnedGrid const &bucketgrid) {
-    std::cout << "Starting bucketxi..." << std::endl;
     // create internal accumulation vectors
     int nbins = grid.getNBinsTotal();
     std::vector<double> dsum(nbins,0.), wsum(nbins,0.);
@@ -28,47 +28,43 @@ double x1min, double x1max, double x2min, double x2max, std::vector<double> &xi,
     long n(columns[0].size());
     long npair(0), nused(0);
 
-    std::map<int,std::vector<int> > buckets;
+    std::map<int,std::vector<int> > bucketPointsMap;
+    std::map<int,std::vector<int> > bucketNeighborsMap;
+    std::map<int,int> pointBucketMap;
 
-    int totalbuckets = bucketgrid.getNBinsTotal();
-    std::cout << "Total number of buckets: " << totalbuckets << std::endl;
-
+    // First pass through the data, fill buckets with point indices.
+    // Also create a lookup tables for points->buckets and buckets->neighbors
     std::vector<double> position(3);
+    std::vector<int> binNeighbors;
     for(int i = 0; i < n; ++i) {
         position[0] = columns[0][i];
         position[1] = columns[1][i];
         position[2] = columns[2][i];
         int bucketIndex = bucketgrid.getIndex(position);
-        if(buckets.count(bucketIndex) > 0) {
-            buckets[bucketIndex].push_back(i);
+        pointBucketMap[i] = bucketIndex;
+        if(bucketPointsMap.count(bucketIndex) > 0) {
+            bucketPointsMap[bucketIndex].push_back(i);
         }
         else {
-            buckets[bucketIndex] = std::vector<int>(1,i);
+            bucketPointsMap[bucketIndex] = std::vector<int>(1,i);
+            bucketgrid.getBinNeighbors(bucketIndex, binNeighbors);
+            bucketNeighborsMap[bucketIndex] = binNeighbors;
         }
     }
 
-    int nbuckets = buckets.size();
+    int nbuckets = bucketPointsMap.size();
     std::cout << "We have " << nbuckets << " buckets" << std::endl;
 
     std::vector<double> separation(2);
-    std::vector<int> bucket;
-    std::vector<int> binNeighbors;
-    for(int i = 0; i < n-1; ++i){
+    for(int i = 0; i < n-1; ++i) {
         double xi = columns[0][i];
         double yi = columns[1][i];
         double zi = columns[2][i];
         double di = columns[3][i];
         double wi = columns[4][i];
-        position[0] = xi;
-        position[1] = yi;
-        position[2] = zi;
-        bucketgrid.getBinNeighbors(bucketgrid.getIndex(position), binNeighbors);
-        for(int neighbor = 0; neighbor < binNeighbors.size(); ++neighbor){
-            //std::cout << binNeighbors[neighbor] << std::endl;
-            bucket = buckets[binNeighbors[neighbor]];
-            for(int bucketIndex = 0; bucketIndex < bucket.size(); ++bucketIndex){
-                int j = bucket[bucketIndex];
-                if (j <= i) continue;
+        BOOST_FOREACH(int b, bucketNeighborsMap[pointBucketMap[i]]) {
+            BOOST_FOREACH(int j, bucketPointsMap[b]) {
+                if(j <= i) continue; 
                 double dx = xi - columns[0][j];
                 double dy = yi - columns[1][j];
                 double dz = zi - columns[2][j];
@@ -92,8 +88,6 @@ double x1min, double x1max, double x2min, double x2max, std::vector<double> &xi,
                 }
                 catch(lk::RuntimeError const &e) {
                     std::cerr << "no xi bin found for i,j = " << i << ',' << j << std::endl;
-                    // std::cerr << ".. separation = (" << separation[0] <<  "," << separation[1] << ")" << std::endl;
-                    // std::cerr << ".. (dx,dy,dz) = (" << dx << "," << dy << "," << dz << ")" << std::endl;
                 }
             }
         }

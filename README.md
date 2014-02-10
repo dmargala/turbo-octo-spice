@@ -1,4 +1,4 @@
-turbo-octo-spice {#mainpage}
+turbo-octo-spice 
 ================
 
 Efficient mock generation and analysis of Lyman-alpha forest surveys

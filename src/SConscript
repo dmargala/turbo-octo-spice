@@ -13,8 +13,10 @@ kdtreetest = opt.Program('#bin/kdtreetest', 'kdtreetest.cc', LIBS=common_libs + 
 # Need to propagate environment path so scons can find the nvcc compile
 cudaEnv = Environment(ENV={'PATH' : os.environ['PATH']})
 cudaEnv.Replace(CC='nvcc')
+
+cudaEnv.Append(CCFLAGS=['-02'])
 # Atomic add requires minimum architecture
-cudaEnv.Append(LINKFLAGS='-m64 -arch=sm_20')
+cudaEnv.Append(LINKFLAGS=['-m64', '-arch=sm_20'])
 cudaEnv.Program('#bin/deviceQuery', 'deviceQuery.cu')
 cudaEnv.Program('#bin/gpuxi', 'gpuxi.cu', LIBS=common_libs)
 

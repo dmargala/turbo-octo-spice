@@ -1,17 +1,24 @@
 import os
 
-env = Environment()
-
-
-#env['BUILDERS']['CudaProgram'] = Builder(action = '/usr/local/cuda/bin/nvcc -m64 -arch=sm_20 -o $TARGET $SOURCE $LIBS', src_suffix = '.cu', suffix = '')
-
 common_libs = ['likely', 'cosmo', 'boost_program_options']
 
-bucketxi = env.Program('#bin/bucketxi', 'bucketxi.cc', LIBS=common_libs)
-kdtreetest = env.Program('#bin/kdtreetest', 'kdtreetest.cc', LIBS=common_libs + ['kdtree'])
+## Compile C++ programs
+opt = Environment(CCFLAGS = '-O2')
+bucketxi = opt.Program('#bin/bucketxi', 'bucketxi.cc', LIBS=common_libs)
+kdtreetest = opt.Program('#bin/kdtreetest', 'kdtreetest.cc', LIBS=common_libs + ['kdtree'])
 
-#env.CudaProgram('#bin/deviceQuery', 'deviceQuery.cu')
-#env.CudaProgram('#bin/gpuxi', 'gpuxi.cu', LIBS=common_libs)
+## Compile CUDA programs
+
+#env['BUILDERS']['CudaProgram'] = Builder(action = '/usr/local/cuda/bin/nvcc -m64 -arch=sm_20 -o $TARGET $SOURCE $LIBS', src_suffix = '.cu', suffix = '')
+# Need to propagate environment path so scons can find the nvcc compile
+cudaEnv = Environment(ENV={'PATH' : os.environ['PATH']})
+cudaEnv.Replace(CC='nvcc')
+# Atomic add requires minimum architecture
+cudaEnv.Append(LINKFLAGS='-m64 -arch=sm_20')
+cudaEnv.Program('#bin/deviceQuery', 'deviceQuery.cu')
+cudaEnv.Program('#bin/gpuxi', 'gpuxi.cu', LIBS=common_libs)
+
+# Custom install directory
 
 #prefix = "/usr/local"
 #install_programs = [bucketxi, kdtreetest]

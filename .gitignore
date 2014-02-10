@@ -1,6 +1,11 @@
-/MockExpander
 *.fits
 *.nb
-/*.dat
-*.dSYM
+*.dat
+*.sconsign.dblite
 /output
+/html
+/bin
+/build
+/latex
+/misc
+

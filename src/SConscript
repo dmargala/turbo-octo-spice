@@ -1,0 +1,18 @@
+import os
+
+env = Environment()
+
+
+#env['BUILDERS']['CudaProgram'] = Builder(action = '/usr/local/cuda/bin/nvcc -m64 -arch=sm_20 -o $TARGET $SOURCE $LIBS', src_suffix = '.cu', suffix = '')
+
+common_libs = ['likely', 'cosmo', 'boost_program_options']
+
+bucketxi = env.Program('#bin/bucketxi', 'bucketxi.cc', LIBS=common_libs)
+kdtreetest = env.Program('#bin/kdtreetest', 'kdtreetest.cc', LIBS=common_libs + ['kdtree'])
+
+#env.CudaProgram('#bin/deviceQuery', 'deviceQuery.cu')
+#env.CudaProgram('#bin/gpuxi', 'gpuxi.cu', LIBS=common_libs)
+
+#prefix = "/usr/local"
+#install_programs = [bucketxi, kdtreetest]
+#env.Alias('install', env.Install(os.path.join(prefix, "bin"), install_programs))

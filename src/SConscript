@@ -1,11 +1,16 @@
 import os
 
+Import('env')
+
 common_libs = ['likely', 'cosmo', 'boost_program_options']
 
+
 ## Compile C++ programs
-opt = Environment(CCFLAGS = '-O2')
-bucketxi = opt.Program('#bin/bucketxi', 'bucketxi.cc', LIBS=common_libs)
-kdtreetest = opt.Program('#bin/kdtreetest', 'kdtreetest.cc', LIBS=common_libs + ['kdtree'])
+opt = env.Clone()
+
+bucketxi = opt.Program('#bin/bucketxi', 'bucketxi.cc',LIBS=common_libs)
+kdtreetest = opt.Program('#bin/kdtreetest', 'kdtreetest.cc', LIBS=common_libs+['kdtree'])
+bucketsky = opt.Program('#bin/bucketsky', 'bucketsky.cc', LIBS=common_libs + ['turbooctospice'], LIBPATH='#lib')
 
 ## Compile CUDA programs
 

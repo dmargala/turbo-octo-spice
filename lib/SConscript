@@ -1,0 +1,7 @@
+
+
+Import('env')
+
+penv = env.Clone()
+penv.Library('turbooctospice', ['#lib/tos.h'])
+

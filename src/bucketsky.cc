@@ -220,14 +220,15 @@ int main(int argc, char **argv) {
         new cosmo::LambdaCdmUniverse(OmegaLambda,OmegaMatter));
 
     double scale = cosmology->getTransverseComovingScale(2.1);
-    std::cout << "Transverse comoving scale: " << scale << std::endl;
+    std::cout << "Transverse comoving scale at z = 2.1: " << scale << std::endl;
 
     tos::TriangleMesh tmesh(recursionLevel);
     int ntriangles = tmesh.triangles.size();
     int npoints = tmesh.points.size();
     std::cout << "Triangular mesh has " << ntriangles << " triangles and " << npoints << " vertices." << std::endl;
 
-    std::cout << bg::distance(tmesh.points[npoints-1], tmesh.points[npoints-2]) << std::endl;
+    double sidelength = bg::distance(tmesh.points[npoints-1], tmesh.points[npoints-2]);
+    std::cout << "Approx triangle side length: " << sidelength << std::endl;
 
     typedef bg::model::point<double, 2, bg::cs::spherical_equatorial<bg::degree> > spherical_point;
     typedef bg::model::box<spherical_point> box;
@@ -247,15 +248,17 @@ int main(int argc, char **argv) {
     }
 
 
-    double limit = 200./scale;
-    std::cout << limit << std::endl;
+    double unitBAO = 110./scale;
+    std::cout << "Approx BAO scale at z = 2.1 in rad: " << unitBAO << std::endl;
+
+    double limit(3*unitBAO);
 
     long count = 0;
     for(int i = 0; i < columns[0].size()-1; ++i) {
         double ra = columns[0][i];
         double dec = columns[1][i];
         spherical_point p(ra,dec);
-        box query_box(spherical_point(ra - limit, dec - limit), spherical_point(ra+limit, dec+limit));
+        box query_box(spherical_point(ra - unitBAO, dec - limit), spherical_point(ra+limit, dec+limit));
 
         std::vector<value> result_s;
         rtree.query(bgi::within(query_box), std::back_inserter(result_s));

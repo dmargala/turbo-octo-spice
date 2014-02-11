@@ -3,5 +3,5 @@
 Import('env')
 
 penv = env.Clone()
-penv.Library('turbooctospice', ['#lib/tos.h'])
+penv.Library('turbooctospice', ['#lib/Triangle.cc', '#lib/TriangleMesh.cc'])
 

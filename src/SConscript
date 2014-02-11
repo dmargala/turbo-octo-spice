@@ -8,9 +8,11 @@ common_libs = ['likely', 'cosmo', 'boost_program_options']
 ## Compile C++ programs
 opt = env.Clone()
 
+#opt.Library('turbooctospice', ['#lib/Triangle.cc', '#lib/TriangleMesh.cc'])
+
 bucketxi = opt.Program('#bin/bucketxi', 'bucketxi.cc',LIBS=common_libs)
 kdtreetest = opt.Program('#bin/kdtreetest', 'kdtreetest.cc', LIBS=common_libs+['kdtree'])
-bucketsky = opt.Program('#bin/bucketsky', 'bucketsky.cc', LIBS=common_libs + ['turbooctospice'], LIBPATH='#lib')
+bucketsky = opt.Program('#bin/bucketsky', 'bucketsky.cc', LIBS=common_libs + ['turbooctospice'], LIBPATH='.')
 
 ## Compile CUDA programs
 

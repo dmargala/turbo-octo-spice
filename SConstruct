@@ -1,4 +1,4 @@
-env = Environment(CCFLAGS = '-O2', CPPPATH='#include')
+env = Environment(CCFLAGS = '-O2', CPPPATH='#include', LIBPATH='#lib')
 
 # Check for required libraries unless we're cleaning up
 if not env.GetOption('clean'):

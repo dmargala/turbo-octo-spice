@@ -1,6 +1,8 @@
 *.fits
 *.nb
 *.dat
+*.o
+*.a
 .sconsign.dblite
 .sconf_temp
 *.log

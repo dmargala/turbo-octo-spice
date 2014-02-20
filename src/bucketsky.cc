@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
     // Configure command-line option processing
     std::string infile,outfile;
     double OmegaLambda,OmegaMatter;
-    int recursionLevel;
+    int recursionOrder;
     po::options_description cli("Correlation function estimator");
     cli.add_options()
         ("help,h", "Prints this info and exits.")
@@ -48,8 +48,8 @@ int main(int argc, char **argv) {
             "Filename to read from")
         ("output,o", po::value<std::string>(&outfile)->default_value(""),
             "Filename to write to")
-        ("level", po::value<int>(&recursionLevel)->default_value(0),
-            "recursion level to use for triangulation")
+        ("order", po::value<int>(&recursionOrder)->default_value(0),
+            "recursion order to use for triangulation")
         ;
 
     // do the command line parsing now
@@ -95,7 +95,7 @@ int main(int argc, char **argv) {
     double scale = cosmology->getTransverseComovingScale(2.1);
     std::cout << "Transverse comoving scale at z = 2.1: " << scale << std::endl;
 
-    tos::TriangleMesh tmesh(recursionLevel);
+    tos::TriangleMesh tmesh(recursionOrder);
     int ntriangles = tmesh.triangles.size();
     int npoints = tmesh.points.size();
     std::cout << "Triangular mesh has " << ntriangles << " triangles and " << npoints << " vertices." << std::endl;

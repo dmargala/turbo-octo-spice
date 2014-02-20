@@ -1,7 +1,11 @@
 *.fits
 *.nb
 *.dat
-*.sconsign.dblite
+*.o
+*.a
+.sconsign.dblite
+.sconf_temp
+*.log
 /output
 /html
 /bin

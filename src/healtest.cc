@@ -20,7 +20,7 @@ namespace lk = likely;
 int main(int argc, char **argv) {
 
     int order;
-    double OmegaLambda, OmegaMatter;
+    double OmegaLambda, OmegaMatter, zmin, rmax;
     std::string infile;
     po::options_description cli("Correlation function estimator");
     cli.add_options()
@@ -28,13 +28,17 @@ int main(int argc, char **argv) {
         ("verbose", "Prints additional information.")
         ("order", po::value<int>(&order)->default_value(1),
             "Healpix map order parameter")
-        ("ring", "Use ring ordering scheme for Healpix map")
+        ("nest", "Use nest ordering scheme for Healpix map")
         ("omega-lambda", po::value<double>(&OmegaLambda)->default_value(0.728),
             "Present-day value of OmegaLambda.")
         ("omega-matter", po::value<double>(&OmegaMatter)->default_value(0),
             "Present-day value of OmegaMatter or zero for 1-OmegaLambda.")
         ("input,i", po::value<std::string>(&infile)->default_value(""),
             "Filename to read from")
+        ("z-min", po::value<double>(&zmin)->default_value(2.1),
+            "Minimum z value, sets spherical bin surface distance")
+        ("r-max", po::value<double>(&rmax)->default_value(200),
+            "Maximum r value to bin.")
         ;
     // do the command line parsing now
     po::variables_map vm;
@@ -50,7 +54,7 @@ int main(int argc, char **argv) {
         std::cout << cli << std::endl;
         return 1;
     }
-    bool verbose(vm.count("verbose")), useRing(vm.count("ring"));
+    bool verbose(vm.count("verbose")), useNest(vm.count("nest"));
 
     // Read the input file
     if(0 == infile.length()) {
@@ -76,30 +80,38 @@ int main(int argc, char **argv) {
     cosmo::AbsHomogeneousUniversePtr cosmology(
         new cosmo::LambdaCdmUniverse(OmegaLambda,OmegaMatter));
 
-    double scale = cosmology->getTransverseComovingScale(2.1);
+    double scale = cosmology->getTransverseComovingScale(zmin);
     std::cout << "Transverse comoving scale at z = 2.1: " << scale << std::endl;
+    double maxAng = rmax/scale;
+    std::cout << "Maximum distance at z = 2.1 (rad): " << maxAng << std::endl;
 
-    double unitBAO = 200/scale;
-    std::cout << "Approx BAO scale at z = 2.1 in rad: " << unitBAO << std::endl;
-
-    Healpix_Ordering_Scheme scheme = (useRing ? RING : NEST);
+    Healpix_Ordering_Scheme scheme = (useNest ? NEST : RING);
     Healpix_Map<double> map(order, scheme); 
 
     std::cout << "Number of pixels: " << map.Npix() << std::endl;
+    std::cout << "Max ang dist between any pixel center and its corners: \n\t" 
+        << map.max_pixrad() << " rad (" << map.max_pixrad()*scale << " Mpc/h)" << std::endl;
 
-    std::cout << "Max ang dist (in radian) between any pixel center and its corners: \n\t" << map.max_pixrad() << std::endl;
-
-    const double PI = std::atan(1.0)*4;
-    const double Deg2Rad = PI/180.;
+    const double pi = std::atan(1.0)*4;
+    const double deg2rad = pi/180.;
 
     typedef std::map<int, std::vector<int> > BucketToPixels;
     BucketToPixels buckets;
     std::vector<pointing> pointings;
+    std::vector<double> X, Y, Z;
+
     for(int i = 0; i < columns[0].size(); ++i) {
-        double phi = columns[0][i]*Deg2Rad;
-        double theta = (90.-columns[1][i])*Deg2Rad;
-        pointing p(theta, phi);
+        double ra(deg2rad*columns[0][i]), dec(deg2rad*columns[1][i]);
+        double theta = (90.0*deg2rad-dec);
+        pointing p(theta, ra);
         pointings.push_back(p);
+
+
+        double s(cosmology->getLineOfSightComovingDistance(std::abs(columns[2][i])));
+        double cosDEC(std::cos(dec));
+        X.push_back(s*cosDEC*std::cos(ra));
+        Y.push_back(s*cosDEC*std::sin(ra));
+        Z.push_back(s*std::sin(dec));
 
         int index = map.ang2pix(p);
         if(buckets.count(index) > 0) {
@@ -113,38 +125,48 @@ int main(int argc, char **argv) {
     int nbuckets = buckets.size();
     std::cout << "We have " << nbuckets << " buckets w/ data" << std::endl;
 
-    long npair = 0;
+    long npair(0), nused(0);
 
     rangeset<int> neighbors_rangeset;
     std::vector<int> neighbors;
 
+    double maxRange = 1 - std::cos(maxAng);
+    double rmaxsq = rmax*rmax;
+
     BOOST_FOREACH(BucketToPixels::value_type &pixels, buckets) {
         // Loop over all points in each bucket
         BOOST_FOREACH(int i, pixels.second) {
-            rangeset<int> neighbors_rangeset;
-            map.query_disc(pointings[i], unitBAO, neighbors_rangeset);
+            double xi = X[i];
+            double yi = Y[i];
+            double zi = Z[i];
+            map.query_disc_inclusive(pointings[i], maxAng, neighbors_rangeset);
             neighbors_rangeset.toVector(neighbors);
-            // Compare this points to all points in neighboring buckets
+            // Compare this point to all points in neighboring buckets
             BOOST_FOREACH(int neighbor, neighbors) {
                 // Loop over all points in neighboring bucket
                 BOOST_FOREACH(int j, buckets[neighbor]) {
-                    if(j == i) std::cout << "We found ourself!" << std::endl;
                     // Only count pairs once
                     if(j <= i) continue;
                     npair++;
+                    double dx = xi - X[j];
+                    double dy = yi - Y[j];
+                    double dz = zi - Z[j];
+                    double dist = dx*dx + dy*dy + dz*dz;
+                    if(dist >= rmaxsq) continue;
+                    if(dist < 0) continue;
+                    nused++;
                 }
             }
         }
     }
 
-    std::cout << "Number of pairs counted: " << npair++ << std::endl;
-    // fix_arr<int, 8> neighbors;
-
-    // map.neighbors(0, neighbors);
-
-    // for(int i = 0; i < neighbors.size(); ++i) {
-    //  std::cout << neighbors[i] << std::endl;
-    // }
+    long n(columns[0].size());
+    long ndistinct = (n*(n-1))/2;
+    double consideredFrac = npair*1.0/ndistinct;
+    double usedFrac = nused*1.0/npair;
+    std::cout << "Number of distinct pairs " << ndistinct << std::endl;
+    std::cout << "considered " << npair << " of distinct pairs. (" << consideredFrac << ")" << std::endl;
+    std::cout << "used " << nused << " of pairs considered. (" << usedFrac << ")" << std::endl;
 
     return 0;
 }

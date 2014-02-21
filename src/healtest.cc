@@ -17,10 +17,12 @@
 namespace po = boost::program_options;
 namespace lk = likely;
 
+const double lyA = 1216;
+
 int main(int argc, char **argv) {
 
     int order;
-    double OmegaLambda, OmegaMatter, zmin, rmax;
+    double OmegaLambda, OmegaMatter, zmin, zmax, rmax, combine, speclo, foresthi, forestlo;
     std::string infile;
     po::options_description cli("Correlation function estimator");
     cli.add_options()
@@ -39,6 +41,17 @@ int main(int argc, char **argv) {
             "Minimum z value, sets spherical bin surface distance")
         ("r-max", po::value<double>(&rmax)->default_value(200),
             "Maximum r value to bin.")
+        ("forest-lo", po::value<double>(&forestlo)->default_value(1050),
+            "Lyman-alpha forest low cutoff wavelength")
+        ("forest-hi", po::value<double>(&foresthi)->default_value(1200),
+            "Lyman-alpha forest high cutoff wavelength")
+        ("spec-lo", po::value<double>(&speclo)->default_value(3650),
+            "Spectrograph wavelength lower limit")
+        ("z-max", po::value<double>(&zmax)->default_value(3.5),
+            "Maximum redshift to consider")
+        ("combine", po::value<double>(&combine)->default_value(4),
+            "Number of wavelength bins to combine in fake spectra.")
+
         ;
     // do the command line parsing now
     po::variables_map vm;
@@ -98,47 +111,79 @@ int main(int argc, char **argv) {
     typedef std::map<int, std::vector<int> > BucketToPixels;
     BucketToPixels buckets;
     std::vector<pointing> pointings;
-    std::vector<double> X, Y, Z;
+    std::vector<double> sth,cth,sph,cph,s;
+    std::vector<std::vector<double> > spectra;
+
+    int goodz = 0;
+
+    double m = std::pow(std::pow(10,0.0001),combine);
+
+    long sumlength = 0;
+    long totalpixels = 0;
 
     for(int i = 0; i < columns[0].size(); ++i) {
-        double ra(deg2rad*columns[0][i]), dec(deg2rad*columns[1][i]);
+        double ra(deg2rad*columns[0][i]);
+        double dec(deg2rad*columns[1][i]);
+        double z = columns[2][i];
+        if(z < zmin || z > zmax) continue;
+
+        double zlo = std::max(speclo/lyA-1,forestlo/lyA*(1+z)-1);
+        double zhi = foresthi/lyA*(1+z)-1;
+
+        double zpix = zlo;
+        std::vector<double> spectrum;
+        while(zpix < zhi) {
+            spectrum.push_back(cosmology->getLineOfSightComovingDistance(zpix));
+            zpix = (1 + zpix)*m - 1;
+            totalpixels++;
+        }
+        spectra.push_back(spectrum);
+
+        sumlength += spectrum.size();
+
         double theta = (90.0*deg2rad-dec);
+
+        s.push_back(cosmology->getLineOfSightComovingDistance(z));
+        sth.push_back(std::sin(theta));
+        cth.push_back(std::cos(theta));
+        sph.push_back(std::sin(ra));
+        cph.push_back(std::cos(ra));
+
         pointing p(theta, ra);
         pointings.push_back(p);
-
-
-        double s(cosmology->getLineOfSightComovingDistance(std::abs(columns[2][i])));
-        double cosDEC(std::cos(dec));
-        X.push_back(s*cosDEC*std::cos(ra));
-        Y.push_back(s*cosDEC*std::sin(ra));
-        Z.push_back(s*std::sin(dec));
-
         int index = map.ang2pix(p);
         if(buckets.count(index) > 0) {
-            buckets[index].push_back(i);
+            buckets[index].push_back(goodz++);
         }
         else {
-            buckets[index] = std::vector<int>(1,i);
+            buckets[index] = std::vector<int>(1,goodz++);
         }
     }
+
+    std::cout << "Average forest size: " <<  float(sumlength)/spectra.size() <<  " pixels" << std::endl;
 
     int nbuckets = buckets.size();
     std::cout << "We have " << nbuckets << " buckets w/ data" << std::endl;
 
-    long npair(0), nused(0);
+    long npair(0), nused(0), npixelpairs(0), npixelpairsused(0);
 
     rangeset<int> neighbors_rangeset;
     std::vector<int> neighbors;
 
-    double maxRange = 1 - std::cos(maxAng);
     double rmaxsq = rmax*rmax;
+    double rminsq = 0;
+    double cosmax = std::cos(maxAng);
 
     BOOST_FOREACH(BucketToPixels::value_type &pixels, buckets) {
         // Loop over all points in each bucket
         BOOST_FOREACH(int i, pixels.second) {
-            double xi = X[i];
-            double yi = Y[i];
-            double zi = Z[i];
+            double s_i = s[i];
+            double sth_i = sth[i];
+            double cth_i = cth[i];
+            double sph_i = sph[i];
+            double cph_i = cph[i];
+            double s_i_sq = s_i*s_i;
+
             map.query_disc_inclusive(pointings[i], maxAng, neighbors_rangeset);
             neighbors_rangeset.toVector(neighbors);
             // Compare this point to all points in neighboring buckets
@@ -148,25 +193,37 @@ int main(int argc, char **argv) {
                     // Only count pairs once
                     if(j <= i) continue;
                     npair++;
-                    double dx = xi - X[j];
-                    double dy = yi - Y[j];
-                    double dz = zi - Z[j];
-                    double dist = dx*dx + dy*dy + dz*dz;
-                    if(dist >= rmaxsq) continue;
-                    if(dist < 0) continue;
+                    double cosij = sth_i*sth[j]*(cph_i*cph[j] + sph_i*sph[j]) + cth_i*cth[j];
+                    if(cosij < cosmax) continue;
+                    BOOST_FOREACH(double ipix, spectra[i]){
+                        BOOST_FOREACH(double jpix, spectra[j]){
+                            npixelpairs++;
+                            double distsq = ipix*ipix + jpix*jpix - 2*ipix*jpix*cosij;
+                            if(distsq >= rmaxsq) continue;
+                            if(distsq < rminsq) continue;
+                            npixelpairsused++;
+                        }
+                    }
                     nused++;
                 }
             }
         }
     }
 
-    long n(columns[0].size());
+    long n(pointings.size());
     long ndistinct = (n*(n-1))/2;
-    double consideredFrac = npair*1.0/ndistinct;
-    double usedFrac = nused*1.0/npair;
-    std::cout << "Number of distinct pairs " << ndistinct << std::endl;
-    std::cout << "considered " << npair << " of distinct pairs. (" << consideredFrac << ")" << std::endl;
-    std::cout << "used " << nused << " of pairs considered. (" << usedFrac << ")" << std::endl;
+    double consideredFrac = float(npair)/ndistinct;
+    double usedFrac = float(nused)/npair;
+    std::cout << "Number of distinct los pairs " << ndistinct << std::endl;
+    std::cout << "considered " << npair << " of distinct los pairs. (" << consideredFrac << ")" << std::endl;
+    std::cout << "used " << nused << " of los pairs considered. (" << usedFrac << ")" << std::endl;
+
+    long ndistinctpixels = (totalpixels*(totalpixels-1))/2;
+    double consideredPixelsFrac = float(npixelpairs)/ndistinctpixels;
+    double usedPixelsFrac = float(npixelpairsused)/npixelpairs;
+    std::cout << "Number of distinct pixel pairs " << ndistinctpixels << std::endl;
+    std::cout << "considered " << npixelpairs << " of distinct pixel pairs. (" << consideredPixelsFrac << ")" << std::endl;
+    std::cout << "used " << npixelpairsused << " of pixel pairs considered. (" << usedPixelsFrac << ")" << std::endl;
 
     return 0;
 }

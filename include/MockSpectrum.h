@@ -7,31 +7,36 @@
 namespace turbooctospice {
 
 	struct QuasarPixel {
-    	float flux, lam, wgt, dist;
+    	float frac, lam, wgt, dist;
 	};
 
 	class MockSpectrum {
 
 	public:
-	    MockSpectrum(float z, float ra, float dec);
+	    MockSpectrum(std::string target, bool verbose=false);
 
 	    float getZ();
 	    float getRA();
 	    float getDec();
+	    float getCoeff0();
+	    float getCoeff1();
 
-	    std::vector<QuasarPixel> pixels;
+	    std::vector<QuasarPixel> getTrimmedSpectrum(
+	    	int ncombine=1, float forestlo=1040, float foresthi=1200, float speclo=3650);
 	private:
-	    float _z, _ra, _dec;
+		void loadTarget(bool verbose);
+	    float _z, _ra, _dec, _coeff0, _coeff1;
+	    std::string _target;
+	    std::vector<float> _frac;
 	};
 
 	inline float MockSpectrum::getZ() { return _z; };
 	inline float MockSpectrum::getRA() { return _ra; };
 	inline float MockSpectrum::getDec() { return _dec; };
+	inline float MockSpectrum::getCoeff0() { return _coeff0; };
+	inline float MockSpectrum::getCoeff1() { return _coeff1; };
 
 	std::string getMockFilename(std::string target);
-	void readMockTargets(std::vector<std::string> &targetlist, 
-		std::vector<MockSpectrum> &quasars, bool const verbose);
-
 }
 
 #endif

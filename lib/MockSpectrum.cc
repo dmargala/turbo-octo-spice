@@ -15,10 +15,62 @@
 
 namespace local = turbooctospice;
 
-local::MockSpectrum::MockSpectrum(float z, float ra, float dec) : 
-_z(z), _ra(ra), _dec(dec) {
-
+local::MockSpectrum::MockSpectrum(std::string target, bool verbose) : 
+_target(target) {
+    loadTarget(verbose);
 }
+
+void local::MockSpectrum::loadTarget(bool verbose) {
+    try {
+        // Lookup file name for this target
+        std::string rawFilename = getMockFilename(_target);
+        if(verbose) {
+            std::cout << "Reading raw mock file " << rawFilename << std::endl;
+        }
+        // Read fits file
+        boost::scoped_ptr<CCfits::FITS> rawMockFile(new CCfits::FITS(rawFilename,CCfits::Read));
+        // Read header keywords
+        CCfits::PHDU& header = rawMockFile->pHDU();
+        header.readKey("m_z", _z);
+        header.readKey("m_ra", _ra);
+        header.readKey("m_dec", _dec);
+        header.readKey("coeff0", _coeff0);
+        header.readKey("coeff1", _coeff1);
+        // Read mock extension
+        CCfits::ExtHDU& table = rawMockFile->extension(1);
+        table.column("f").read(_frac, 1, table.rows());
+    }
+    catch (CCfits::FitsException& e) {
+        std::cerr << "CCfits Exception Thrown :" << e.message();       
+    }
+}
+
+std::vector<local::QuasarPixel> local::MockSpectrum::getTrimmedSpectrum(
+int ncombine, float forestlo, float foresthi, float speclo) {
+    // init quasar pixels
+    std::vector<QuasarPixel> pixels;
+    // Max and min wavelength defined by lyman alpha forest range and spec cutoff
+    float minlam(std::max(forestlo*(1+_z), speclo));
+    float maxlam(foresthi*(1+_z));
+    // Iterate over raw mock pixels
+    float lam;
+    QuasarPixel qp;
+    for(int i = 0; i < _frac.size(); ++i) {
+        // Calculate current pixel's wavelength
+        lam = std::pow(10,_coeff0+i*_coeff1);
+        // If below forest, skip to next pixel
+        if (lam < minlam) continue;
+        // If beyond forest, we're done
+        if (lam > maxlam) break;
+        // Save the pixel
+        qp.frac = _frac[i];
+        qp.lam = lam;
+        qp.wgt = 1.0;
+        pixels.push_back(qp);
+    }
+    return pixels;
+}
+
 
 std::string local::getMockFilename(std::string target) {
     const char *fromEnv(std::getenv("BOSS_ROOT"));
@@ -36,56 +88,4 @@ std::string local::getMockFilename(std::string target) {
     std::vector<std::string> strs;
     boost::split(strs, target, boost::is_any_of("-"));
     return boost::str(filenameFormat % BOSS_ROOT % MOCK_VERSION % strs[0] % target);
-}
-
-void local::readMockTargets(std::vector<std::string> &targetlist, std::vector<MockSpectrum> &quasars, bool const verbose=false) {
-    boost::scoped_ptr<CCfits::FITS> rawMockFile;
-    // Loop over the available targets in the input file.        
-    BOOST_FOREACH(std::string target, targetlist) {
-        try {
-            std::string rawFilename = getMockFilename(target);
-            if(verbose) {
-                std::cout << "Reading raw mock file " << rawFilename << std::endl;
-            }
-            rawMockFile.reset(new CCfits::FITS(rawFilename,CCfits::Read));
-
-            CCfits::PHDU& header = rawMockFile->pHDU();
-
-            float z, ra, dec;
-            header.readKey("m_z", z);
-            header.readKey("m_ra", ra);
-            header.readKey("m_dec", dec);
-            MockSpectrum quasar(z, ra, dec);
-
-            float coeff0, coeff1;
-            header.readKey("coeff0", coeff0);
-            header.readKey("coeff1", coeff1);
-
-            CCfits::ExtHDU& table = rawMockFile->extension(1);
-            std::vector<float> f;
-
-            table.column("f").read(f, 1, table.rows());
-
-            float lam;
-            float forestlo(1040), foresthi(1200), lya(1216), speclo(3650);
-
-            float minlam(std::max(forestlo*(1+z), speclo));
-            float maxlam(foresthi*(1+z));
-
-            QuasarPixel qp;
-            for(int i = 0; i < f.size(); ++i) {
-                lam = std::pow(10,coeff0+i*coeff1);
-                if (lam < minlam) continue;
-                if (lam > maxlam) break;
-                qp.flux = f[i];
-                qp.lam = lam;
-                qp.wgt = 1.0;
-                quasar.pixels.push_back(qp);
-            }
-            quasars.push_back(quasar);
-        }
-        catch (CCfits::FitsException& e) {
-            std::cerr << "CCfits Exception Thrown :" << e.message();       
-        }
-    }
 }

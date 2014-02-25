@@ -2,6 +2,7 @@
 // Read BOSS mock data 
 
 #include "boost/program_options.hpp"
+#include "boost/foreach.hpp"
 
 #include "cosmo/cosmo.h"
 #include "likely/likely.h"
@@ -67,11 +68,14 @@ int main(int argc, char **argv) {
 
     std::vector<tos::MockSpectrum> quasars;
 
-    tos::readMockTargets(targetlist, quasars, verbose);
-
-    for(int i=0; i < quasars.size(); ++i){
-        std::cout << quasars[i].getZ() << " " << quasars[i].pixels.size() << std::endl;
+    long npixels(0);
+    for(int i = 0; i < targetlist.size(); ++i ){
+        tos::MockSpectrum mock(targetlist[i]);
+        std::vector<tos::QuasarPixel> pixels(mock.getTrimmedSpectrum());
+        npixels += pixels.size();
     }
+
+    std::cout << "Number of pixels: " << npixels << std::endl;
 
     return 0;
 }

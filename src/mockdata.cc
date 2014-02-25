@@ -2,36 +2,19 @@
 // Read BOSS mock data 
 
 #include "boost/program_options.hpp"
-#include "boost/foreach.hpp"
-#include "boost/format.hpp"
-#include "boost/smart_ptr.hpp"
 
-#include "bosslya/bosslya.h"
 #include "cosmo/cosmo.h"
 #include "likely/likely.h"
 
 #include <iostream>
 #include <fstream>
-#include <algorithm>
 
-#include <CCfits/CCfits>
-#include "healpix_map.h"
+#include "tos.h"
 
 
 namespace po = boost::program_options;
 namespace lk = likely;
-namespace lya = bosslya;
-
-struct QuasarPixel {
-    float flux, lam, wgt, dist;
-};
-
-struct QuasarSpectrum {
-    float z, ra, dec, sindec, cosdec, sinra, cosra;
-    pointing p;
-    std::vector<QuasarPixel> pixels;
-};
-
+namespace tos = turbooctospice;
 
 int main(int argc, char **argv) {
 
@@ -59,84 +42,35 @@ int main(int argc, char **argv) {
     }
     bool verbose(vm.count("verbose"));
 
-    long nTargets;
-    lya::TargetSet targetSet;
-
-    // Read targetlist file with redshifts
-    nTargets = lya::readTargetSet(targetSet,infile);
-    if(verbose) {
-        std::cout << "Will read " << nTargets << " targets." << std::endl;
-    }
-
-    std::string rawFilename;
-
-    boost::scoped_ptr<CCfits::FITS> pinfile;
-
-    std::string baseDir = "/Users/daniel/data/boss";
-    std::string mockDir = "M3_0_0/rawlite";
-    boost::format filenameFormat("%s/%s/%04d/mockrawShort-%04d-%5d-%04d.fits");
-
-    std::vector<QuasarSpectrum> quasars;
-
-    // Loop over the available targets in the input file.        
-    BOOST_FOREACH(lya::Target target, targetSet) {
-        try {
-            rawFilename = (filenameFormat % baseDir % mockDir % target.getPlate() % target.getPlate() % target.getMJD() % target.getFiber()).str();
-
-            pinfile.reset(new CCfits::FITS(rawFilename,CCfits::Read));
-
-            CCfits::PHDU& header = pinfile->pHDU();
-
-            if(verbose) {
-                std::cout << "Reading raw mock file " << rawFilename << std::endl;
-            }
-
-            QuasarSpectrum quasar;
-
-            header.readKey("m_z", quasar.z);
-            header.readKey("m_ra", quasar.ra);
-            header.readKey("m_dec", quasar.dec);
-            double coeff0, coeff1;
-            header.readKey("coeff0", coeff0);
-            header.readKey("coeff1", coeff1);
-
-            boost::format outFormat("%.4f %.4f %.4f %.4f %.4f");
-            std::cout << outFormat % quasar.z % quasar.ra % quasar.dec % coeff0 % coeff1 << std::endl;
-
-            CCfits::ExtHDU& table = pinfile->extension(1);
-            std::vector<float> f;
-
-            table.column("f").read(f, 1, table.rows());
-
-            float lam;
-            float forestlo(1040), foresthi(1200), lya(1216), speclo(3650);
-
-            float minlam = std::max(forestlo*(1+quasar.z), speclo);
-            float maxlam = foresthi*(1+quasar.z);
-
-            QuasarPixel qp;
-            for(int i = 0; i < f.size(); ++i) {
-                lam = std::pow(10,coeff0+i*coeff1);
-                if (lam < minlam) continue;
-                if (lam > maxlam) break;
-                qp.flux = f[i];
-                qp.lam = lam;
-                qp.wgt = 1.0;
-                quasar.pixels.push_back(qp);
-            }
-
-            std::cout << f.size() << " " << quasar.pixels.size() << std::endl;
-        }
-        catch (CCfits::FitsException&) 
-        {
-          std::cerr << " Fits Exception Thrown by test function \n";       
-        }
-    }
-
     // Read the input file
     if(0 == infile.length()) {
         std::cerr << "Missing infile parameter." << std::endl;
         return -2;
+    }
+    std::vector<std::string> targetlist;
+    try {
+        std::ifstream in(infile.c_str());
+        std::string line;
+        while (std::getline(in, line)) {
+            targetlist.push_back(line);
+        }
+        in.close();
+    }
+    catch(std::exception const &e) {
+        std::cerr << "Error while reading " << infile << ": " << e.what() << std::endl;
+        return -3;
+    }
+    if(verbose) {
+        std::cout << "Read " << targetlist.size() << " rows from " << infile
+            << std::endl;
+    }
+
+    std::vector<tos::MockSpectrum> quasars;
+
+    tos::readMockTargets(targetlist, quasars, verbose);
+
+    for(int i=0; i < quasars.size(); ++i){
+        std::cout << quasars[i].getZ() << " " << quasars[i].pixels.size() << std::endl;
     }
 
     return 0;

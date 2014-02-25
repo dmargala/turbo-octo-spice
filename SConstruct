@@ -9,6 +9,9 @@ if not env.GetOption('clean'):
 	if not conf.CheckLib('cosmo'):
 		print 'Did not find cosmo!'
 		Exit(1)
+	if not conf.CheckLib('bosslya'):
+		print 'Did not find bosslya!'
+		Exit(1)
 	if not conf.CheckLib('boost_program_options'):
 		print 'Did not find program options'
 		Exit(1)

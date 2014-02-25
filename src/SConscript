@@ -14,10 +14,12 @@ bucketxi = opt.Program('#bin/bucketxi', 'bucketxi.cc', LIBS=common_libs)
 kdtreetest = opt.Program('#bin/kdtreetest', 'kdtreetest.cc', LIBS=common_libs + ['kdtree'])
 bucketsky = opt.Program('#bin/bucketsky', 'bucketsky.cc', LIBS=common_libs + ['turbooctospice'], LIBPATH='.')
 
-
 healCpp = '/Users/daniel/source/Healpix_3.11/src/cxx/basic_gcc/include'
 healLib = '/Users/daniel/source/Healpix_3.11/src/cxx/basic_gcc/lib'
 healtest = opt.Program('#bin/healtest', 'healtest.cc', LIBS=common_libs + ['healpix_cxx','cxxsupport'],
+	LIBPATH=healLib, CPPPATH=healCpp )
+mockdata = opt.Program('#bin/mockdata', 'mockdata.cc', 
+	LIBS=common_libs+['bosslya','cfitsio','CCfits']+['healpix_cxx','cxxsupport'],
 	LIBPATH=healLib, CPPPATH=healCpp )
 ## Compile CUDA programs
 

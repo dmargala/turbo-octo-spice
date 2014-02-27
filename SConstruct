@@ -18,5 +18,4 @@ if not env.GetOption('clean'):
 	env = conf.Finish()
 
 # Use alternate build directory, do not copy files
-SConscript('lib/SConscript', exports = ['env'])
 SConscript('src/SConscript', variant_dir='build', duplicate=0, exports = ['env'])

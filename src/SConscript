@@ -3,10 +3,7 @@ import os
 Import('env')
 
 ## Build turbooctospice library
-env.Library('turbooctospice', [
-	'#lib/Triangle.cc',
-	'#lib/TriangleMesh.cc',
-	'#lib/MockSpectrum.cc'])
+env.Library('turbooctospice', Glob('#lib/*.cc'))
 
 ## Compile C++ programs
 common_libs = ['likely', 'cosmo', 'boost_program_options']

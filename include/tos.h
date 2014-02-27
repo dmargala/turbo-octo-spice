@@ -5,3 +5,5 @@
 #include "TriangleMesh.h"
 
 #include "MockSpectrum.h"
+
+#include "XiEstimator.h"

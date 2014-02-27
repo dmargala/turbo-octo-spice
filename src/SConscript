@@ -17,6 +17,7 @@ healtest = env.Program('healtest', 'healtest.cc', LIBS=common_libs + ['healpix_c
 	LIBPATH=healLib, CPPPATH=healCpp )
 mockdata = env.Program('mockdata', 'mockdata.cc', 
 	LIBS=common_libs+['cfitsio','CCfits','turbooctospice'],LIBPATH='.')
+templatexi = env.Program('templatexi', 'templatexi.cc', LIBS=common_libs+['turbooctospice'], LIBPATH='.')
 ## Compile CUDA programs
 
 #env['BUILDERS']['CudaProgram'] = Builder(action = '/usr/local/cuda/bin/nvcc -m64 -arch=sm_20 -o $TARGET $SOURCE $LIBS', src_suffix = '.cu', suffix = '')

@@ -3,34 +3,41 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 namespace turbooctospice {
  
     template <typename PairSearchPolicy, typename BinPolicy> 
     class XiEstimator : private PairSearchPolicy, private BinPolicy {
-        using PairSearchPolicy::print;
-        using BinPolicy::message;
+        using PairSearchPolicy::findPairs;
+        using BinPolicy::binPair;
     public:
-        void run() const {
-        	print(message());
+        void run(std::vector<float> &pixels) const {
+        	findPairs(pixels, binPair);
         }
     };
      
     class PairSearchPolicyBrute {
     protected:
-        template<typename MessageType> void print(MessageType const &message) const {
-        std::cout << message << std::endl;
+        template<typename BinMethod> void findPairs(std::vector<float> &pixels, BinMethod binPair) const {
+            for(int i = 0; i < pixels.size()-1; ++i) {
+                float a = pixels[i];
+                for(int j = i+1; j < pixels.size(); ++j) {
+                    float b = pixels[j];
+                    std::cout << a << "," << b << " -> " << binPair(a, b) << std::endl;
+                }
+            }
         }
     };
      
     class BinPolicyDummy {
     protected:
-        std::string message() const;
+        static float binPair(float a, float b);
     };
 
     class BinPolicyWeighted {
     protected:
-        std::string message() const;
+        static float binPair(float a, float b);
     };
 
 }

@@ -28,7 +28,7 @@ void local::MockSpectrum::loadTarget(bool verbose) {
             std::cout << "Reading raw mock file " << rawFilename << std::endl;
         }
         // Read fits file
-        boost::scoped_ptr<CCfits::FITS> rawMockFile(new CCfits::FITS(rawFilename,CCfits::Read));
+        std::auto_ptr<CCfits::FITS> rawMockFile(new CCfits::FITS(rawFilename,CCfits::Read));
         // Read header keywords
         CCfits::PHDU& header = rawMockFile->pHDU();
         header.readKey("m_z", _z);

@@ -1,7 +1,7 @@
 // Created 27-Feb-2013 by Daniel Margala (University of California, Irvine) <dmargala@uci.edu>
 
-#ifndef TOS_XI_ESTIMATOR
-#define TOS_XI_ESTIMATOR
+#ifndef TURBOOCTOSPICE_XI_ESTIMATOR
+#define TURBOOCTOSPICE_XI_ESTIMATOR
 
 #include <iostream>
 #include <string>

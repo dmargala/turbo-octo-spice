@@ -1,3 +1,5 @@
+// Created 28-Feb-2014 by Daniel Margala (University of California, Irvine) <dmargala@uci.edu>
+
 #include "MockSpectrum.h"
 
 #include "boost/foreach.hpp"

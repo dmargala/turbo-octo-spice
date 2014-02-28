@@ -1,3 +1,5 @@
+// Created 28-Feb-2014 by Daniel Margala (University of California, Irvine) <dmargala@uci.edu>
+
 #include "Triangle.h"
 
 namespace local = turbooctospice;

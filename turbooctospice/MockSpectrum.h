@@ -1,5 +1,7 @@
-#ifndef TOS_MOCK_SPECTRUM
-#define TOS_MOCK_SPECTRUM
+// Created 28-Feb-2014 by Daniel Margala (University of California, Irvine) <dmargala@uci.edu>
+
+#ifndef TURBOOCTOSPICE_MOCK_SPECTRUM
+#define TURBOOCTOSPICE_MOCK_SPECTRUM
 
 #include <vector>
 #include <string>
@@ -11,7 +13,6 @@ namespace turbooctospice {
 	};
 
 	class MockSpectrum {
-
 	public:
 	    MockSpectrum(std::string target, bool verbose=false);
 
@@ -28,7 +29,7 @@ namespace turbooctospice {
 	    float _z, _ra, _dec, _coeff0, _coeff1;
 	    std::string _target;
 	    std::vector<float> _frac;
-	};
+	}; // MockSpectrum
 
 	inline float MockSpectrum::getZ() { return _z; };
 	inline float MockSpectrum::getRA() { return _ra; };
@@ -37,6 +38,6 @@ namespace turbooctospice {
 	inline float MockSpectrum::getCoeff1() { return _coeff1; };
 
 	std::string getMockFilename(std::string target);
-}
+} // turbooctospice
 
 #endif

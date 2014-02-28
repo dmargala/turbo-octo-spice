@@ -1,5 +1,7 @@
-#ifndef TOS_TRIANGLE_MESH
-#define TOS_TRIANGLE_MESH
+// Created 28-Feb-2014 by Daniel Margala (University of California, Irvine) <dmargala@uci.edu>
+
+#ifndef TURBOOCTOSPICE_TRIANGLE_MESH
+#define TURBOOCTOSPICE_TRIANGLE_MESH
 
 #include "types.h"
 #include "Triangle.h"

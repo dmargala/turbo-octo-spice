@@ -1,4 +1,4 @@
-env = Environment(CCFLAGS = '-O2', CPPPATH='#include', LIBPATH='#lib')
+env = Environment(CCFLAGS = '-O2', CPPPATH='#turbooctospice', LIBPATH='#turbooctospice')
 
 # Check for required libraries unless we're cleaning up
 if not env.GetOption('clean'):

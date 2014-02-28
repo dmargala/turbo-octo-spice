@@ -1,5 +1,7 @@
-#ifndef TOS_TYPES
-#define TOS_TYPES
+// Created 28-Feb-2014 by Daniel Margala (University of California, Irvine) <dmargala@uci.edu>
+
+#ifndef TURBOOCTOSPICE_TYPES
+#define TURBOOCTOSPICE_TYPES
 
 #include "boost/geometry.hpp"
 #include "boost/geometry/geometries/point.hpp"

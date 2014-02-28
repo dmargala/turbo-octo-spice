@@ -3,7 +3,7 @@ import os
 Import('env')
 
 ## Build turbooctospice library
-env.Library('turbooctospice', Glob('#lib/*.cc'))
+env.Library('turbooctospice', Glob('#turbooctospice/*.cc'))
 
 ## Compile C++ programs
 common_libs = ['likely', 'cosmo', 'boost_program_options', 'boost_system', 'boost_thread','boost_coroutine']

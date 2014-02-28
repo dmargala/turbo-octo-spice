@@ -7,3 +7,7 @@
 #include "MockSpectrum.h"
 
 #include "XiEstimator.h"
+#include "BrutePairSearch.h"
+#include "DoNothing.h"
+
+#include "PrintPair.h"

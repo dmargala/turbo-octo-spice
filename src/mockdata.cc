@@ -10,7 +10,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "tos.h"
+#include "turbooctospice.h"
 
 
 namespace po = boost::program_options;

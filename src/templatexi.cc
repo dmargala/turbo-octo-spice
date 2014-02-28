@@ -1,7 +1,7 @@
 // Created 27-Feb-2013 by Daniel Margala (University of California, Irvine) <dmargala@uci.edu>
 // Example strategy (polcicy) design pattern using templated classes
 
-#include "tos.h"
+#include "turbooctospice.h"
 
 namespace tos = turbooctospice;
 

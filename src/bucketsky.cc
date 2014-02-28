@@ -20,7 +20,7 @@
 #include <vector>
 #include <map>
 
-#include "tos.h"
+#include "turbooctospice.h"
 
 namespace po = boost::program_options;
 namespace lk = likely;

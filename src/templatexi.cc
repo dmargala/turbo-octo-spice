@@ -1,22 +1,26 @@
+// Created 27-Feb-2013 by Daniel Margala (University of California, Irvine) <dmargala@uci.edu>
+// Example strategy (polcicy) design pattern using templated classes
+
 #include "tos.h"
 
 namespace tos = turbooctospice;
 
 int main(int argc, char **argv) {
 
-	std::vector<float> pixels;
+	// Create sample data
+	std::vector<tos::Pixel> pixels;
 	for(int i = 0; i < 5; ++i) {
-		pixels.push_back(i);
+		pixels.push_back(tos::Pixel(i));
 	}
 
-    /* Example 1 */
+    // Example 1 
     std::cout << "Example 1: " << std::endl;
     typedef tos::XiEstimator<tos::PairSearchPolicyBrute, tos::BinPolicyDummy> SimpleXi;
  
     SimpleXi simple;
     simple.run(pixels); 
  
-    /* Example 2 */
+    // Example 2
     std::cout << "Example 2: " << std::endl;
     typedef tos::XiEstimator<tos::PairSearchPolicyBrute, tos::BinPolicyWeighted> WeightedXi;
  

@@ -6,7 +6,7 @@ Import('env')
 env.Library('turbooctospice', Glob('#lib/*.cc'))
 
 ## Compile C++ programs
-common_libs = ['likely', 'cosmo', 'boost_program_options']
+common_libs = ['likely', 'cosmo', 'boost_program_options', 'boost_system', 'boost_thread','boost_coroutine']
 bucketxi = env.Program('bucketxi', 'bucketxi.cc', LIBS=common_libs)
 kdtreetest = env.Program('kdtreetest', 'kdtreetest.cc', LIBS=common_libs + ['kdtree'])
 bucketsky = env.Program('bucketsky', 'bucketsky.cc', LIBS=common_libs + ['turbooctospice'],LIBPATH='.')

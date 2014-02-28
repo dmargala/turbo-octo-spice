@@ -1,3 +1,5 @@
+// Created 27-Feb-2013 by Daniel Margala (University of California, Irvine) <dmargala@uci.edu>
+
 #ifndef TOS_XI_ESTIMATOR
 #define TOS_XI_ESTIMATOR
 
@@ -5,39 +7,53 @@
 #include <string>
 #include <vector>
 
+#include "boost/bind.hpp"
+#include "boost/coroutine/coroutine.hpp"
+
 namespace turbooctospice {
+
+    typedef float Pixel;
+    typedef std::pair<Pixel,Pixel> PixelPair;
+    typedef boost::coroutines::coroutine<PixelPair()> PairGenerator;
  
     template <typename PairSearchPolicy, typename BinPolicy> 
     class XiEstimator : private PairSearchPolicy, private BinPolicy {
-        using PairSearchPolicy::findPairs;
-        using BinPolicy::binPair;
+        // using PairSearchPolicy::findPairs;
+        // using BinPolicy::binPair;
     public:
-        void run(std::vector<float> &pixels) const {
-        	findPairs(pixels, binPair);
+        void run(std::vector<Pixel> const &pixels) {
+            PairGenerator pairs(boost::bind(&PairSearchPolicy::findPairs, 
+                dynamic_cast<PairSearchPolicy*>(this), _1, pixels));
+            // Loop over yielded pairs
+            while(pairs){ // Check completion status
+                // Extract yielded result
+                BinPolicy::binPair(pairs.get());
+                // Fire up the generator?
+                pairs();
+            }
         }
     };
-     
+
     class PairSearchPolicyBrute {
-    protected:
-        template<typename BinMethod> void findPairs(std::vector<float> &pixels, BinMethod binPair) const {
+    public:
+        void findPairs(PairGenerator::caller_type& yield, std::vector<Pixel> const &pixels) {
             for(int i = 0; i < pixels.size()-1; ++i) {
-                float a = pixels[i];
                 for(int j = i+1; j < pixels.size(); ++j) {
-                    float b = pixels[j];
-                    std::cout << a << "," << b << " -> " << binPair(a, b) << std::endl;
+                    yield(PixelPair(pixels[i],pixels[j]));
                 }
             }
         }
     };
-     
+
+
     class BinPolicyDummy {
     protected:
-        static float binPair(float a, float b);
+        void binPair(PixelPair const &pair) const;
     };
 
     class BinPolicyWeighted {
     protected:
-        static float binPair(float a, float b);
+        void binPair(PixelPair const &pair) const; 
     };
 
 }

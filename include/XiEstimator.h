@@ -8,13 +8,10 @@
 #include <vector>
 
 #include "boost/bind.hpp"
-#include "boost/coroutine/coroutine.hpp"
+
+#include "types.h"
 
 namespace turbooctospice {
-
-    typedef float Pixel;
-    typedef std::pair<Pixel,Pixel> PixelPair;
-    typedef boost::coroutines::coroutine<PixelPair()> PairGenerator;
  
     template <typename PairSearchPolicy, typename BinPolicy> 
     class XiEstimator : private PairSearchPolicy, private BinPolicy {

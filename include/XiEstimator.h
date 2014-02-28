@@ -33,13 +33,7 @@ namespace turbooctospice {
 
     class PairSearchPolicyBrute {
     public:
-        void findPairs(PairGenerator::caller_type& yield, std::vector<Pixel> const &pixels) {
-            for(int i = 0; i < pixels.size()-1; ++i) {
-                for(int j = i+1; j < pixels.size(); ++j) {
-                    yield(PixelPair(pixels[i],pixels[j]));
-                }
-            }
-        }
+        void findPairs(PairGenerator::caller_type& yield, std::vector<Pixel> const &pixels) const;
     };
 
 

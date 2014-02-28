@@ -7,15 +7,14 @@
 
 namespace local = turbooctospice;
 
-// template<typename BinMethod> void local::PairSearchPolicyBrute::findPairs(std::vector<float> &pixels, BinMethod binPair) const {
-//     for(int i = 0; i < pixels.size()-1; ++i) {
-//         float a = pixels[i];
-//         for(int j = i+1; j < pixels.size(); ++j) {
-//             float b = pixels[j];
-//             std::cout << a << "," << b << " -> " << binPair(a, b) << std::endl;
-//         }
-//     }
-// }
+void local::PairSearchPolicyBrute::findPairs(local::PairGenerator::caller_type& yield, 
+std::vector<local::Pixel> const &pixels) const {
+    for(int i = 0; i < pixels.size()-1; ++i) {
+        for(int j = i+1; j < pixels.size(); ++j) {
+            yield(local::PixelPair(pixels[i],pixels[j]));
+        }
+    }
+}
 
 void local::BinPolicyDummy::binPair(local::PixelPair const &pair) const {
     std::cout << pair.first*pair.second << std::endl;

@@ -7,16 +7,16 @@ env.Library('turbooctospice', Glob('#turbooctospice/*.cc'))
 
 ## Compile C++ programs
 common_libs = ['likely', 'cosmo', 'boost_program_options', 'boost_system', 'boost_thread','boost_coroutine']
-bucketxi = env.Program('bucketxi', 'bucketxi.cc', LIBS=common_libs)
-kdtreetest = env.Program('kdtreetest', 'kdtreetest.cc', LIBS=common_libs + ['kdtree'])
-bucketsky = env.Program('bucketsky', 'bucketsky.cc', LIBS=common_libs + ['turbooctospice'],LIBPATH='.')
+# bucketxi = env.Program('bucketxi', 'bucketxi.cc', LIBS=common_libs)
+# kdtreetest = env.Program('kdtreetest', 'kdtreetest.cc', LIBS=common_libs + ['kdtree'])
+# bucketsky = env.Program('bucketsky', 'bucketsky.cc', LIBS=common_libs + ['turbooctospice'],LIBPATH='.')
 
-healCpp = '/Users/daniel/source/Healpix_3.11/src/cxx/basic_gcc/include'
-healLib = '/Users/daniel/source/Healpix_3.11/src/cxx/basic_gcc/lib'
-healtest = env.Program('healtest', 'healtest.cc', LIBS=common_libs + ['healpix_cxx','cxxsupport'],
-	LIBPATH=healLib, CPPPATH=healCpp )
-mockdata = env.Program('mockdata', 'mockdata.cc', 
-	LIBS=common_libs+['cfitsio','CCfits','turbooctospice'],LIBPATH='.')
+# healCpp = '/Users/daniel/source/Healpix_3.11/src/cxx/basic_gcc/include'
+# healLib = '/Users/daniel/source/Healpix_3.11/src/cxx/basic_gcc/lib'
+# healtest = env.Program('healtest', 'healtest.cc', LIBS=common_libs + ['healpix_cxx','cxxsupport'],
+# 	LIBPATH=healLib, CPPPATH=healCpp )
+# mockdata = env.Program('mockdata', 'mockdata.cc', 
+# 	LIBS=common_libs+['cfitsio','CCfits','turbooctospice'],LIBPATH='.')
 templatexi = env.Program('templatexi', 'templatexi.cc', LIBS=common_libs+['turbooctospice'], LIBPATH='.')
 ## Compile CUDA programs
 

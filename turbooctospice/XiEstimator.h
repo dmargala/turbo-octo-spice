@@ -3,8 +3,6 @@
 #ifndef TURBOOCTOSPICE_XI_ESTIMATOR
 #define TURBOOCTOSPICE_XI_ESTIMATOR
 
-#include <vector>
-
 #include "boost/bind.hpp"
 
 #include "types.h"
@@ -12,11 +10,11 @@
 namespace turbooctospice {
  
     template <typename PairSearchPolicy, typename BinPolicy> 
-    class XiEstimator : public PairSearchPolicy, public BinPolicy {
+    class XiEstimator : private PairSearchPolicy, private BinPolicy {
     public:
-        void run(std::vector<Pixel> const &pixels) {
+        void run(Pixels const &a, Pixels const &b) {
             PairGenerator pairs(boost::bind(&PairSearchPolicy::findPairs, 
-                dynamic_cast<PairSearchPolicy*>(this), _1, pixels));
+                dynamic_cast<PairSearchPolicy*>(this), _1, a, b));
             // Loop over yielded pairs
             while(pairs){ // Check completion status
                 // Extract yielded result
@@ -24,6 +22,9 @@ namespace turbooctospice {
                 // Fire up the generator?
                 pairs();
             }
+        }
+        void run(Pixels const &a) {
+            run(a, a);
         }
     private:
     }; // XiEstimator

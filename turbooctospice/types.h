@@ -13,6 +13,8 @@ namespace turbooctospice {
 	typedef boost::geometry::model::point<float, 3, boost::geometry::cs::cartesian> point;
 
     typedef float Pixel;
+    typedef std::vector<Pixel> Pixels;
+
     typedef std::pair<Pixel,Pixel> PixelPair;
     typedef boost::coroutines::coroutine<PixelPair()> PairGenerator;
 }

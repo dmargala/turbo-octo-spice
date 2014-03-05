@@ -7,6 +7,11 @@ env.Library('turbooctospice', Glob('#turbooctospice/*.cc'))
 
 ## Compile C++ programs
 common_libs = ['likely', 'cosmo', 'boost_program_options', 'boost_system', 'boost_thread','boost_coroutine']
+
+
+templatexi = env.Program('templatexi', 'templatexi.cc', LIBS=common_libs+['turbooctospice'], LIBPATH='.')
+
+
 # bucketxi = env.Program('bucketxi', 'bucketxi.cc', LIBS=common_libs)
 # kdtreetest = env.Program('kdtreetest', 'kdtreetest.cc', LIBS=common_libs + ['kdtree'])
 # bucketsky = env.Program('bucketsky', 'bucketsky.cc', LIBS=common_libs + ['turbooctospice'],LIBPATH='.')
@@ -17,7 +22,6 @@ common_libs = ['likely', 'cosmo', 'boost_program_options', 'boost_system', 'boos
 # 	LIBPATH=healLib, CPPPATH=healCpp )
 # mockdata = env.Program('mockdata', 'mockdata.cc', 
 # 	LIBS=common_libs+['cfitsio','CCfits','turbooctospice'],LIBPATH='.')
-templatexi = env.Program('templatexi', 'templatexi.cc', LIBS=common_libs+['turbooctospice'], LIBPATH='.')
 ## Compile CUDA programs
 
 #env['BUILDERS']['CudaProgram'] = Builder(action = '/usr/local/cuda/bin/nvcc -m64 -arch=sm_20 -o $TARGET $SOURCE $LIBS', src_suffix = '.cu', suffix = '')

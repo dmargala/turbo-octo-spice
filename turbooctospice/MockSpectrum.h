@@ -6,11 +6,9 @@
 #include <vector>
 #include <string>
 
-namespace turbooctospice {
+#include "types.h"
 
-	struct QuasarPixel {
-    	float frac, lam, wgt, dist;
-	};
+namespace turbooctospice {
 
 	class MockSpectrum {
 	public:

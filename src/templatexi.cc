@@ -31,6 +31,7 @@ int main(int argc, char **argv) {
         ("axis2", po::value<std::string>(&axis2)->default_value("[0:200]*50"),
             "Axis-2 binning")
         ("rmu", "Use (r,mu) binning instead of (rP,rT) binning")
+        ("ignore", "No binnig (use for profiling pair search methods")
         ;
 
     // do the command line parsing now
@@ -47,7 +48,7 @@ int main(int argc, char **argv) {
         std::cout << cli << std::endl;
         return 1;
     }
-    bool verbose(vm.count("verbose")),rmu(vm.count("rmu"));
+    bool verbose(vm.count("verbose")),rmu(vm.count("rmu")),ignore(vm.count("ignore"));
 
     // Read the input file
     if(0 == infile.length()) {
@@ -90,10 +91,20 @@ int main(int argc, char **argv) {
     // Run the estimator
     std::vector<double> xi;
  
-    typedef tos::XiEstimator<tos::BrutePairSearch<tos::Pixels>, tos::XYZPair<tos::Pixel> > PrintXi;
-    PrintXi printxi;
-    printxi.run(pixels, pixels, grid, rmu, x1min, x1max, x2min, x2max, xi); 
+    typedef tos::BrutePairSearch<tos::Pixels> BPS;
+    typedef tos::IgnorePair<tos::Pixel> IP;
+    typedef tos::BinXYZPair<tos::Pixel> BP;
+    typedef tos::XiEstimator<BPS, IP> IgnoreXi;
+    typedef tos::XiEstimator<BPS, BP> BruteXi;
 
+    if(ignore) {
+        IgnoreXi ignorexi(new BPS, new IP);
+        ignorexi.run(pixels, pixels, xi); 
+    }
+    else {
+        BruteXi brutexi(new BPS, new BP(grid, rmu, x1min, x1max, x2min, x2max));
+        brutexi.run(pixels, pixels, xi); 
+    }
 
     long n = columns[0].size();
     std::cout << "Number of distinct pairs " << n*(n-1)/2 << std::endl;

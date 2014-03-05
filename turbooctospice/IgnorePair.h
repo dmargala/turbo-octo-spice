@@ -11,12 +11,14 @@ namespace lk = likely;
 
 namespace turbooctospice {
 	template <typename PixelType>
-	class DoNothing {
+	class IgnorePair {
 	public:
-		void binPair(PixelType const &first, PixelType const &second, lk::BinnedGrid const &grid, bool rmu,
-		double x1min, double x1max, double x2min, double x2max, std::vector<double> &dsum, std::vector<double> &wsum) const {};
+		void binPair(PixelType const &first, PixelType const &second, std::vector<double> &dsum, std::vector<double> &wsum, long &nused) const {
+			nused++;
+		};
+		int getNBinsTotal() const { return 0; };
 	private:
-	}; // DoNothing
+	}; // IgnorePair
 
 } // turbooctospice
 

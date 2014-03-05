@@ -25,7 +25,7 @@ namespace turbooctospice {
 		    std::cout << "Exiting cross-correlation generator ..." << std::endl;
         }
         void findPairs(PairGenerator::caller_type& yield, PixelIterable const &a) const {
-        	//std::cout << "Entering auto-correlation generator ..." << std::endl;
+        	std::cout << "Entering auto-correlation generator ..." << std::endl;
     		for(auto i = a.begin(); i != boost::prior(a.end()); ++i) {
 		        for(auto j = boost::next(i); j != a.end(); ++j) {
 		            yield(std::make_pair(*i,*j));

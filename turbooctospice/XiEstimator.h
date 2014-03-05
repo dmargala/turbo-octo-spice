@@ -17,12 +17,12 @@ namespace lk = likely;
 namespace turbooctospice {
  
     template <typename PairSearchPolicy, typename BinPolicy> 
-    class XiEstimator : private PairSearchPolicy, private BinPolicy {
+    class XiEstimator {
     public:
-        void run(Pixels const &a, Pixels const &b, lk::BinnedGrid const &grid, bool rmu, 
-        double x1min, double x1max, double x2min, double x2max, std::vector<double> &xi) {
+        XiEstimator(PairSearchPolicy *psp, BinPolicy *bp) : _psp(psp), _bp(bp) {};
+        void run(Pixels const &a, Pixels const &b, std::vector<double> &xi) const {
             // create internal accumulation vectors
-            int nbins = grid.getNBinsTotal();
+            int nbins = _bp->getNBinsTotal();
             std::vector<double> dsum(nbins,0.), wsum(nbins,0.);
 
             // Loop over pixel pairs
@@ -31,8 +31,7 @@ namespace turbooctospice {
             while(pairs){ // Check completion status
                 npair++;
                 // Extract yielded result
-                BinPolicy::binPair(pairs.get().first, pairs.get().second, grid, rmu, 
-                    x1min, x1max, x2min, x2max, dsum, wsum, nused);
+                _bp->binPair(pairs.get().first, pairs.get().second, dsum, wsum, nused);
                 // Fire up the generator?
                 pairs();
             }
@@ -46,13 +45,16 @@ namespace turbooctospice {
         }
         PairGenerator getGenerator(Pixels const &a, Pixels const &b) const {
             if(&a == &b) {
-                return PairGenerator(boost::bind(&PairSearchPolicy::findPairs, this, _1, a));
+                return PairGenerator(boost::bind(&PairSearchPolicy::findPairs, _psp, _1, a));
             }
             else {
-                return PairGenerator(boost::bind(&PairSearchPolicy::findPairs, this, _1, a, b));
+                return PairGenerator(boost::bind(&PairSearchPolicy::findPairs, _psp, _1, a, b));
             }
         }
     private:
+        boost::shared_ptr<const PairSearchPolicy> _psp;
+        boost::shared_ptr<const BinPolicy> _bp;
+
     }; // XiEstimator
 
 } // turbooctospice 

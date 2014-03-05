@@ -12,6 +12,7 @@
 namespace lk = likely;
 
 namespace turbooctospice {
+
 	template <typename PixelType>
 	class BinXYZPair {
 	public:
@@ -58,6 +59,9 @@ namespace turbooctospice {
         bool _rmu;
         double _x1min, _x1max, _x2min, _x2max;
 	}; // BinXYZPair
+
+    typedef BinXYZPair<Pixel> Bin;
+
 } // turbooctospice
 
 #endif // TURBOOCTOSPICE_BIN_XYZ_PAIR

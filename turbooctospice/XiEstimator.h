@@ -45,9 +45,13 @@ namespace turbooctospice {
         }
         PairGenerator getGenerator(Pixels const &a, Pixels const &b) const {
             if(&a == &b) {
+                int n(a.size());
+                std::cout << "Number of distinct pairs : " << n*(n-1)/2 << std::endl;
                 return PairGenerator(boost::bind(&PairSearchPolicy::findPairs, _psp, _1, a));
             }
             else {
+                int n(a.size()), m(b.size());
+                std::cout << "Number of distinct pairs : " << n*m << std::endl;
                 return PairGenerator(boost::bind(&PairSearchPolicy::findPairs, _psp, _1, a, b));
             }
         }
@@ -56,6 +60,11 @@ namespace turbooctospice {
         boost::shared_ptr<const BinPolicy> _bp;
 
     }; // XiEstimator
+
+    typedef XiEstimator<BruteSearch, Ignore> BruteIgnoreXi;
+    typedef XiEstimator<BruteSearch, Bin> BruteBinXi;
+    typedef XiEstimator<BucketSearch, Ignore> BucketIgnoreXi;
+    typedef XiEstimator<BucketSearch, Bin> BucketBinXi; 
 
 } // turbooctospice 
 

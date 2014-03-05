@@ -12,6 +12,7 @@
 #include "types.h"
 
 namespace turbooctospice {
+
 	template <typename PixelIterable>
 	class BrutePairSearch : private PixelIterable {
 	public:
@@ -35,6 +36,8 @@ namespace turbooctospice {
         }
 	private:
 	}; // BrutePairSearch
+
+	typedef BrutePairSearch<Pixels> BruteSearch;
 
 } // turbooctospice
 

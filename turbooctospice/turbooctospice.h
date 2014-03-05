@@ -6,10 +6,10 @@
 
 #include "MockSpectrum.h"
 
-#include "XiEstimator.h"
-
 #include "BrutePairSearch.h"
 #include "BucketPairSearch.h"
 
 #include "IgnorePair.h"
 #include "BinXYZPair.h"
+
+#include "XiEstimator.h"

@@ -19,14 +19,13 @@ namespace turbooctospice {
     struct Pixel {
     	float x, y, z, d, w;
     	int i;
-
-    	// Pixel(float _x, float _y, float _z, float _d, float _w) : x(_x), y(_y), z(_z), d(_d), w(_w) {}
     };
 
     typedef std::vector<Pixel> Pixels;
 
     typedef std::pair<Pixel,Pixel> PixelPair;
     typedef boost::coroutines::coroutine<PixelPair()> PairGenerator;
+
 }
 
 #endif

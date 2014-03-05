@@ -16,7 +16,7 @@ namespace po = boost::program_options;
 int main(int argc, char **argv) {
 
     // Configure command-line option processing
-    std::string infile,outfile,axis1,axis2;
+    std::string infile,outfile,axis1,axis2,buckets;
 
     po::options_description cli("Correlation function estimator");
     cli.add_options()
@@ -32,6 +32,8 @@ int main(int argc, char **argv) {
             "Axis-2 binning")
         ("rmu", "Use (r,mu) binning instead of (rP,rT) binning")
         ("ignore", "No binnig (use for profiling pair search methods")
+        ("buckets", po::value<std::string>(&buckets)->default_value(""),
+            "bucket binning")
         ;
 
     // do the command line parsing now
@@ -84,30 +86,38 @@ int main(int argc, char **argv) {
 
     // Instantiate the correlation function grid
     lk::AbsBinningCPtr bins1 = lk::createBinning(axis1), bins2 = lk::createBinning(axis2);
-        double x1min(bins1->getBinLowEdge(0)), x1max(bins1->getBinHighEdge(bins1->getNBins()-1));
-        double x2min(bins2->getBinLowEdge(0)), x2max(bins2->getBinHighEdge(bins2->getNBins()-1));
+    double x1min(bins1->getBinLowEdge(0)), x1max(bins1->getBinHighEdge(bins1->getNBins()-1));
+    double x2min(bins2->getBinLowEdge(0)), x2max(bins2->getBinHighEdge(bins2->getNBins()-1));
     lk::BinnedGrid grid(bins1,bins2);
 
     // Run the estimator
     std::vector<double> xi;
- 
-    typedef tos::BrutePairSearch<tos::Pixels> BPS;
-    typedef tos::IgnorePair<tos::Pixel> IP;
-    typedef tos::BinXYZPair<tos::Pixel> BP;
-    typedef tos::XiEstimator<BPS, IP> IgnoreXi;
-    typedef tos::XiEstimator<BPS, BP> BruteXi;
 
-    if(ignore) {
-        IgnoreXi ignorexi(new BPS, new IP);
-        ignorexi.run(pixels, pixels, xi); 
+    if(buckets.length()) {
+        lk::AbsBinningCPtr bucketbins1 = lk::createBinning(buckets),
+            bucketbins2 = lk::createBinning(buckets),
+            bucketbins3 = lk::createBinning(buckets);
+        lk::BinnedGrid bucketgrid(bucketbins1, bucketbins2, bucketbins3);
+
+        if(ignore) {
+            tos::BucketIgnoreXi xiestimator(new tos::BucketSearch(bucketgrid), new tos::Ignore);
+            xiestimator.run(pixels, pixels, xi); 
+        }
+        else {
+            tos::BucketBinXi xiestimator(new tos::BucketSearch(bucketgrid), new tos::Bin(grid, rmu, x1min, x1max, x2min, x2max));
+            xiestimator.run(pixels, pixels, xi); 
+        }
     }
     else {
-        BruteXi brutexi(new BPS, new BP(grid, rmu, x1min, x1max, x2min, x2max));
-        brutexi.run(pixels, pixels, xi); 
+        if(ignore) {
+            tos::BruteIgnoreXi xiestimator(new tos::BruteSearch, new tos::Ignore);
+            xiestimator.run(pixels, pixels, xi); 
+        }
+        else {
+            tos::BruteBinXi xiestimator(new tos::BruteSearch, new tos::Bin(grid, rmu, x1min, x1max, x2min, x2max));
+            xiestimator.run(pixels, pixels, xi); 
+        }
     }
-
-    long n = columns[0].size();
-    std::cout << "Number of distinct pairs " << n*(n-1)/2 << std::endl;
 
     // Save the estimator results
     if(0 == outfile.length()) {

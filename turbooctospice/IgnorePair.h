@@ -10,6 +10,7 @@
 namespace lk = likely;
 
 namespace turbooctospice {
+
 	template <typename PixelType>
 	class IgnorePair {
 	public:
@@ -19,6 +20,8 @@ namespace turbooctospice {
 		int getNBinsTotal() const { return 0; };
 	private:
 	}; // IgnorePair
+
+    typedef IgnorePair<Pixel> Ignore;
 
 } // turbooctospice
 

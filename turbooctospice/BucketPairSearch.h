@@ -13,12 +13,11 @@
 namespace lk = likely;
 
 namespace turbooctospice {
+
     template <typename PixelIterable>
     class BucketPairSearch : private PixelIterable {
     public:
-        BucketPairSearch(lk::BinnedGrid const &bucketgrid) {
-            _bucketgrid = bucketgrid;
-        }
+        BucketPairSearch(lk::BinnedGrid const &bucketgrid): _bucketgrid(bucketgrid) {};
         ~BucketPairSearch() {};
         void findPairs(PairGenerator::caller_type& yield, PixelIterable const &a, PixelIterable const &b) const {
             // Pass through pixels, assign pixels to buckets 
@@ -69,7 +68,7 @@ namespace turbooctospice {
                         BOOST_FOREACH(int j, bucketPointsMap[b]) {
                             // Only count pairs once
                             if(j <= i) continue;
-                            yield(a[i],a[j]);
+                            yield(std::make_pair(a[i],a[j]));
                         }
                     }
                 }
@@ -78,6 +77,9 @@ namespace turbooctospice {
     private:
         lk::BinnedGrid _bucketgrid;
     }; // BucketPairSearch
+
+    typedef BucketPairSearch<Pixels> BucketSearch;
+
 } // turbooctospice
 
 #endif // TURBOOCTOSPICE_BUCKET_PAIR_SEARCH

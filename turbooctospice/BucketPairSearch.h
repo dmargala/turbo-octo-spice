@@ -14,14 +14,13 @@ namespace lk = likely;
 
 namespace turbooctospice {
 
-    class PairSearchPolicy {};
-    template <typename PixelIterable>
-    class BucketPairSearch : PairSearchPolicy {
+    template <class PixelIterable>
+    class BucketPairSearch {
     public:
         BucketPairSearch(lk::BinnedGrid const &bucketgrid, bool verbose = false) : 
         _bucketgrid(bucketgrid), _verbose(verbose) {};
         ~BucketPairSearch() {};
-        void findPairs(PairGenerator::caller_type& yield, PixelIterable const &a, PixelIterable const &b) const {
+        template<class PairGenerator> void findPairs(typename PairGenerator::caller_type& yield, PixelIterable const &a, PixelIterable const &b) const {
             // Pass through pixels, assign pixels to buckets 
             if (_verbose) std::cout << "Entering cross-correlation generator ..." << std::endl;
 
@@ -31,7 +30,7 @@ namespace turbooctospice {
                         // Loop over all points in neighboring bucket
             if (_verbose) std::cout << "Exiting cross-correlation generator ..." << std::endl;
         }
-        void findPairs(PairGenerator::caller_type& yield, PixelIterable const &a) const {
+        template<class PairGenerator> void findPairs(typename PairGenerator::caller_type& yield, PixelIterable const &a) const {
             if (_verbose) std::cout << "Entering auto-correlation generator ..." << std::endl;
             // The key is a global bucketgrid index and the value is a 
             // list of indices that represent points inside that bucket

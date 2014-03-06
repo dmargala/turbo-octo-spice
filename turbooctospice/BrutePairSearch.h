@@ -16,11 +16,11 @@ namespace turbooctospice {
 	/// BrutePairSearch is a specific type.
 	/// \tparam PixelIterable
 	///
-	template <typename PixelIterable>
+	template <class PixelIterable>
 	class BrutePairSearch {
 	public:
 		BrutePairSearch(bool verbose = false) : _verbose(verbose) {};
-        void findPairs(PairGenerator::caller_type& yield, PixelIterable const &a, PixelIterable const &b) const {
+        template <class PairGenerator> void findPairs(typename PairGenerator::caller_type& yield, PixelIterable const &a, PixelIterable const &b) const {
         	if (_verbose) std::cout << "Entering cross-correlation generator ..." << std::endl;
     		for(auto i = a.begin(); i != a.end(); ++i) {
 		        for(auto j = b.begin(); j != b.end(); ++j) {
@@ -29,7 +29,7 @@ namespace turbooctospice {
 		    }
 		    if (_verbose) std::cout << "Exiting cross-correlation generator ..." << std::endl;
         }
-        void findPairs(PairGenerator::caller_type& yield, PixelIterable const &a) const {
+        template <class PairGenerator> void findPairs(typename PairGenerator::caller_type& yield, PixelIterable const &a) const {
         	if (_verbose) std::cout << "Entering auto-correlation generator ..." << std::endl;
     		for(auto i = a.begin(); i != boost::prior(a.end()); ++i) {
 		        for(auto j = boost::next(i); j != a.end(); ++j) {

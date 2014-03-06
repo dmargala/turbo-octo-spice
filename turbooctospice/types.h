@@ -25,9 +25,6 @@ namespace turbooctospice {
     ///
     typedef std::vector<Pixel> Pixels;
 
-    typedef std::pair<Pixel,Pixel> PixelPair;
-    typedef boost::coroutines::coroutine<PixelPair()> PairGenerator;
-
 }
 
 #endif

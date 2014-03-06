@@ -72,6 +72,7 @@ int main(int argc, char **argv) {
             << std::endl;
     }
 
+    // Parse the input file
     tos::Pixels pixels;
     for(int i = 0; i < columns[0].size(); ++i) {
         tos::Pixel pixel;
@@ -100,21 +101,33 @@ int main(int argc, char **argv) {
         lk::BinnedGrid bucketgrid(bucketbins1, bucketbins2, bucketbins3);
 
         if(ignore) {
-            tos::BucketIgnoreXi xiestimator(new tos::BucketSearch(bucketgrid), new tos::Ignore);
+            tos::BucketIgnoreXi xiestimator(
+                new tos::BucketSearch(bucketgrid, verbose), 
+                new tos::Ignore, 
+                verbose);
             xiestimator.run(pixels, pixels, xi); 
         }
         else {
-            tos::BucketBinXi xiestimator(new tos::BucketSearch(bucketgrid), new tos::Bin(grid, rmu, x1min, x1max, x2min, x2max));
+            tos::BucketBinXi xiestimator(
+                new tos::BucketSearch(bucketgrid,  verbose), 
+                new tos::Bin(grid, rmu, x1min, x1max, x2min, x2max), 
+                verbose);
             xiestimator.run(pixels, pixels, xi); 
         }
     }
     else {
         if(ignore) {
-            tos::BruteIgnoreXi xiestimator(new tos::BruteSearch, new tos::Ignore);
+            tos::BruteIgnoreXi xiestimator(
+                new tos::BruteSearch(verbose), 
+                new tos::Ignore, 
+                verbose);
             xiestimator.run(pixels, pixels, xi); 
         }
         else {
-            tos::BruteBinXi xiestimator(new tos::BruteSearch, new tos::Bin(grid, rmu, x1min, x1max, x2min, x2max));
+            tos::BruteBinXi xiestimator(
+                new tos::BruteSearch(verbose), 
+                new tos::Bin(grid, rmu, x1min, x1max, x2min, x2max), 
+                verbose);
             xiestimator.run(pixels, pixels, xi); 
         }
     }

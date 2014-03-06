@@ -13,13 +13,20 @@
 
 namespace lk = likely;
 
-
 namespace turbooctospice {
- 
+    /// Represents a templated algorithm for estimating a correlation function from a set of pixels.
+    ///
     template <typename PairSearchPolicy, typename BinPolicy> 
     class XiEstimator {
     public:
-        XiEstimator(PairSearchPolicy *psp, BinPolicy *bp) : _psp(psp), _bp(bp) {};
+        /// Creates a new algorithm templated on the specified PairSearchPolicy and BinPolicy.
+        /// Set the verbose option to true to print pair statistics to console.
+        /// @param psp a PairSearchPolicy pointer
+        /// @param bp a BinPolicy pointer
+        /// @param verbose a boolean argument.
+        ///
+        XiEstimator(PairSearchPolicy *psp, BinPolicy *bp, bool verbose = false) : 
+        _psp(psp), _bp(bp), _verbose(verbose) {};
         void run(Pixels const &a, Pixels const &b, std::vector<double> &xi) const {
             // create internal accumulation vectors
             int nbins = _bp->getNBinsTotal();
@@ -36,7 +43,7 @@ namespace turbooctospice {
                 pairs();
             }
 
-            std::cout << "used " << nused << " of " << npair << " pairs." << std::endl;
+            if (_verbose) std::cout << "used " << nused << " of " << npair << " pairs." << std::endl;
             // Compute xi and swap result with xi reference argument
             for(int index = 0; index < nbins; ++index) {
                 if(wsum[index] > 0) dsum[index] /= wsum[index];
@@ -46,18 +53,19 @@ namespace turbooctospice {
         PairGenerator getGenerator(Pixels const &a, Pixels const &b) const {
             if(&a == &b) {
                 int n(a.size());
-                std::cout << "Number of distinct pairs : " << n*(n-1)/2 << std::endl;
+                if (_verbose) std::cout << "Number of distinct pairs : " << n*(n-1)/2 << std::endl;
                 return PairGenerator(boost::bind(&PairSearchPolicy::findPairs, _psp, _1, a));
             }
             else {
                 int n(a.size()), m(b.size());
-                std::cout << "Number of distinct pairs : " << n*m << std::endl;
+                if (_verbose) std::cout << "Number of distinct pairs : " << n*m << std::endl;
                 return PairGenerator(boost::bind(&PairSearchPolicy::findPairs, _psp, _1, a, b));
             }
         }
     private:
-        boost::shared_ptr<const PairSearchPolicy> _psp;
-        boost::shared_ptr<const BinPolicy> _bp;
+        boost::shared_ptr<const PairSearchPolicy> _psp;     ///< PairSearchPolicy pointer
+        boost::shared_ptr<const BinPolicy> _bp;             ///< BinPolicy pointer
+        bool _verbose;                                      ///< verbose
 
     }; // XiEstimator
 

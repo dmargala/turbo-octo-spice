@@ -14,8 +14,9 @@ namespace lk = likely;
 
 namespace turbooctospice {
 
+    class PairSearchPolicy {};
     template <typename PixelIterable>
-    class BucketPairSearch : private PixelIterable {
+    class BucketPairSearch : PairSearchPolicy {
     public:
         BucketPairSearch(lk::BinnedGrid const &bucketgrid, bool verbose = false) : 
         _bucketgrid(bucketgrid), _verbose(verbose) {};

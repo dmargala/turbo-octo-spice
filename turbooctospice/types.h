@@ -21,6 +21,8 @@ namespace turbooctospice {
     	int i;
     };
 
+    /// This is the Pixels typedef.
+    ///
     typedef std::vector<Pixel> Pixels;
 
     typedef std::pair<Pixel,Pixel> PixelPair;

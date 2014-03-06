@@ -13,8 +13,11 @@
 
 namespace turbooctospice {
 
+	/// BrutePairSearch is a specific type.
+	/// \tparam PixelIterable
+	///
 	template <typename PixelIterable>
-	class BrutePairSearch : private PixelIterable {
+	class BrutePairSearch {
 	public:
 		BrutePairSearch(bool verbose = false) : _verbose(verbose) {};
         void findPairs(PairGenerator::caller_type& yield, PixelIterable const &a, PixelIterable const &b) const {

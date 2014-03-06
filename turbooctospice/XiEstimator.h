@@ -15,6 +15,8 @@ namespace lk = likely;
 
 namespace turbooctospice {
     /// Represents a templated algorithm for estimating a correlation function from a set of pixels.
+    /// \tparam PairSearchPolicy psp
+    /// \tparam BinPolicy bp
     ///
     template <typename PairSearchPolicy, typename BinPolicy> 
     class XiEstimator {

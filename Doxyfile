@@ -306,7 +306,7 @@ AUTOLINK_SUPPORT       = YES
 # diagrams that involve STL classes more complete and accurate.
 # The default value is: NO.
 
-BUILTIN_STL_SUPPORT    = NO
+BUILTIN_STL_SUPPORT    = YES
 
 # If you use Microsoft's C++/CLI language, you should set this option to YES to
 # enable parsing support.
@@ -2043,7 +2043,7 @@ DIA_PATH               =
 # and usage relations if the target is undocumented or is not a class.
 # The default value is: YES.
 
-HIDE_UNDOC_RELATIONS   = YES
+HIDE_UNDOC_RELATIONS   = NO
 
 # If you set the HAVE_DOT tag to YES then doxygen will assume the dot tool is
 # available from the path. This tool is part of Graphviz (see:

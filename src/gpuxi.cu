@@ -7,11 +7,9 @@
 // Example usage:
 // time -p ./gpuxi -i /Users/daniel/Cosmo/LyAlpha/cosmo/build/delta.dat --verbose
 
-#include "cosmo/cosmo.h"
 #include "likely/likely.h"
 
-#include "boost/program_options.hpp"
-#include "boost/format.hpp"
+// #include "boost/program_options.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -22,7 +20,7 @@
 
 #include "/Users/daniel/source/gpu/cuda_by_example/common/book.h"
 
-namespace po = boost::program_options;
+// namespace po = boost::program_options;
 namespace lk = likely;
 
 struct DataStruct {
@@ -251,40 +249,41 @@ int nbins, std::vector<double> &xi, long chunksize) {
 int main(int argc, char **argv) {
 
     // Configure command-line option processing
-    std::string infile,outfile,axis1,axis2;
-    long chunksize;
-    po::options_description cli("Correlation function estimator");
-    cli.add_options()
-        ("help,h", "Prints this info and exits.")
-        ("verbose", "Prints additional information.")
-        ("input,i", po::value<std::string>(&infile)->default_value(""),
-            "Filename to read field samples from")
-        ("output,o", po::value<std::string>(&outfile)->default_value("xi.dat"),
-            "Filename to write correlation function to")
-        ("axis1", po::value<std::string>(&axis1)->default_value("[0:200]*50"),
-            "Axis-1 binning")
-        ("axis2", po::value<std::string>(&axis2)->default_value("[0:200]*50"),
-            "Axis-2 binning")
-        ("rmu", "Use (r,mu) binning instead of (rP,rT) binning")
-        ("chunksize", po::value<long>(&chunksize)->default_value(4096),
-            "Number of chunks to split the dataset into.")
-        ;
+    std::string infile("sample-data/delta-tinier.dat"),outfile("xi.dat"),axis1("[0:200]*50"),axis2("[0:200]*50");
+    long chunksize(4096);
+    // po::options_description cli("Correlation function estimator");
+    // cli.add_options()
+    //     ("help,h", "Prints this info and exits.")
+    //     ("verbose", "Prints additional information.")
+    //     ("input,i", po::value<std::string>(&infile)->default_value(""),
+    //         "Filename to read field samples from")
+    //     ("output,o", po::value<std::string>(&outfile)->default_value("xi.dat"),
+    //         "Filename to write correlation function to")
+    //     ("axis1", po::value<std::string>(&axis1)->default_value("[0:200]*50"),
+    //         "Axis-1 binning")
+    //     ("axis2", po::value<std::string>(&axis2)->default_value("[0:200]*50"),
+    //         "Axis-2 binning")
+    //     ("rmu", "Use (r,mu) binning instead of (rP,rT) binning")
+    //     ("chunksize", po::value<long>(&chunksize)->default_value(4096),
+    //         "Number of chunks to split the dataset into.")
+    //     ;
 
     // do the command line parsing now
-    po::variables_map vm;
-    try {
-        po::store(po::parse_command_line(argc, argv, cli), vm);
-        po::notify(vm);
-    }
-    catch(std::exception const &e) {
-        std::cerr << "Unable to parse command line options: " << e.what() << std::endl;
-        return -1;
-    }
-    if(vm.count("help")) {
-        std::cout << cli << std::endl;
-        return 1;
-    }
-    bool verbose(vm.count("verbose")),rmu(vm.count("rmu"));
+    // po::variables_map vm;
+    // try {
+    //     po::store(po::parse_command_line(argc, argv, cli), vm);
+    //     po::notify(vm);
+    // }
+    // catch(std::exception const &e) {
+    //     std::cerr << "Unable to parse command line options: " << e.what() << std::endl;
+    //     return -1;
+    // }
+    // if(vm.count("help")) {
+    //     std::cout << cli << std::endl;
+    //     return 1;
+    // }
+    // bool verbose(vm.count("verbose")),rmu(vm.count("rmu"));
+    bool verbose(true);
 
     // Read the input file
     if(0 == infile.length()) {

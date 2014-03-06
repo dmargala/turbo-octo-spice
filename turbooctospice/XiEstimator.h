@@ -36,6 +36,7 @@ namespace turbooctospice {
         XiEstimator(PairSearchPolicy<PixelIterable> *psp, BinPolicy<PixelType> *bp, bool verbose = false) : 
         _psp(psp), _bp(bp), _verbose(verbose) {};
         void run(PixelIterable const &a, PixelIterable const &b, std::vector<double> &xi) const {
+        void run(PixelIterable const &a, PixelIterable const &b, std::vector<double> &xi, bool normalize = true) const {
             // create internal accumulation vectors
             int nbins = _bp->getNBinsTotal();
             std::vector<double> dsum(nbins,0.), wsum(nbins,0.);
@@ -54,8 +55,10 @@ namespace turbooctospice {
 
             if (_verbose) std::cout << "used " << nused << " of " << npair << " pairs." << std::endl;
             // Compute xi and swap result with xi reference argument
-            for(int index = 0; index < nbins; ++index) {
-                if(wsum[index] > 0) dsum[index] /= wsum[index];
+            if (normalize) {
+                for(int index = 0; index < nbins; ++index) {
+                    if(wsum[index] > 0) dsum[index] /= wsum[index];
+                }
             }
             dsum.swap(xi);
         }

@@ -34,6 +34,7 @@ int main(int argc, char **argv) {
         ("ignore", "No binnig (use for profiling pair search methods")
         ("buckets", po::value<std::string>(&buckets)->default_value(""),
             "bucket binning")
+        ("norm", "Normalize xi by dividing by weights")
         ;
 
     // do the command line parsing now
@@ -50,7 +51,7 @@ int main(int argc, char **argv) {
         std::cout << cli << std::endl;
         return 1;
     }
-    bool verbose(vm.count("verbose")),rmu(vm.count("rmu")),ignore(vm.count("ignore"));
+    bool verbose(vm.count("verbose")),rmu(vm.count("rmu")),ignore(vm.count("ignore")),norm(vm.count("norm"));
 
     // Read the input file
     if(0 == infile.length()) {
@@ -105,14 +106,14 @@ int main(int argc, char **argv) {
                 new tos::BucketSearch(bucketgrid, verbose), 
                 new tos::Ignore, 
                 verbose);
-            xiestimator.run(pixels, pixels, xi); 
+            xiestimator.run(pixels, pixels, xi, norm); 
         }
         else {
             tos::BucketBinXi xiestimator(
                 new tos::BucketSearch(bucketgrid,  verbose), 
                 new tos::Bin(grid, rmu, x1min, x1max, x2min, x2max), 
                 verbose);
-            xiestimator.run(pixels, pixels, xi); 
+            xiestimator.run(pixels, pixels, xi, norm); 
         }
     }
     else {
@@ -121,19 +122,22 @@ int main(int argc, char **argv) {
                 new tos::BruteSearch(verbose), 
                 new tos::Ignore, 
                 verbose);
-            xiestimator.run(pixels, pixels, xi); 
+            xiestimator.run(pixels, pixels, xi, norm); 
         }
         else {
             tos::BruteBinXi xiestimator(
                 new tos::BruteSearch(verbose), 
                 new tos::Bin(grid, rmu, x1min, x1max, x2min, x2max), 
                 verbose);
-            xiestimator.run(pixels, pixels, xi); 
+            xiestimator.run(pixels, pixels, xi, norm); 
         }
     }
 
     // Save the estimator results
-    if(0 == outfile.length()) {
+    if(outfile.length() > 0) {
+        if(verbose) {
+            std::cout << "Saving xi to " << outfile << std::endl;
+        }
         try {
             std::ofstream out(outfile.c_str());
             for(int index = 0; index < xi.size(); ++index) {

@@ -15,8 +15,8 @@ namespace lk = likely;
 
 namespace turbooctospice {
     /// Represents a templated algorithm for estimating a correlation function from a set of pixels.
-    /// \tparam PairSearchPolicy psp
-    /// \tparam BinPolicy bp
+    /// @tparam PairSearchPolicy a pair finding class
+    /// @tparam BinPolicy a binning class
     ///
     template <typename PairSearchPolicy, typename BinPolicy> 
     class XiEstimator {
@@ -31,8 +31,14 @@ namespace turbooctospice {
         /// @param bp a BinPolicy pointer
         /// @param verbose a boolean argument.
         ///
-        XiEstimator(PairSearchPolicy *psp, BinPolicy *bp, bool verbose = false) : 
-        _psp(psp), _bp(bp), _verbose(verbose) {};
+        XiEstimator(PairSearchPolicy *psp, BinPolicy *bp, bool verbose = false) : _psp(psp), _bp(bp), _verbose(verbose) {};
+
+        /// Perform xi estimate
+        /// @param a iterable container of pixel data
+        /// @param b iterable container of pixel data
+        /// @param xi output xi estimate
+        /// @param normalize divide bin totals by weights (turn off to count pairs as a function of distance)
+        ///
         void run(PixelIterable const &a, PixelIterable const &b, std::vector<double> &xi, bool normalize = true) const {
             // create internal accumulation vectors
             int nbins = _bp->getNBinsTotal();
@@ -59,6 +65,8 @@ namespace turbooctospice {
             }
             dsum.swap(xi);
         }
+    private:
+        // Binds the PairSearchPolicy findPairs method to a generator of PixelPairs
         PairGenerator getGenerator(PixelIterable const &a, PixelIterable const &b) const {
             if(&a == &b) {
                 int n(a.size());
@@ -71,10 +79,9 @@ namespace turbooctospice {
                 return PairGenerator(boost::bind(&PairSearchPolicy::template findPairs<PairGenerator>, _psp, _1, a, b));
             }
         }
-    private:
-        boost::shared_ptr<const PairSearchPolicy> _psp;     ///< PairSearchPolicy pointer
-        boost::shared_ptr<const BinPolicy> _bp;             ///< BinPolicy pointer
-        bool _verbose;                                      ///< verbose
+        boost::shared_ptr<const PairSearchPolicy> _psp;    
+        boost::shared_ptr<const BinPolicy> _bp;     
+        bool _verbose;             
 
     }; // XiEstimator
     

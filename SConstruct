@@ -2,13 +2,13 @@ import os
 
 env = Environment(CCFLAGS = '-O2', CPPPATH='#turbooctospice', LIBPATH='#turbooctospice')
 
-useC11 = False
+useC11 = True
 useClang = True
 
 if useC11:
     env = Environment(ENV={'PATH' : os.environ['PATH']})
     env.Replace(CXX='clang++')
-    env.Append(CCFLAGS = ['-std=c++11','-stdlib=libc++'], LINKFLAGS='-stdlib=libc++')
+    env.Append(CCFLAGS = ['-std=c++11'])
 elif useClang:
     env = Environment(ENV={'PATH' : os.environ['PATH']})
     env.Replace(CXX='clang++')

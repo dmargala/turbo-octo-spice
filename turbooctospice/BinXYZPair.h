@@ -13,9 +13,10 @@ namespace lk = likely;
 
 namespace turbooctospice {
 
-	template <typename PixelType>
+	template <typename T>
 	class BinXYZPair {
 	public:
+        typedef T PixelType;
         BinXYZPair(lk::BinnedGrid const &grid, bool rmu, double x1min, double x1max, double x2min, double x2max): 
         _grid(grid), _rmu(rmu), _x1min(x1min), _x1max(x1max), _x2min(x2min), _x2max(x2max) {
         };

@@ -16,9 +16,10 @@ namespace turbooctospice {
 	/// BrutePairSearch is a specific type.
 	/// \tparam PixelIterable
 	///
-	template <class PixelIterable>
+	template <class T>
 	class BrutePairSearch {
 	public:
+		typedef T PixelIterable;
 		BrutePairSearch(bool verbose = false) : _verbose(verbose) {};
         template <class PairGenerator> void findPairs(typename PairGenerator::caller_type& yield, PixelIterable const &a, PixelIterable const &b) const {
         	if (_verbose) std::cout << "Entering cross-correlation generator ..." << std::endl;

@@ -14,9 +14,10 @@ namespace lk = likely;
 
 namespace turbooctospice {
 
-    template <class PixelIterable>
+    template <class T>
     class BucketPairSearch {
     public:
+        typedef T PixelIterable;
         BucketPairSearch(lk::BinnedGrid const &bucketgrid, bool verbose = false) : 
         _bucketgrid(bucketgrid), _verbose(verbose) {};
         ~BucketPairSearch() {};

@@ -21,20 +21,20 @@ namespace turbooctospice {
 	public:
 		typedef T PixelIterable;
 		BrutePairSearch(bool verbose = false) : _verbose(verbose) {};
-        template <class PairGenerator> void findPairs(typename PairGenerator::caller_type& yield, PixelIterable const &a, PixelIterable const &b) const {
+        template <class PairGenerator, class PairType> void findPairs(typename PairGenerator::caller_type& yield, PixelIterable const &a, PixelIterable const &b) const {
         	if (_verbose) std::cout << "Entering cross-correlation generator ..." << std::endl;
     		for(auto i = a.begin(); i != a.end(); ++i) {
 		        for(auto j = b.begin(); j != b.end(); ++j) {
-		            yield(std::make_pair(*i,*j));
+		            yield(PairType(*i,*j));
 		        }
 		    }
 		    if (_verbose) std::cout << "Exiting cross-correlation generator ..." << std::endl;
         }
-        template <class PairGenerator> void findPairs(typename PairGenerator::caller_type& yield, PixelIterable const &a) const {
+        template <class PairGenerator, class PairType> void findPairs(typename PairGenerator::caller_type& yield, PixelIterable const &a) const {
         	if (_verbose) std::cout << "Entering auto-correlation generator ..." << std::endl;
     		for(auto i = a.begin(); i != boost::prior(a.end()); ++i) {
 		        for(auto j = boost::next(i); j != a.end(); ++j) {
-		            yield(std::make_pair(*i,*j));
+		            yield(PairType(*i,*j));
 		        }
 		    }
 		    if (_verbose) std::cout << "Exiting auto-correlation generator ..." << std::endl;

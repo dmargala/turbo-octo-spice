@@ -16,52 +16,36 @@ namespace turbooctospice {
 	template <typename T>
 	class BinXYZPair {
 	public:
-        typedef T PixelType;
-        BinXYZPair(lk::BinnedGrid const &grid, bool rmu, double x1min, double x1max, double x2min, double x2max): 
-        _grid(grid), _rmu(rmu), _x1min(x1min), _x1max(x1max), _x2min(x2min), _x2max(x2max) {
+        typedef T PairType;
+        BinXYZPair(double minValue, double maxValue, int nBins): _minValue(minValue), _maxValue(maxValue), _nBins(nBins) {
+            _binWidth = (maxValue - minValue)/nBins;
+            _minValueSq = _minValue*_minValue;
+            _maxValueSq = _maxValue*_maxValue;
         };
         ~BinXYZPair() {};
-		void binPair(PixelType const &first, PixelType const &second, std::vector<double> &dsum, std::vector<double> &wsum, long &nused) const {
-			// Calculate separation
-            double dx = first.x - second.x;
-            double dy = first.y - second.y;
-            double dz = first.z - second.z;
-            std::vector<double> _separation(2);
-            if(_rmu) {
-                _separation[0] = std::sqrt(dx*dx+dy*dy+dz*dz);
-                _separation[1] = std::fabs(dz/_separation[0]);
-            }
-            else {
-                _separation[0] = std::fabs(dz);
-                _separation[1] = std::sqrt(dx*dx+dy*dy);
-            }
+		void binPair(PairType &pair, std::vector<double> &dsum, std::vector<double> &wsum, long &nused) const {
             // Check that separation is within range of interest
-            if(_separation[0] < _x1min || _separation[0] >= _x1max) return;
-            if(_separation[1] < _x2min || _separation[1] >= _x2max) return;
-            //std::cout << "(" << dx << "," << dy << "," << dz << ") -> (" << separation[0] << "," << separation[0] << ") -> ";
-
-            // Bin pair
-            try {
-	            int index = _grid.getIndex(_separation);
-	            double wgt = first.w*second.w;
-	            double prod = wgt*first.d*second.d;
-	            dsum[index] += prod;
-	            wsum[index] += wgt;
-	            nused++;
-				//std::cout << index << " => " << prod << " (" << wgt << ")" << std::endl;
-            }
-            catch(lk::RuntimeError const &e) {
-                std::cerr << "no xi bin found for i,j = " << first.i << ',' << second.i << std::endl;
-            }
+            double rsq = pair.separationSq();
+            if(rsq < _minValueSq || rsq >= _maxValueSq) return;
+            // Accumulate pair
+            int index = getBinIndex(std::sqrt(rsq));
+            double wgt = pair.weight();
+            dsum[index] += wgt*pair.product();
+            wsum[index] += wgt;
+            nused++;
 		};
-        int getNBinsTotal() const { return _grid.getNBinsTotal(); };
+        int getNBins() const { return _nBins; };
+        int getBinIndex(double value) const {
+            return std::floor((value - _minValue)/_binWidth);
+        }
+        double getBinCenter(int index) const {
+            return _minValue + (index+0.5)*_binWidth;
+        }
 	private:
-        lk::BinnedGrid _grid;
-        bool _rmu;
-        double _x1min, _x1max, _x2min, _x2max;
+        double _minValue, _maxValue, _nBins, _binWidth, _minValueSq, _maxValueSq;
 	}; // BinXYZPair
 
-    typedef BinXYZPair<Pixel> Bin;
+    typedef BinXYZPair<XYZPixelPair> Bin;
 
 } // turbooctospice
 

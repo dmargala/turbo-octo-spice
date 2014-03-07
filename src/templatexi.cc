@@ -16,7 +16,7 @@ namespace po = boost::program_options;
 int main(int argc, char **argv) {
 
     // Configure command-line option processing
-    std::string infile,outfile,axis1,axis2,buckets;
+    std::string infile,outfile,axis,buckets;
 
     po::options_description cli("Correlation function estimator");
     cli.add_options()
@@ -26,10 +26,8 @@ int main(int argc, char **argv) {
             "Filename to read field samples from")
         ("output,o", po::value<std::string>(&outfile)->default_value(""),
             "Filename to write correlation function to")
-        ("axis1", po::value<std::string>(&axis1)->default_value("[0:200]*50"),
-            "Axis-1 binning")
-        ("axis2", po::value<std::string>(&axis2)->default_value("[0:200]*50"),
-            "Axis-2 binning")
+        ("axis", po::value<std::string>(&axis)->default_value("[0:200]*50"),
+            "Xi axis binning")
         ("rmu", "Use (r,mu) binning instead of (rP,rT) binning")
         ("ignore", "No binnig (use for profiling pair search methods")
         ("buckets", po::value<std::string>(&buckets)->default_value(""),
@@ -87,10 +85,9 @@ int main(int argc, char **argv) {
     }
 
     // Instantiate the correlation function grid
-    lk::AbsBinningCPtr bins1 = lk::createBinning(axis1), bins2 = lk::createBinning(axis2);
-    double x1min(bins1->getBinLowEdge(0)), x1max(bins1->getBinHighEdge(bins1->getNBins()-1));
-    double x2min(bins2->getBinLowEdge(0)), x2max(bins2->getBinHighEdge(bins2->getNBins()-1));
-    lk::BinnedGrid grid(bins1,bins2);
+    lk::AbsBinningCPtr bins = lk::createBinning(axis);
+    int nbins(bins->getNBins());
+    double min(bins->getBinLowEdge(0)), max(bins->getBinHighEdge(nbins-1));
 
     // Run the estimator
     std::vector<double> xi;
@@ -106,14 +103,14 @@ int main(int argc, char **argv) {
                 new tos::BucketSearch(bucketgrid, verbose), 
                 new tos::Ignore, 
                 verbose);
-            xiestimator.run(pixels, pixels, xi, norm); 
+            xi = xiestimator.run(pixels, pixels, norm); 
         }
         else {
             tos::BucketBinXi xiestimator(
                 new tos::BucketSearch(bucketgrid,  verbose), 
-                new tos::Bin(grid, rmu, x1min, x1max, x2min, x2max), 
+                new tos::Bin(min, max, nbins), 
                 verbose);
-            xiestimator.run(pixels, pixels, xi, norm); 
+            xi = xiestimator.run(pixels, pixels, norm); 
         }
     }
     else {
@@ -122,14 +119,14 @@ int main(int argc, char **argv) {
                 new tos::BruteSearch(verbose), 
                 new tos::Ignore, 
                 verbose);
-            xiestimator.run(pixels, pixels, xi, norm); 
+            xi = xiestimator.run(pixels, pixels, norm); 
         }
         else {
             tos::BruteBinXi xiestimator(
                 new tos::BruteSearch(verbose), 
-                new tos::Bin(grid, rmu, x1min, x1max, x2min, x2max), 
+                new tos::Bin(min, max, nbins), 
                 verbose);
-            xiestimator.run(pixels, pixels, xi, norm); 
+            xi = xiestimator.run(pixels, pixels, norm); 
         }
     }
 

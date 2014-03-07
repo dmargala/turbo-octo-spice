@@ -21,7 +21,7 @@ namespace turbooctospice {
         BucketPairSearch(lk::BinnedGrid const &bucketgrid, bool verbose = false) : 
         _bucketgrid(bucketgrid), _verbose(verbose) {};
         ~BucketPairSearch() {};
-        template<class PairGenerator> void findPairs(typename PairGenerator::caller_type& yield, PixelIterable const &a, PixelIterable const &b) const {
+        template<class PairGenerator, class PairType> void findPairs(typename PairGenerator::caller_type& yield, PixelIterable const &a, PixelIterable const &b) const {
             // Pass through pixels, assign pixels to buckets 
             if (_verbose) std::cout << "Entering cross-correlation generator ..." << std::endl;
             // The key is a global bucketgrid index and the value is a 
@@ -76,14 +76,14 @@ namespace turbooctospice {
                     BOOST_FOREACH(int bucketindex, bucketNeighborsMap[bucket.first]) {
                         // Loop over all points in neighboring bucket
                         BOOST_FOREACH(int j, bucketPointsMapB[bucketindex]) {
-                            yield(std::make_pair(a[i],b[j]));
+                            yield(PairType(a[i],b[j]));
                         }
                     }
                 }
             }
             if (_verbose) std::cout << "Exiting cross-correlation generator ..." << std::endl;
         }
-        template<class PairGenerator> void findPairs(typename PairGenerator::caller_type& yield, PixelIterable const &a) const {
+        template<class PairGenerator, class PairType> void findPairs(typename PairGenerator::caller_type& yield, PixelIterable const &a) const {
             if (_verbose) std::cout << "Entering auto-correlation generator ..." << std::endl;
             // The key is a global bucketgrid index and the value is a 
             // list of indices that represent points inside that bucket
@@ -124,7 +124,7 @@ namespace turbooctospice {
                         BOOST_FOREACH(int j, bucketPointsMap[bucketindex]) {
                             // Only count pairs once
                             if(j <= i) continue;
-                            yield(std::make_pair(a[i],a[j]));
+                            yield(PairType(a[i],a[j]));
                         }
                     }
                 }

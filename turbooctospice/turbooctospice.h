@@ -6,6 +6,9 @@
 
 #include "MockSpectrum.h"
 
+#include "Pixel.h"
+#include "Pair.h"
+
 #include "BrutePairSearch.h"
 #include "BucketPairSearch.h"
 

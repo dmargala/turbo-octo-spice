@@ -21,9 +21,8 @@ namespace turbooctospice {
     template <typename PairSearchPolicy, typename BinPolicy> 
     class XiEstimator {
         typedef typename PairSearchPolicy::PixelIterable PixelIterable;
-        typedef typename BinPolicy::PixelType PixelType;
-        typedef std::pair<PixelType,PixelType> PixelPair;
-        typedef boost::coroutines::coroutine<PixelPair()> PairGenerator;
+        typedef typename BinPolicy::PairType PairType;
+        typedef boost::coroutines::coroutine<PairType()> PairGenerator;
     public:
         /// Creates a new algorithm templated on the specified PairSearchPolicy and BinPolicy.
         /// Set the verbose option to true to print pair statistics to console.
@@ -39,9 +38,9 @@ namespace turbooctospice {
         /// @param xi output xi estimate
         /// @param normalize divide bin totals by weights (turn off to count pairs as a function of distance)
         ///
-        void run(PixelIterable const &a, PixelIterable const &b, std::vector<double> &xi, bool normalize = true) const {
+        std::vector<double> run(PixelIterable const &a, PixelIterable const &b, bool normalize = true) const {
             // create internal accumulation vectors
-            int nbins = _bp->getNBinsTotal();
+            int nbins = _bp->getNBins();
             std::vector<double> dsum(nbins,0.), wsum(nbins,0.);
 
             // Loop over pixel pairs
@@ -49,9 +48,10 @@ namespace turbooctospice {
 
             long npair(0), nused(0);
             while(pairs){ // Check completion status
+            //for(auto &pair : pairs) {
                 npair++;
                 // Extract yielded result
-                _bp->binPair(pairs.get().first, pairs.get().second, dsum, wsum, nused);
+                _bp->binPair(pairs.get(), dsum, wsum, nused);
                 // Fire up the generator?
                 pairs();
             }
@@ -63,7 +63,7 @@ namespace turbooctospice {
                     if(wsum[index] > 0) dsum[index] /= wsum[index];
                 }
             }
-            dsum.swap(xi);
+            return dsum;
         }
     private:
         // Binds the PairSearchPolicy findPairs method to a generator of PixelPairs
@@ -71,12 +71,12 @@ namespace turbooctospice {
             if(&a == &b) {
                 int n(a.size());
                 if (_verbose) std::cout << "Number of distinct pairs : " << n*(n-1)/2 << std::endl;
-                return PairGenerator(boost::bind(&PairSearchPolicy::template findPairs<PairGenerator>, _psp, _1, a));
+                return PairGenerator(boost::bind(&PairSearchPolicy::template findPairs<PairGenerator, PairType>, _psp, _1, a));
             }
             else {
                 int n(a.size()), m(b.size());
                 if (_verbose) std::cout << "Number of distinct pairs : " << n*m << std::endl;
-                return PairGenerator(boost::bind(&PairSearchPolicy::template findPairs<PairGenerator>, _psp, _1, a, b));
+                return PairGenerator(boost::bind(&PairSearchPolicy::template findPairs<PairGenerator, PairType>, _psp, _1, a, b));
             }
         }
         boost::shared_ptr<const PairSearchPolicy> _psp;    

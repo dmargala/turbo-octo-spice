@@ -100,33 +100,33 @@ int main(int argc, char **argv) {
 
         if(ignore) {
             tos::BucketIgnoreXi xiestimator(
-                new tos::BucketSearch(bucketgrid, verbose), 
+                new tos::BucketSearch(pixels, bucketgrid, verbose), 
                 new tos::Ignore, 
                 verbose);
-            xi = xiestimator.run(pixels, pixels, norm); 
+            xi = xiestimator.run(norm); 
         }
         else {
             tos::BucketBinXi xiestimator(
-                new tos::BucketSearch(bucketgrid,  verbose), 
+                new tos::BucketSearch(pixels, bucketgrid,  verbose), 
                 new tos::Bin(min, max, nbins), 
                 verbose);
-            xi = xiestimator.run(pixels, pixels, norm); 
+            xi = xiestimator.run(norm); 
         }
     }
     else {
         if(ignore) {
             tos::BruteIgnoreXi xiestimator(
-                new tos::BruteSearch(verbose), 
+                new tos::BruteSearch(pixels, verbose), 
                 new tos::Ignore, 
                 verbose);
-            xi = xiestimator.run(pixels, pixels, norm); 
+            xi = xiestimator.run(norm); 
         }
         else {
             tos::BruteBinXi xiestimator(
-                new tos::BruteSearch(verbose), 
+                new tos::BruteSearch(pixels, verbose), 
                 new tos::Bin(min, max, nbins), 
                 verbose);
-            xi = xiestimator.run(pixels, pixels, norm); 
+            xi = xiestimator.run(norm); 
         }
     }
 

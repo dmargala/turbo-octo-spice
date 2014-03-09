@@ -18,6 +18,8 @@ namespace turbooctospice {
     class BucketPairSearch {
     public:
         typedef T PixelIterable;
+        typedef std::map<int, std::vector<int> > BucketToPoints;
+        typedef std::map<int, std::vector<int> > BucketToBuckets;
         BucketPairSearch(PixelIterable a, PixelIterable b, lk::BinnedGrid const &bucketgrid, bool verbose = false) : 
         _a(a), _b(b), _bucketgrid(bucketgrid), _verbose(verbose) {
             _auto = false;
@@ -32,11 +34,10 @@ namespace turbooctospice {
                 if (_verbose) std::cout << "Entering auto-correlation generator ..." << std::endl;
                 // The key is a global bucketgrid index and the value is a 
                 // list of indices that represent points inside that bucket
-                typedef std::map<int, std::vector<int> > BucketIndexToIntegerList;
-                BucketIndexToIntegerList bucketPointsMap;
+                BucketToPoints bucketPointsMap;
                 // The key is a global bucketgrid index and the value is
                 // a list of neighboring buckets
-                BucketIndexToIntegerList bucketNeighborsMap;
+                BucketToBuckets bucketNeighborsMap;
                 // First pass through the data, fill buckets with point indices.
                 // Also create a lookup tables for points->buckets and buckets->neighbors
                 std::vector<double> position(3);
@@ -58,13 +59,13 @@ namespace turbooctospice {
                 int nbuckets = bucketNeighborsMap.size();
                 std::cout << "We have " << nbuckets << " buckets" << std::endl;
                 // Loop over all buckets
-                BOOST_FOREACH(BucketIndexToIntegerList::value_type &bucket, bucketPointsMap){
+                for(auto &bucket : bucketPointsMap){
                     // Loop over all points in each bucket
-                    BOOST_FOREACH(int i, bucket.second) {
+                    for(int i : bucket.second) {
                         // Compare this points to all points in neighboring buckets
-                        BOOST_FOREACH(int bucketindex, bucketNeighborsMap[bucket.first]) {
+                        for(int bucketindex : bucketNeighborsMap[bucket.first]) {
                             // Loop over all points in neighboring bucket
-                            BOOST_FOREACH(int j, bucketPointsMap[bucketindex]) {
+                            for(int j : bucketPointsMap[bucketindex]) {
                                 // Only count pairs once
                                 if(j <= i) continue;
                                 yield(PairType(_a.at(i),_a.at(j)));
@@ -79,11 +80,10 @@ namespace turbooctospice {
                 if (_verbose) std::cout << "Entering cross-correlation generator ..." << std::endl;
                 // The key is a global bucketgrid index and the value is a 
                 // list of indices that represent points inside that bucket
-                typedef std::map<int, std::vector<int> > BucketIndexToIntegerList;
-                BucketIndexToIntegerList bucketPointsMapA, bucketPointsMapB;
+                BucketToPoints bucketPointsMapA, bucketPointsMapB;
                 // The key is a global bucketgrid index and the value is
                 // a list of neighboring buckets
-                BucketIndexToIntegerList bucketNeighborsMap;
+                BucketToBuckets bucketNeighborsMap;
                 // First pass through the data, fill buckets with point indices.
                 // Also create a lookup tables for points->buckets and buckets->neighbors
                 std::vector<double> position(3);
@@ -122,13 +122,13 @@ namespace turbooctospice {
                 std::cout << "We have " << nbuckets << " buckets" << std::endl;
 
                 // Loop over all buckets
-                BOOST_FOREACH(BucketIndexToIntegerList::value_type &bucket, bucketPointsMapA){
+                for(auto &bucket : bucketPointsMapA){
                     // Loop over all points in each bucket
-                    BOOST_FOREACH(int i, bucket.second) {
+                    for(int i : bucket.second) {
                         // Compare this points to all points in neighboring buckets
-                        BOOST_FOREACH(int bucketindex, bucketNeighborsMap[bucket.first]) {
+                        for(int bucketindex : bucketNeighborsMap[bucket.first]) {
                             // Loop over all points in neighboring bucket
-                            BOOST_FOREACH(int j, bucketPointsMapB[bucketindex]) {
+                            for(int j : bucketPointsMapB[bucketindex]) {
                                 yield(PairType(_a.at(i),_b.at(j)));
                             }
                         }

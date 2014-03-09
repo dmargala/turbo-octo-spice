@@ -8,6 +8,7 @@
 #include <utility>
 
 #include <iostream>
+#include <iterator>
 
 #include "types.h"
 
@@ -23,16 +24,18 @@ namespace turbooctospice {
 		BrutePairSearch(PixelIterable a, PixelIterable b, bool verbose = false) : 
 		_a(a), _b(b), _verbose(verbose) {
 			_auto = false;
+			int n(_a.size()), m(_b.size());
+            if (_verbose) std::cout << "Number of distinct pairs : " << n*m << std::endl;
 		};
 		BrutePairSearch(PixelIterable a, bool verbose = false) : 
 		_a(a), _verbose(verbose) {
 			_auto = true;
+			int n(_a.size());
+            if (_verbose) std::cout << "Number of distinct pairs : " << n*(n-1)/2 << std::endl;
 		};
         template <class PairGenerator, class PairType> void findPairs(typename PairGenerator::caller_type& yield) const {
 			if (_auto) {
 				if (_verbose) std::cout << "Entering auto-correlation generator ..." << std::endl;
-				int n(_a.size());
-                if (_verbose) std::cout << "Number of distinct pairs : " << n*(n-1)/2 << std::endl;
 	    		for(auto i = _a.begin(); i != boost::prior(_a.end()); ++i) {
 			        for(auto j = boost::next(i); j != _a.end(); ++j) {
 			            yield(PairType(*i,*j));
@@ -42,11 +45,9 @@ namespace turbooctospice {
 			}
 			else {
 	        	if (_verbose) std::cout << "Entering cross-correlation generator ..." << std::endl;
-	        	int n(_a.size()), m(_b.size());
-                if (_verbose) std::cout << "Number of distinct pairs : " << n*m << std::endl;
-	    		for(auto i = _a.begin(); i != _a.end(); ++i) {
-			        for(auto j = _b.begin(); j != _b.end(); ++j) {
-			            yield(PairType(*i,*j));
+	    		for(auto &first : _a) {
+			        for(auto &second : _b) {
+			            yield(PairType(first, second));
 			        }
 			    }
 			    if (_verbose) std::cout << "Exiting cross-correlation generator ..." << std::endl;

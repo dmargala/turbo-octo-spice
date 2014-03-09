@@ -33,6 +33,7 @@ namespace turbooctospice {
 		HealPairSearch(PixelIterable quasars, HealMap map, double maxAng, bool verbose = false) : 
 		_quasars(quasars), _map(map), _maxAng(maxAng), _verbose(verbose) {
 			_cosmax = std::cos(_maxAng);
+		    sortQuasars();
 		};
 		~HealPairSearch() {};
         template <class PairGenerator, class PairType> void findPairs(typename PairGenerator::caller_type& yield) const {
@@ -40,12 +41,10 @@ namespace turbooctospice {
 		    rangeset<int> neighbors_rangeset;
 		    std::vector<int> neighbors;
 
-		    BucketToPixels _buckets;
-		    sortQuasars(_buckets);
     		if (_verbose) std::cout << "We have " << _buckets.size() << " buckets w/ data" << std::endl;
 
     		boost::progress_display t(_quasars.size());
-	        // Loop over all quasars in this bucket
+	        // Loop over all quasars
 	        for(int quasarIndexI = 0; quasarIndexI < _quasars.size(); ++quasarIndexI) {
 	            // Find neighboring buckets
 	            _map.query_disc_inclusive(_quasars[quasarIndexI].p, _maxAng, neighbors_rangeset);
@@ -53,7 +52,7 @@ namespace turbooctospice {
 	            // Loop over neighboring buckets
 	            for(int neighborBucketIndex : neighbors) {
 	                // Loop over all quasars in neighboring bucket
-	                for(int quasarIndexJ : _buckets[neighborBucketIndex]) {
+	                for(int quasarIndexJ : _buckets.at(neighborBucketIndex)) {
 	                    // Only use unique pairs of quasars
 	                    if(quasarIndexJ <= quasarIndexI) continue;
 	                    // kinda kuldgey...
@@ -71,7 +70,7 @@ namespace turbooctospice {
 		    if (_verbose) std::cout << "Exiting auto-correlation generator ..." << std::endl;
         }
 	private:
-		void sortQuasars(BucketToPixels &_buckets) const {
+		void sortQuasars() {
 			for(int i = 0; i < _quasars.size(); ++i) {
 				int index = _map.ang2pix(_quasars[i].p);
 				if(_buckets.count(index) > 0 ) {
@@ -84,6 +83,7 @@ namespace turbooctospice {
 		}
 		bool _verbose;
 		double _maxAng, _cosmax;
+		BucketToPixels _buckets;
 		HealMap _map;
 		PixelIterable _quasars;
 	}; // HealPairSearch

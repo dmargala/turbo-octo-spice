@@ -45,7 +45,9 @@ namespace turbooctospice {
         double _minValue, _maxValue, _nBins, _binWidth, _minValueSq, _maxValueSq;
 	}; // BinXYZPair
 
-    typedef BinXYZPair<XYZPixelPair> Bin;
+    typedef BinXYZPair<XYZPixelPair> BinXYZ;
+    typedef BinXYZPair<AngPixelPair> BinAng;
+
 
 } // turbooctospice
 

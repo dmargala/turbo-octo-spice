@@ -25,6 +25,7 @@ namespace turbooctospice {
     ///
     typedef std::vector<Pixel> Pixels;
 
+
 }
 
 #endif

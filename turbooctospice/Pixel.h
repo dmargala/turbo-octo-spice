@@ -22,12 +22,16 @@ namespace turbooctospice {
 
 	}; // Pixel
 
-	template<typename T> double angularSeparation(const T &p1, const T &p2) {
+	template<class T1, class T2> double angularSeparation(const T1 &p1, const T2 &p2) {
 		return p1.sth*p2.sth*(p1.cph*p2.cph + p1.sph*p2.sph) + p1.cth*p2.cth;
+	};
+	template<class T> double angularSeparation(const T &p1, const T &p2) {
+		return angularSeparation<T,T>(p1,p2);
 	};
 
 	typedef LOSPixel<float> LOSPixelf;
 	typedef LOSPixel<double> LOSPixeld;
+
 } // turbooctospice
 
 #endif // TURBOOCTOSPICE_LOSPIXEL

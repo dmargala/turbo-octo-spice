@@ -15,8 +15,8 @@ namespace lk = likely;
 
 namespace turbooctospice {
     /// Represents a templated algorithm for estimating a correlation function from a set of pixels.
-    /// @tparam PairSearchPolicy a pair finding class
-    /// @tparam BinPolicy a binning class
+    /// @tparam PairSearchPolicy policy class must expose a findPairs member function
+    /// @tparam BinPolicy policy class must expose an inner type called PairType and a binPair member function
     ///
     template <typename PairSearchPolicy, typename BinPolicy> 
     class XiEstimator {
@@ -73,9 +73,14 @@ namespace turbooctospice {
     }; // XiEstimator
     
     typedef XiEstimator<BruteSearch, Ignore> BruteIgnoreXi;
-    typedef XiEstimator<BruteSearch, Bin> BruteBinXi;
+    typedef XiEstimator<BruteSearch, BinXYZ> BruteBinXi;
     typedef XiEstimator<BucketSearch, Ignore> BucketIgnoreXi;
-    typedef XiEstimator<BucketSearch, Bin> BucketBinXi; 
+    typedef XiEstimator<BucketSearch, BinXYZ> BucketBinXi;
+
+#ifdef HAVE_LIBHEAL
+    typedef XiEstimator<HealSearch, IgnoreAng > HealIgnoreXi;
+    typedef XiEstimator<HealSearch, BinAng> HealBinXi;
+#endif
 
 } // turbooctospice 
 

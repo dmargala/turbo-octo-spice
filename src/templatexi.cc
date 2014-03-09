@@ -1,23 +1,28 @@
 // Created 27-Feb-2013 by Daniel Margala (University of California, Irvine) <dmargala@uci.edu>
 // Example strategy (polcicy) design pattern using templated classes
 
-#include <fstream>
-
 #include "boost/program_options.hpp"
 
 #include "turbooctospice.h"
+
+#include "cosmo/cosmo.h"
 #include "likely/likely.h"
 
-namespace lk = likely;
+#include <iostream>
+#include <fstream>
+#include <vector>
 
-namespace tos = turbooctospice;
 namespace po = boost::program_options;
+namespace lk = likely;
+namespace tos = turbooctospice;
+
+const double lyA = 1216;
 
 int main(int argc, char **argv) {
 
     // Configure command-line option processing
+    double OmegaLambda, OmegaMatter, zmin, zmax, combine, speclo, foresthi, forestlo;
     std::string infile,outfile,axis,buckets;
-
     po::options_description cli("Correlation function estimator");
     cli.add_options()
         ("help,h", "Prints this info and exits.")
@@ -28,11 +33,27 @@ int main(int argc, char **argv) {
             "Filename to write correlation function to")
         ("axis", po::value<std::string>(&axis)->default_value("[0:200]*50"),
             "Xi axis binning")
-        ("rmu", "Use (r,mu) binning instead of (rP,rT) binning")
         ("ignore", "No binnig (use for profiling pair search methods")
         ("buckets", po::value<std::string>(&buckets)->default_value(""),
             "bucket binning")
         ("norm", "Normalize xi by dividing by weights")
+        ("omega-lambda", po::value<double>(&OmegaLambda)->default_value(0.728),
+            "Present-day value of OmegaLambda.")
+        ("omega-matter", po::value<double>(&OmegaMatter)->default_value(0),
+            "Present-day value of OmegaMatter or zero for 1-OmegaLambda.")
+        ("z-min", po::value<double>(&zmin)->default_value(2.1),
+            "Minimum z value, sets spherical bin surface distance")
+        ("forest-lo", po::value<double>(&forestlo)->default_value(1040),
+            "Lyman-alpha forest low cutoff wavelength")
+        ("forest-hi", po::value<double>(&foresthi)->default_value(1200),
+            "Lyman-alpha forest high cutoff wavelength")
+        ("spec-lo", po::value<double>(&speclo)->default_value(3650),
+            "Spectrograph wavelength lower limit")
+        ("combine", po::value<double>(&combine)->default_value(4),
+            "Number of wavelength bins to combine in fake spectra.")
+        ("z-max", po::value<double>(&zmax)->default_value(3.5),
+            "Maximum redshift to consider")
+        ("heal", "Use HEALPIX search")
         ;
 
     // do the command line parsing now
@@ -49,7 +70,7 @@ int main(int argc, char **argv) {
         std::cout << cli << std::endl;
         return 1;
     }
-    bool verbose(vm.count("verbose")),rmu(vm.count("rmu")),ignore(vm.count("ignore")),norm(vm.count("norm"));
+    bool verbose(vm.count("verbose")),ignore(vm.count("ignore")),norm(vm.count("norm")),heal(vm.count("heal"));
 
     // Read the input file
     if(0 == infile.length()) {
@@ -71,19 +92,6 @@ int main(int argc, char **argv) {
             << std::endl;
     }
 
-    // Parse the input file
-    tos::Pixels pixels;
-    for(int i = 0; i < columns[0].size(); ++i) {
-        tos::Pixel pixel;
-        pixel.x = columns[0][i];
-        pixel.y = columns[1][i];
-        pixel.z = columns[2][i];
-        pixel.d = columns[3][i];
-        pixel.w = columns[4][i];
-        pixel.i = i;
-        pixels.push_back(pixel);
-    }
-
     // Instantiate the correlation function grid
     lk::AbsBinningCPtr bins = lk::createBinning(axis);
     int nbins(bins->getNBins());
@@ -92,41 +100,131 @@ int main(int argc, char **argv) {
     // Run the estimator
     std::vector<double> xi;
 
-    if(buckets.length()) {
-        lk::AbsBinningCPtr bucketbins1 = lk::createBinning(buckets),
-            bucketbins2 = lk::createBinning(buckets),
-            bucketbins3 = lk::createBinning(buckets);
-        lk::BinnedGrid bucketgrid(bucketbins1, bucketbins2, bucketbins3);
+    if (heal) {
+        if(OmegaMatter == 0) OmegaMatter = 1 - OmegaLambda;
+        cosmo::AbsHomogeneousUniversePtr cosmology(
+            new cosmo::LambdaCdmUniverse(OmegaLambda,OmegaMatter));
+
+        double scale = cosmology->getTransverseComovingScale(zmin);
+        double maxAng = max/scale;
+        if(verbose) {
+            std::cout << "Transverse comoving scale at z = 2.1: " << scale << std::endl;
+            std::cout << "Maximum distance at z = 2.1 (rad): " << maxAng << std::endl;
+        }
+
+        // Healpix_Ordering_Scheme scheme = RING
+        int order = 5;
+        Healpix_Map<double> map(order, RING); 
+
+        if(verbose) {
+            std::cout << "Number of pixels: " << map.Npix() << std::endl;
+            std::cout << "Max ang dist between any pixel center and its corners: \n\t" 
+                << map.max_pixrad() << " rad (" << map.max_pixrad()*scale << " Mpc/h)" << std::endl;
+        }
+
+        const double pi = std::atan(1.0)*4;
+        const double deg2rad = pi/180.;
+
+        long sumlength = 0;
+
+        tos::Quasars quasars;
+        double m = std::pow(std::pow(10,0.0001),combine);
+
+        for(int i = 0; i < columns[0].size(); ++i){
+            double ra(deg2rad*columns[0][i]);
+            double dec(deg2rad*columns[1][i]);
+            double theta = (90.0*deg2rad-dec);
+            double z = columns[2][i];
+            if(z < zmin || z > zmax) continue;
+
+            double zlo = std::max(speclo/lyA-1,forestlo/lyA*(1+z)-1);
+            double zhi = foresthi/lyA*(1+z)-1;
+
+            double zpix = zlo;
+            tos::Quasarf quasar;
+            quasar.p = pointing(theta, ra);
+            double sth = std::sin(theta);
+            double cth = std::cos(theta);
+            double sph = std::sin(ra);
+            double cph = std::cos(ra);
+            double s;
+            std::vector<tos::LOSPixelf> pixels;
+            while(zpix < zhi) {
+                s = cosmology->getLineOfSightComovingDistance(zpix);
+                pixels.push_back(tos::LOSPixelf(s,sth,cth,sph,cph,1,1));
+                zpix = (1 + zpix)*m - 1;
+            }
+            sumlength += pixels.size();
+            quasar.pixels = pixels;
+            quasars.push_back(quasar);
+        }
+        std::cout << "Average forest size: " <<  float(sumlength)/quasars.size() <<  " pixels" << std::endl;
 
         if(ignore) {
-            tos::BucketIgnoreXi xiestimator(
-                new tos::BucketSearch(pixels, bucketgrid, verbose), 
-                new tos::Ignore, 
+            tos::HealIgnoreXi xiestimator(
+                new tos::HealSearch(quasars, map, maxAng, verbose), 
+                new tos::IgnoreAng, 
                 verbose);
-            xi = xiestimator.run(norm); 
+            xi = xiestimator.run(norm);
         }
         else {
-            tos::BucketBinXi xiestimator(
-                new tos::BucketSearch(pixels, bucketgrid,  verbose), 
-                new tos::Bin(min, max, nbins), 
+            tos::HealBinXi xiestimator(
+                new tos::HealSearch(quasars, map, maxAng, verbose), 
+                new tos::BinAng(min, max, nbins), 
                 verbose);
-            xi = xiestimator.run(norm); 
+            xi = xiestimator.run(norm);
         }
+
     }
     else {
-        if(ignore) {
-            tos::BruteIgnoreXi xiestimator(
-                new tos::BruteSearch(pixels, verbose), 
-                new tos::Ignore, 
-                verbose);
-            xi = xiestimator.run(norm); 
+        // Parse the input file
+        tos::Pixels pixels;
+        for(int i = 0; i < columns[0].size(); ++i) {
+            tos::Pixel pixel;
+            pixel.x = columns[0][i];
+            pixel.y = columns[1][i];
+            pixel.z = columns[2][i];
+            pixel.d = columns[3][i];
+            pixel.w = columns[4][i];
+            pixel.i = i;
+            pixels.push_back(pixel);
+        }
+        if(buckets.length()) {
+            lk::AbsBinningCPtr bucketbins1 = lk::createBinning(buckets),
+                bucketbins2 = lk::createBinning(buckets),
+                bucketbins3 = lk::createBinning(buckets);
+            lk::BinnedGrid bucketgrid(bucketbins1, bucketbins2, bucketbins3);
+
+            if(ignore) {
+                tos::BucketIgnoreXi xiestimator(
+                    new tos::BucketSearch(pixels, bucketgrid, verbose), 
+                    new tos::Ignore, 
+                    verbose);
+                xi = xiestimator.run(norm); 
+            }
+            else {
+                tos::BucketBinXi xiestimator(
+                    new tos::BucketSearch(pixels, bucketgrid,  verbose), 
+                    new tos::BinXYZ(min, max, nbins), 
+                    verbose);
+                xi = xiestimator.run(norm); 
+            }
         }
         else {
-            tos::BruteBinXi xiestimator(
-                new tos::BruteSearch(pixels, verbose), 
-                new tos::Bin(min, max, nbins), 
-                verbose);
-            xi = xiestimator.run(norm); 
+            if(ignore) {
+                tos::BruteIgnoreXi xiestimator(
+                    new tos::BruteSearch(pixels, verbose), 
+                    new tos::Ignore, 
+                    verbose);
+                xi = xiestimator.run(norm); 
+            }
+            else {
+                tos::BruteBinXi xiestimator(
+                    new tos::BruteSearch(pixels, verbose), 
+                    new tos::BinXYZ(min, max, nbins), 
+                    verbose);
+                xi = xiestimator.run(norm); 
+            }
         }
     }
 

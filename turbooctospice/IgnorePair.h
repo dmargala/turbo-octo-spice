@@ -23,6 +23,7 @@ namespace turbooctospice {
 	}; // IgnorePair
 
     typedef IgnorePair<XYZPixelPair> Ignore;
+    typedef IgnorePair<AngPixelPair> IgnoreAng;
 
 } // turbooctospice
 

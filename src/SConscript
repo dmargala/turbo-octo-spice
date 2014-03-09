@@ -5,23 +5,40 @@ Import('env')
 ## Build turbooctospice library
 env.Library('turbooctospice', Glob('#turbooctospice/*.cc'))
 
-## Compile C++ programs
-common_libs = ['likely', 'cosmo', 'boost_program_options', 'boost_system', 'boost_thread','boost_coroutine']
+tos = ['turbooctospice']
+tosCppPath = ['../turbooctospice']
+tosLibPath = ['../build']
 
+common = ['likely', 'cosmo', 'boost_program_options', 'boost_system', 'boost_thread', 'boost_coroutine']
 
-templatexi = env.Program('templatexi', 'templatexi.cc', LIBS=common_libs+['turbooctospice'], LIBPATH='.')
+### Common libs only
+bucketxi = env.Program('bucketxi', 'bucketxi.cc', LIBS=common)
 
+### Requires kdtree library
+kdtreetest = env.Program('kdtreetest', 'kdtreetest.cc', LIBS=common+['kdtree'])
 
-bucketxi = env.Program('bucketxi', 'bucketxi.cc', LIBS=common_libs)
-kdtreetest = env.Program('kdtreetest', 'kdtreetest.cc', LIBS=common_libs + ['kdtree'])
-bucketsky = env.Program('bucketsky', 'bucketsky.cc', LIBS=common_libs + ['turbooctospice'],LIBPATH='.')
+### Requires HealPix library
+healCppPath = ['/Users/daniel/source/Healpix_3.11/src/cxx/basic_gcc/include']
+healLibPath = ['/Users/daniel/source/Healpix_3.11/src/cxx/basic_gcc/lib']
+healLibs = ['healpix_cxx','cxxsupport']
+# healOptions = {'LIBS':healLibs, 'LIBPATH':healLibs, 'CPPPATH':healCppPath}
 
-healCpp = '/Users/daniel/source/Healpix_3.11/src/cxx/basic_gcc/include'
-healLib = '/Users/daniel/source/Healpix_3.11/src/cxx/basic_gcc/lib'
-healtest = env.Program('healtest', 'healtest.cc', LIBS=common_libs + ['healpix_cxx','cxxsupport'],
-	LIBPATH=healLib, CPPPATH=healCpp )
-mockdata = env.Program('mockdata', 'mockdata.cc', 
-	LIBS=common_libs+['cfitsio','CCfits','turbooctospice'],LIBPATH='.')
+# healtest = env.Program('healtest', 'healtest.cc',**healOptions)
+healtest = env.Program('healtest', 'healtest.cc', LIBS=common+healLibs, LIBPATH=healLibPath, CPPPATH=healCppPath )
+
+### Requires tos library
+bucketsky = env.Program('bucketsky', 'bucketsky.cc',LIBS=common+tos, LIBPATH=tosLibPath, CPPPATH=tosCppPath)
+
+templatexi = env.Program('templatexi', 'templatexi.cc',
+	LIBS=common+tos+healLibs, 
+	LIBPATH=tosLibPath+healLibPath, 
+	CPPPATH=tosCppPath+healCppPath,
+	CPPDEFINES = ['HAVE_LIBHEAL'])
+
+### Requires fits / ccfits libraries
+cfitsLibs = ['cfitsio','CCfits']
+mockdata = env.Program('mockdata', 'mockdata.cc', LIBS=common+tos+cfitsLibs, LIBPATH=tosLibPath, CPPPATH=tosCppPath)
+
 ## Compile CUDA programs
 
 #env['BUILDERS']['CudaProgram'] = Builder(action = '/usr/local/cuda/bin/nvcc -m64 -arch=sm_20 -o $TARGET $SOURCE $LIBS', src_suffix = '.cu', suffix = '')

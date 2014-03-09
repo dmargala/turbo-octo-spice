@@ -58,6 +58,9 @@ namespace turbooctospice {
 			double s2 = Base::second.s;
 			return s1*s1 + s2*s2 - 2*s1*s2*_cos12;
 		}
+		double cosAngularSeparation(){
+			return _cos12;
+		}
 		double weight(){
             return Base::first.w*Base::second.w;
 		}
@@ -66,9 +69,10 @@ namespace turbooctospice {
 		}
 	private:
 		double _cos12;
-	};
+	}; // AngPair
 
 	typedef AngPair<LOSPixelf> AngPixelPair;
+
 } // turbooctospice
 
 #endif // TURBOOCTOSPICE_PAIR

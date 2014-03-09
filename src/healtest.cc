@@ -74,27 +74,8 @@ lk::BinnedGrid const &grid, bool rmu, double maxAng, double x1min, double x1max,
                             npixelpairs++;
                             double sj = quasars[i].lambdas[jpix];
                             double dist = std::sqrt(si*si + sj*sj - 2*si*sj*cosij);
-                            if(rmu) {
-                                separation[0] = dist;
-                                separation[1] = std::fabs(cosij);
-                            }
-                            else {
-                                separation[0] = std::fabs(si-sj)/2;
-                                separation[1] = dist*cosij;
-                            }
-                            if(separation[0] < x1min || separation[0] >= x1max) continue;
-                            if(separation[1] < x2min || separation[1] >= x2max) continue;
-                            try {
-                                std::cout << separation[0] << ", " << separation[1] << std::endl;
-                                int index = grid.getIndex(separation);
-                                double wgt = wi*quasars[j].weights[jpix];
-                                dsum[index] += wgt*di*quasars[j].spectrum[jpix];
-                                wsum[index] += wgt;
-                                npixelpairsused++;
-                            }
-                            catch(lk::RuntimeError const &e) {
-                                std::cerr << "no bin found for i,j = " << i << ',' << j << std::endl;
-                            }
+                            if(dist < x1min || dist > x1max) continue;
+                            npixelpairsused++;
                         }
                     }
                 }

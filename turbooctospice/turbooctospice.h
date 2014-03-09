@@ -12,6 +12,10 @@
 #include "BrutePairSearch.h"
 #include "BucketPairSearch.h"
 
+#ifdef HAVE_LIBHEAL
+#include "HealPairSearch.h"
+#endif
+
 #include "IgnorePair.h"
 #include "BinXYZPair.h"
 

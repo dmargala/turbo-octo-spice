@@ -13,16 +13,18 @@ namespace lk = likely;
 
 namespace turbooctospice {
 
-	template <typename T>
+	template <class T>
 	class BinXYZPair {
 	public:
         typedef T PairType;
-        BinXYZPair(double minValue, double maxValue, int nBins): _minValue(minValue), _maxValue(maxValue), _nBins(nBins) {
+        BinXYZPair(double minValue, double maxValue, int nBins, bool countPair = false): 
+        _minValue(minValue), _maxValue(maxValue), _nBins(nBins), _countPair(countPair) {
             _binWidth = (maxValue - minValue)/nBins;
             _minValueSq = _minValue*_minValue;
             _maxValueSq = _maxValue*_maxValue;
         };
         ~BinXYZPair() {};
+        //template <class PairType> void binPair(typename PairType &pair, std::vector<double> &dsum, std::vector<double> &wsum, long &nused) const {
 		void binPair(PairType &pair, std::vector<double> &dsum, std::vector<double> &wsum, long &nused) const {
             // Check that separation is within range of interest
             double rsq = pair.separationSq();
@@ -30,8 +32,13 @@ namespace turbooctospice {
             // Accumulate pair
             int index = getBinIndex(std::sqrt(rsq));
             double wgt = pair.weight();
-            dsum[index] += wgt*pair.product();
             wsum[index] += wgt;
+            if(_countPair) {
+                dsum[index] = wsum[index]*wsum[index];
+            }
+            else {
+                dsum[index] += wgt*pair.product();
+            }
             nused++;
 		};
         int getNBins() const { return _nBins; };
@@ -43,11 +50,11 @@ namespace turbooctospice {
         }
 	private:
         double _minValue, _maxValue, _nBins, _binWidth, _minValueSq, _maxValueSq;
+        bool _countPair;
 	}; // BinXYZPair
 
     typedef BinXYZPair<XYZPixelPair> BinXYZ;
     typedef BinXYZPair<AngPixelPair> BinAng;
-
 
 } // turbooctospice
 

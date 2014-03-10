@@ -10,6 +10,7 @@ namespace turbooctospice {
 	class Pair : public std::pair<T,T> {
 	public:
 		typedef std::pair<T,T> Base;
+		typedef boost::coroutines::coroutine<Pair()> PairGenerator;
 		Pair() : Base() {};
 		Pair(const Pair &pair) : Base(pair) {};
 		Pair(T first, T second) : Base(first,second) {};
@@ -40,6 +41,8 @@ namespace turbooctospice {
 	class AngPair : public std::pair<T,T> {
 	public:
 		typedef std::pair<T,T> Base;
+		typedef boost::coroutines::coroutine<AngPair()> PairGenerator;
+
 		AngPair() : Base() {};
 		AngPair(const AngPair &pair) : Base(pair) { 
 			_cos12 = angularSeparation<T>(pair.first, pair.second);

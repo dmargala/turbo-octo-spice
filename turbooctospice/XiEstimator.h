@@ -18,10 +18,10 @@ namespace turbooctospice {
     /// @tparam PairSearchPolicy policy class must expose a findPairs member function
     /// @tparam BinPolicy policy class must expose an inner type called PairType and a binPair member function
     ///
-    template <typename PairSearchPolicy, typename BinPolicy> 
+    template <class PairSearchPolicy, class BinPolicy> 
     class XiEstimator {
         typedef typename BinPolicy::PairType PairType;
-        typedef boost::coroutines::coroutine<PairType()> PairGenerator;
+        typedef typename PairType::PairGenerator PairGenerator;
     public:
         /// Creates a new algorithm templated on the specified PairSearchPolicy and BinPolicy.
         /// Set the verbose option to true to print pair statistics to console.

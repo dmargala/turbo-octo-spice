@@ -16,9 +16,18 @@ namespace turbooctospice {
     	float frac, lam, wgt, dist;
 	};
 
-    struct Pixel {
+    class Pixel {
+    public:
     	float x, y, z, d, w;
     	int i;
+
+        /// WWHYYYYY???
+        bool operator==(const Pixel &rhs) const {
+            return true;
+        }
+        bool operator!=(const Pixel &rhs) const {
+            return !this->operator==(rhs);
+        }
     };
 
     /// This is the Pixels typedef.

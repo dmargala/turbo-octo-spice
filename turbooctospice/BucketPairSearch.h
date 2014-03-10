@@ -29,7 +29,7 @@ namespace turbooctospice {
             _auto = true;
         };
         ~BucketPairSearch() {};
-        template<class PairGenerator, class PairType> void findPairs(typename PairGenerator::caller_type& yield) const {
+        template<class PairGenerator, class PairType> void findPairs(typename PairGenerator::push_type& yield) const {
             if (_auto) {
                 if (_verbose) std::cout << "Entering auto-correlation generator ..." << std::endl;
                 // The key is a global bucketgrid index and the value is a 

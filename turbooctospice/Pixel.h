@@ -20,6 +20,14 @@ namespace turbooctospice {
 		LOSPixel(T _s, T _sth, T _cth, T _sph, T _cph, T _d, T _w) : 
 		s(_s), sth(_sth), cth(_cth), sph(_sph), cph(_cph), d(_d), w(_w) {};
 
+        /// WWHYYYYY???
+        bool operator==(const LOSPixel &rhs) const {
+            return true;
+        }
+        bool operator!=(const LOSPixel &rhs) const {
+            return !this->operator==(rhs);
+        }
+
 	}; // Pixel
 
 	template<class T1, class T2> double angularSeparation(const T1 &p1, const T2 &p2) {

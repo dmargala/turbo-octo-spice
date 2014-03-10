@@ -6,6 +6,8 @@
 #include <iostream> 
 
 #include "boost/bind.hpp"
+#include "boost/coroutine/coroutine.hpp"
+#include "boost/shared_ptr.hpp"
 
 #include "types.h"
 
@@ -44,16 +46,13 @@ namespace turbooctospice {
 
             // Loop over pixel pairs
             // Binds the PairSearchPolicy findPairs method to a generator of PixelPairs
-            PairGenerator pairs(boost::bind(&PairSearchPolicy::template findPairs<PairGenerator, PairType>, _psp, _1));
+            typename PairGenerator::pull_type pairs(boost::bind(&PairSearchPolicy::template findPairs<PairGenerator, PairType>, _psp, _1));
 
             long npair(0), nused(0);
-            while(pairs){ // Check completion status
-            //for(auto &pair : pairs) {
+            //while(pairs){ // Check completion status
+            for(PairType pair : pairs) {
                 npair++;
-                // Extract yielded result
-                _bp->binPair(pairs.get(), dsum, wsum, nused);
-                // Fire up the generator?
-                pairs();
+                _bp->binPair(pair, dsum, wsum, nused);
             }
 
             if (_verbose) std::cout << "used " << nused << " of " << npair << " pairs." << std::endl;

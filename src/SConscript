@@ -33,7 +33,7 @@ templatexi = env.Program('templatexi', 'templatexi.cc',
 	LIBS=common+tos+healLibs, 
 	LIBPATH=tosLibPath+healLibPath, 
 	CPPPATH=tosCppPath+healCppPath,
-	CPPDEFINES = ['HAVE_LIBHEAL'])
+	CPPDEFINES = ['HAVE_LIBHEAL','BOOST_COROUTINES_UNIDIRECT'])
 
 ### Requires fits / ccfits libraries
 cfitsLibs = ['cfitsio','CCfits']

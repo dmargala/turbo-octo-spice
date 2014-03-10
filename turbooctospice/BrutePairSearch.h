@@ -33,7 +33,7 @@ namespace turbooctospice {
 			int n(_a.size());
             if (_verbose) std::cout << "Number of distinct pairs : " << n*(n-1)/2 << std::endl;
 		};
-        template <class PairGenerator, class PairType> void findPairs(typename PairGenerator::caller_type& yield) const {
+        template <class PairGenerator, class PairType> void findPairs(typename PairGenerator::push_type& yield) const {
 			if (_auto) {
 				if (_verbose) std::cout << "Entering auto-correlation generator ..." << std::endl;
 	    		for(auto i = _a.begin(); i != boost::prior(_a.end()); ++i) {

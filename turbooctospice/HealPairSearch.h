@@ -35,7 +35,7 @@ namespace turbooctospice {
 			_cosmax = std::cos(_maxAng);
 		};
 		~HealPairSearch() {};
-        template <class PairGenerator, class PairType> void findPairs(typename PairGenerator::caller_type& yield) const {
+        template <class PairGenerator, class PairType> void findPairs(typename PairGenerator::push_type& yield) const {
         	if (_verbose) std::cout << "Entering auto-correlation generator ..." << std::endl;
 		    rangeset<int> neighbors_rangeset;
 		    std::vector<int> neighbors;

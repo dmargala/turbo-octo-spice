@@ -5,12 +5,14 @@
 
 #include "utility"
 
+#include "boost/coroutine/coroutine.hpp"
+
 namespace turbooctospice {
 	template <typename T>
 	class Pair : public std::pair<T,T> {
 	public:
 		typedef std::pair<T,T> Base;
-		typedef boost::coroutines::coroutine<Pair()> PairGenerator;
+		typedef boost::coroutines::coroutine<Pair> PairGenerator;
 		Pair() : Base() {};
 		Pair(const Pair &pair) : Base(pair) {};
 		Pair(T first, T second) : Base(first,second) {};
@@ -41,7 +43,7 @@ namespace turbooctospice {
 	class AngPair : public std::pair<T,T> {
 	public:
 		typedef std::pair<T,T> Base;
-		typedef boost::coroutines::coroutine<AngPair()> PairGenerator;
+		typedef boost::coroutines::coroutine<AngPair> PairGenerator;
 
 		AngPair() : Base() {};
 		AngPair(const AngPair &pair) : Base(pair) { 

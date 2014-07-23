@@ -17,6 +17,6 @@
 #endif
 
 #include "IgnorePair.h"
-#include "BinXYZPair.h"
+#include "BinPair.h"
 
 #include "XiEstimator.h"

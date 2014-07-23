@@ -1,7 +1,7 @@
 // Created 28-Feb-2014 by Daniel Margala (University of California, Irvine) <dmargala@uci.edu>
 
-#ifndef TURBOOCTOSPICE_BIN_XYZ_PAIR
-#define TURBOOCTOSPICE_BIN_XYZ_PAIR
+#ifndef TURBOOCTOSPICE_BIN_PAIR
+#define TURBOOCTOSPICE_BIN_PAIR
 
 #include "types.h"
 
@@ -14,16 +14,16 @@ namespace lk = likely;
 namespace turbooctospice {
 
 	template <class T>
-	class BinXYZPair {
+	class BinPair {
 	public:
         typedef T PairType;
-        BinXYZPair(double minValue, double maxValue, int nBins, bool countPair = false): 
+        BinPair(double minValue, double maxValue, int nBins, bool countPair = false): 
         _minValue(minValue), _maxValue(maxValue), _nBins(nBins), _countPair(countPair) {
             _binWidth = (maxValue - minValue)/nBins;
             _minValueSq = _minValue*_minValue;
             _maxValueSq = _maxValue*_maxValue;
         };
-        ~BinXYZPair() {};
+        ~BinPair() {};
         //template <class PairType> void binPair(typename PairType &pair, std::vector<double> &dsum, std::vector<double> &wsum, long &nused) const {
 		void binPair(PairType &pair, std::vector<double> &dsum, std::vector<double> &wsum, long &nused) const {
             // Check that separation is within range of interest
@@ -51,11 +51,11 @@ namespace turbooctospice {
 	private:
         double _minValue, _maxValue, _nBins, _binWidth, _minValueSq, _maxValueSq;
         bool _countPair;
-	}; // BinXYZPair
+	}; // BinPair
 
-    typedef BinXYZPair<XYZPixelPair> BinXYZ;
-    typedef BinXYZPair<AngPixelPair> BinAng;
+    typedef BinPair<XYZPixelPair> BinXYZ;
+    typedef BinPair<AngPixelPair> BinAng;
 
 } // turbooctospice
 
-#endif // TURBOOCTOSPICE_BIN_XYZ_PAIR
+#endif // TURBOOCTOSPICE_BIN_PAIR

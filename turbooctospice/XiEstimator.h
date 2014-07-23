@@ -8,6 +8,7 @@
 #include "boost/bind.hpp"
 #include "boost/coroutine/coroutine.hpp"
 #include "boost/shared_ptr.hpp"
+#include "boost/foreach.hpp"
 
 #include "types.h"
 
@@ -50,7 +51,7 @@ namespace turbooctospice {
 
             long npair(0), nused(0);
             //while(pairs){ // Check completion status
-            for(PairType pair : pairs) {
+            BOOST_FOREACH(PairType &pair, pairs) {
                 npair++;
                 _bp->binPair(pair, dsum, wsum, nused);
             }

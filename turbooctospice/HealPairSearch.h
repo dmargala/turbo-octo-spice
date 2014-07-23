@@ -89,7 +89,7 @@ namespace turbooctospice {
 		PixelIterable _quasars;
 	}; // HealPairSearch
 
-	typedef HealPairSearch<std::vector<Quasarf>> HealSearch;
+	typedef HealPairSearch<std::vector<Quasarf> > HealSearch;
 } // turbooctospice
 
 #endif // TURBOOCTOSPICE_HEAL_PAIR_SEARCH

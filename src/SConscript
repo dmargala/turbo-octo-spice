@@ -13,6 +13,7 @@ common = ['likely', 'cosmo', 'boost_program_options', 'boost_system', 'boost_thr
 
 ### Common libs only
 bucketxi = env.Program('bucketxi', 'bucketxi.cc', LIBS=common)
+coroutinetest = env.Program('coroutinetest', 'coroutinetest.cc',LIBS=common)
 
 ### Requires kdtree library
 kdtreetest = env.Program('kdtreetest', 'kdtreetest.cc', LIBS=common+['kdtree'])
@@ -48,9 +49,9 @@ cudaEnv.Replace(CC='nvcc')
 
 cudaEnv.Append(CCFLAGS=['-02'])
 # Atomic add requires minimum architecture
-cudaEnv.Append(LINKFLAGS=['-m64', '-arch=sm_20', '-DBOOST_NOINLINE=__attribute__ ((noinline))'])
-cudaEnv.Program('deviceQuery', 'deviceQuery.cu')
-cudaEnv.Program('gpuxi', 'gpuxi.cu', LIBS=['likely', 'boost_program_options'])
+cudaEnv.Append(LINKFLAGS=['-m64', '-arch=sm_20','-D__int128=long -DBOOST_NOINLINE=__attribute__ ((noinline))'])
+# cudaEnv.Program('deviceQuery', 'deviceQuery.cu')
+# cudaEnv.Program('gpuxi', 'gpuxi.cu', LIBS=['likely', 'boost_program_options'])
 
 # Custom install directory
 

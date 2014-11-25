@@ -6,9 +6,9 @@
 #include "likely/likely.h"
 
 #include "boost/foreach.hpp"
+#include "boost/progress.hpp"
 
 #include <iostream>
-
 
 namespace lk = likely;
 
@@ -58,6 +58,8 @@ namespace turbooctospice {
                 }
                 int nbuckets = bucketNeighborsMap.size();
                 std::cout << "We have " << nbuckets << " buckets" << std::endl;
+                // progress bar
+                boost::progress_display t(_a.size());
                 // Loop over all buckets
                 for(auto &bucket : bucketPointsMap){
                     // Loop over all points in each bucket
@@ -71,6 +73,7 @@ namespace turbooctospice {
                                 yield(PairType(_a.at(i),_a.at(j)));
                             }
                         }
+                        t+=1;
                     }
                 }
                 if (_verbose) std::cout << "Exiting auto-correlation generator ..." << std::endl;
@@ -121,6 +124,7 @@ namespace turbooctospice {
                 int nbuckets = bucketNeighborsMap.size();
                 std::cout << "We have " << nbuckets << " buckets" << std::endl;
 
+                boost::progress_display t(_a.size());
                 // Loop over all buckets
                 for(auto &bucket : bucketPointsMapA){
                     // Loop over all points in each bucket
@@ -132,6 +136,7 @@ namespace turbooctospice {
                                 yield(PairType(_a.at(i),_b.at(j)));
                             }
                         }
+                        t+=1;
                     }
                 }
                 if (_verbose) std::cout << "Exiting cross-correlation generator ..." << std::endl;

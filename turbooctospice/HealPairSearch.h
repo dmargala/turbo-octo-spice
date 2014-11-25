@@ -24,7 +24,6 @@ namespace turbooctospice {
     typedef Quasar<LOSPixelf> Quasarf;
     typedef std::vector<Quasarf> Quasars;
 
-
 	template <class T>
 	class HealPairSearch {
 	public:
@@ -45,6 +44,10 @@ namespace turbooctospice {
 
     		if (_verbose) std::cout << "We have " << _buckets.size() << " buckets w/ data" << std::endl;
 
+   			long nuniquepairs(0), nlospairsused(0), npixelpairs(0);
+
+   			long neighborBucketCounter(0), neighborQuasarCounter(0);
+
     		boost::progress_display t(_quasars.size());
 	        // Loop over all quasars in this bucket
 	        for(int quasarIndexI = 0; quasarIndexI < _quasars.size(); ++quasarIndexI) {
@@ -53,15 +56,19 @@ namespace turbooctospice {
 	            neighbors_rangeset.toVector(neighbors);
 	            // Loop over neighboring buckets
 	            for(int neighborBucketIndex : neighbors) {
+	            	neighborBucketCounter++;
 	                // Loop over all quasars in neighboring bucket
 	                for(int quasarIndexJ : _buckets[neighborBucketIndex]) {
+	                	neighborQuasarCounter++;
 	                    // Only use unique pairs of quasars
 	                    if(quasarIndexJ <= quasarIndexI) continue;
-	                    // kinda kuldgey...
+	                    nuniquepairs++;
 	                    double cosij = PairType(_quasars[quasarIndexI].pixels[0], _quasars[quasarIndexJ].pixels[0]).cosAngularSeparation();
 	                    if(cosij < _cosmax) continue;
+	                    nlospairsused++;
 	                    for(int i = 0; i < _quasars[quasarIndexI].pixels.size(); ++i) {
 	                        for(int j = 0; j < _quasars[quasarIndexJ].pixels.size(); ++j) {
+	                        	npixelpairs++;
                             	yield(PairType(_quasars[quasarIndexI].pixels[i],_quasars[quasarIndexJ].pixels[j],cosij));
 	                        }
 	                    }
@@ -69,6 +76,17 @@ namespace turbooctospice {
 	            }
 	            t+=1;
 	        }
+	        if (_verbose) {
+	        	long nquasars = _quasars.size();
+	        	long ndistinct = nquasars*(nquasars-1)/2;
+	        	double consideredFrac = float(nuniquepairs)/ndistinct;
+			    double usedFrac = float(nlospairsused)/nuniquepairs;
+			    std::cout << "neighboring buckets: " << neighborBucketCounter << std::endl;
+			    std::cout << "neighboring quasars: " << neighborQuasarCounter << std::endl;
+	        	std::cout << "considered " << nuniquepairs << " of distinct los pairs. (" << consideredFrac << ")" << std::endl;
+			    std::cout << "used " << nlospairsused << " of los pairs considered. (" << usedFrac << ")" << std::endl;
+		       	std::cout << "considered " << npixelpairs << " of distinct pixel pairs." << std::endl;
+		    }
 		    if (_verbose) std::cout << "Exiting auto-correlation generator ..." << std::endl;
         }
 	private:

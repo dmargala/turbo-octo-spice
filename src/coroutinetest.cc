@@ -41,31 +41,46 @@ private:
 	std::vector<int> _numbers;
 };
 
-class my_generator {
+template <typename T> class BoostGenerator {
 public:
-	typedef int result_type;
-	my_generator() : state(0) { }
-	int operator()() { return ++state; }
+	typedef Pair<T> result_type;
+	BoostGenerator(std::vector<T> numbers, int _i=0) : 
+		_numbers(numbers), i(_i), j(0) { }
+	Pair<T> operator()() { 
+		Pair<T> return_value(_numbers[i], _numbers[j]);
+		next();
+		return return_value; 
+	}
+	bool valid() {
+		if (i == _numbers.size()) return false;
+    	return true;
+	}
+	void next() {
+		++j;
+		if (j == _numbers.size()) {
+			++i;
+			j = 0;
+		}
+	}
+	BoostGenerator begin() {
+		return BoostGenerator(*this, _numbers.size());
+	}
+	BoostGenerator end() {
+		return BoostGenerator(*this, _numbers.size());
+	}
 private:
-	int state;
+	int i, j;
+	std::vector<T> _numbers;
 };
 
-template <typename T> class Generator {
+template <typename T> class SimpleGenerator {
 	public:
-	Generator(std::vector<T> numbers) : _numbers(numbers) {
-		i = j = 0;
-		std::cout << "Generator constructor" << std::endl;
-	}
-	~Generator(){
-		std::cout << "Generator destructor" << std::endl;
+	SimpleGenerator(std::vector<T> numbers) : 
+		_numbers(numbers), i(0), j(0) {
 	}
     bool valid() {
-    	if (i == _numbers.size()) {
-    		return false;
-    	}
-    	else {
-    		return true;
-    	}
+    	if (i == _numbers.size()) return false;
+    	return true;
     }
     void next() {
     	++j;
@@ -89,27 +104,31 @@ int main(int argc, char **argv) {
 	myInts.push_back(2);
 	myInts.push_back(3);
 
+	std::cout << "Testing coroutine generator..." << std::endl;
+
 	boost::shared_ptr<const SearchPolicy> sp(new SearchPolicy(myInts));
-
 	coro_t::pull_type generator(boost::bind(&SearchPolicy::findInts, sp, _1));
-
 	BOOST_FOREACH(PairType& i, generator){
 		std::cout << i.first << " " << i.second << std::endl;
 	}
 
-	my_generator gen;
-	boost::generator_iterator_generator<my_generator>::type it = boost::make_generator_iterator(gen);
-	for(int i = 0; i < 10; ++i, ++it){
-		std::cout << *it << std::endl;
-	}
+	// std::cout << "Testing boost generator..." << std::endl;
 
-	Generator<int> mygen(myInts);
-	while(mygen.valid()) {
-		PairType i(mygen.get());
+	// BoostGenerator<int> boostGen(myInts);
+	// boost::generator_iterator_generator<BoostGenerator<int> >::type it = boost::make_generator_iterator(boostGen);
+	// BOOST_FOREACH(PairType& i, it){
+	// //for(int i = 0; i < 10; ++i, ++it){
+	// 	std::cout << i.first << " " << i.second << std::endl;
+	// }
+
+	std::cout << "Testing simple generator..." << std::endl;
+
+	SimpleGenerator<int> simpleGen(myInts);
+	while(simpleGen.valid()) {
+		PairType i(simpleGen.get());
 		std::cout << i.first << " " << i.second << std::endl;
-		mygen.next();
+		simpleGen.next();
 	}
 
-	std::cout << "hello!" << std::endl;
 	return 0;
 }

@@ -6,6 +6,7 @@
 #include "boost/shared_ptr.hpp"
 
 #include "boost/coroutine/coroutine.hpp"
+#include "boost/generator_iterator.hpp"
 
 #include <vector>
 
@@ -40,6 +41,46 @@ private:
 	std::vector<int> _numbers;
 };
 
+class my_generator {
+public:
+	typedef int result_type;
+	my_generator() : state(0) { }
+	int operator()() { return ++state; }
+private:
+	int state;
+};
+
+template <typename T> class Generator {
+	public:
+	Generator(std::vector<T> numbers) : _numbers(numbers) {
+		i = j = 0;
+		std::cout << "Generator constructor" << std::endl;
+	}
+	~Generator(){
+		std::cout << "Generator destructor" << std::endl;
+	}
+    bool valid() {
+    	if (i == _numbers.size()) {
+    		return false;
+    	}
+    	else {
+    		return true;
+    	}
+    }
+    void next() {
+    	++j;
+    	if (j == _numbers.size()) {
+    		++i;
+    		j = 0;
+    	}
+    }
+    Pair<T> get() {
+    	return Pair<T>(_numbers[i],_numbers[j]);
+    }
+    std::vector<T> _numbers;
+    int i, j;
+};
+
 int main(int argc, char **argv) {
 
 	std::vector<int> myInts;
@@ -54,6 +95,19 @@ int main(int argc, char **argv) {
 
 	BOOST_FOREACH(PairType& i, generator){
 		std::cout << i.first << " " << i.second << std::endl;
+	}
+
+	my_generator gen;
+	boost::generator_iterator_generator<my_generator>::type it = boost::make_generator_iterator(gen);
+	for(int i = 0; i < 10; ++i, ++it){
+		std::cout << *it << std::endl;
+	}
+
+	Generator<int> mygen(myInts);
+	while(mygen.valid()) {
+		PairType i(mygen.get());
+		std::cout << i.first << " " << i.second << std::endl;
+		mygen.next();
 	}
 
 	std::cout << "hello!" << std::endl;

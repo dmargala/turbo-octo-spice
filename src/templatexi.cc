@@ -33,16 +33,18 @@ int main(int argc, char **argv) {
             "Filename to write correlation function to")
         ("axis", po::value<std::string>(&axis)->default_value("[0:200]*50"),
             "Xi axis binning")
-        ("ignore", "No binnig (use for profiling pair search methods")
+        ("ignore", "No binnig (use to profile pair search methods)")
         ("buckets", po::value<std::string>(&buckets)->default_value(""),
-            "bucket binning")
+            "Specify bucket search binning scheme")
         ("norm", "Normalize xi by dividing by weights")
-        ("omega-lambda", po::value<double>(&OmegaLambda)->default_value(0.728),
+        ("omega-lambda", po::value<double>(&OmegaLambda)->default_value(0.728,"0.728"),
             "Present-day value of OmegaLambda.")
         ("omega-matter", po::value<double>(&OmegaMatter)->default_value(0),
             "Present-day value of OmegaMatter or zero for 1-OmegaLambda.")
-        ("z-min", po::value<double>(&zmin)->default_value(2.1),
+        ("z-min", po::value<double>(&zmin)->default_value(2.1,"2.1"),
             "Minimum z value, sets spherical bin surface distance")
+        ("z-max", po::value<double>(&zmax)->default_value(3.5),
+            "Maximum redshift to consider")
         ("forest-lo", po::value<double>(&forestlo)->default_value(1040),
             "Lyman-alpha forest low cutoff wavelength")
         ("forest-hi", po::value<double>(&foresthi)->default_value(1200),
@@ -51,8 +53,6 @@ int main(int argc, char **argv) {
             "Spectrograph wavelength lower limit")
         ("combine", po::value<double>(&combine)->default_value(4),
             "Number of wavelength bins to combine in fake spectra.")
-        ("z-max", po::value<double>(&zmax)->default_value(3.5),
-            "Maximum redshift to consider")
         ("heal", "Use HEALPIX search")
         ;
 
@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
         std::cerr << "Missing infile parameter." << std::endl;
         return -2;
     }
-    std::vector<std::vector<double> > columns(5);
+    std::vector<std::vector<double> > columns(3);
     try {
         std::ifstream in(infile.c_str());
         lk::readVectors(in,columns);
@@ -125,7 +125,7 @@ int main(int argc, char **argv) {
         const double pi = std::atan(1.0)*4;
         const double deg2rad = pi/180.;
 
-        long sumlength = 0;
+        long totalpixels = 0;
 
         tos::Quasars quasars;
         double m = std::pow(std::pow(10,0.0001),combine);
@@ -143,22 +143,29 @@ int main(int argc, char **argv) {
             double zpix = zlo;
             tos::Quasarf quasar;
             quasar.p = pointing(theta, ra);
-            double sth = std::sin(theta);
-            double cth = std::cos(theta);
-            double sph = std::sin(ra);
-            double cph = std::cos(ra);
-            double s;
+            float sth = std::sin(theta);
+            float cth = std::cos(theta);
+            float sph = std::sin(ra);
+            float cph = std::cos(ra);
+            float s;
             std::vector<tos::LOSPixelf> pixels;
             while(zpix < zhi) {
                 s = cosmology->getLineOfSightComovingDistance(zpix);
                 pixels.push_back(tos::LOSPixelf(s,sth,cth,sph,cph,1,1));
                 zpix = (1 + zpix)*m - 1;
             }
-            sumlength += pixels.size();
+            totalpixels += pixels.size();
             quasar.pixels = pixels;
             quasars.push_back(quasar);
         }
-        std::cout << "Average forest size: " <<  float(sumlength)/quasars.size() <<  " pixels" << std::endl;
+
+        long nquasars = quasars.size();
+        long ndistinct = nquasars*(nquasars-1)/2;
+        long ndistinctpixels = totalpixels*(totalpixels-1)/2;
+
+        std::cout << "Average forest size: " <<  ((double)totalpixels)/nquasars <<  " pixels" << std::endl;
+        std::cout << "Number of distinct los pairs " << ndistinct << std::endl;
+        std::cout << "Number of distinct pixel pairs " << ndistinctpixels << std::endl;
 
         if(ignore) {
             tos::HealIgnoreXi xiestimator(
@@ -184,8 +191,8 @@ int main(int argc, char **argv) {
             pixel.x = columns[0][i];
             pixel.y = columns[1][i];
             pixel.z = columns[2][i];
-            pixel.d = columns[3][i];
-            pixel.w = columns[4][i];
+            pixel.d = 1;//columns[3][i];
+            pixel.w = 1;//columns[4][i];
             pixel.i = i;
             pixels.push_back(pixel);
         }

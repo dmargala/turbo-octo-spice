@@ -12,7 +12,6 @@
 
 #include "turbooctospice.h"
 
-
 namespace po = boost::program_options;
 namespace lk = likely;
 namespace tos = turbooctospice;

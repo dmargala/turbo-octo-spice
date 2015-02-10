@@ -6,16 +6,11 @@
 #include "likely/likely.h"
 
 #include "types.h"
+#include "constants.h"
 
 namespace lk = likely;
 
 namespace turbooctospice {
-
-    const double lyA = 1216.0;
-    const double logLyA = std::log10(lyA);
-    const double pi = std::atan(1.0)*4;
-    const double deg2rad = pi/180.0;
-    const double rad2arcmin = 60.0/deg2rad;
 
     class AbsTwoPointGrid {
     public:

@@ -1,7 +1,5 @@
 // Created 28-Feb-2014 by Daniel Margala (University of California, Irvine) <dmargala@uci.edu>
 
-#pragma clang diagnostic ignored "-Wc++11-extensions"
-
 #ifndef TURBOOCTOSPICE_BRUTE_PAIR_SEARCH
 #define TURBOOCTOSPICE_BRUTE_PAIR_SEARCH
 
@@ -16,56 +14,51 @@
 
 namespace turbooctospice {
 
-	/// BrutePairSearch is a specific type.
-	/// \tparam PixelIterable
-	///
-	template <class T>
-	class BrutePairSearch {
-	public:
-		typedef T PixelIterable;
-		BrutePairSearch(PixelIterable a, PixelIterable b, bool verbose = false) : 
-		_a(a), _b(b), _verbose(verbose) {
-			_auto = false;
-			int n(_a.size()), m(_b.size());
+    /// BrutePairSearch is a specific type.
+    /// \tparam PixelIterable
+    ///
+    template <class T>
+    class BrutePairSearch {
+    public:
+        typedef T PixelIterable;
+        typedef typename PixelIterable::iterator PixelIterator;
+        BrutePairSearch(PixelIterable a, PixelIterable b, bool verbose = false) : 
+        _a(a), _b(b), _verbose(verbose) {
+            _auto = false;
+            int n(_a.size()), m(_b.size());
+            _a_it = _a.begin();
+            _b_it = _b.begin();
             if (_verbose) std::cout << "Number of distinct pairs : " << n*m << std::endl;
-		};
-		BrutePairSearch(PixelIterable a, bool verbose = false) : 
-		_a(a), _verbose(verbose) {
-			_auto = true;
-			int n(_a.size());
+        };
+        BrutePairSearch(PixelIterable a, bool verbose = false) : 
+        _a(a), _verbose(verbose) {
+            _auto = true;
+            int n(_a.size());
+            _a_it = _a.begin();
+            _b_it = std::next(_a_it, 1);
             if (_verbose) std::cout << "Number of distinct pairs : " << n*(n-1)/2 << std::endl;
-		};
-        template <class PairGenerator, class PairType> void findPairs(typename PairGenerator::push_type& yield) const {
-
-			if (_auto) {
-				if (_verbose) std::cout << "Entering auto-correlation generator ..." << std::endl;
-				boost::progress_display t(_a.size()-1);
-	    		for(auto i = _a.begin(); i != boost::prior(_a.end()); ++i) {
-			        for(auto j = boost::next(i); j != _a.end(); ++j) {
-			            yield(PairType(*i,*j));
-			        }
-			        t+=1;
-			    }
-			    if (_verbose) std::cout << "Exiting auto-correlation generator ..." << std::endl;
-			}
-			else {
-	        	if (_verbose) std::cout << "Entering cross-correlation generator ..." << std::endl;
-	        	boost::progress_display t(_a.size());
-	    		for(auto &first : _a) {
-			        for(auto &second : _b) {
-			            yield(PairType(first, second));
-			        }
-			        t+=1;
-			    }
-			    if (_verbose) std::cout << "Exiting cross-correlation generator ..." << std::endl;
-		   	}
+        };
+        bool valid() const {
+            if (_b_it != _a.end()) return true;
+            return false;
         }
-	private:
-		bool _verbose, _auto;
-		PixelIterable _a, _b;
-	}; // BrutePairSearch
+        void next() {
+            ++_b_it;
+            if (_b_it == _a.end()) {
+                ++_a_it;
+                _b_it = std::next(_a_it, 1);
+            }
+        }
+        template <class PairType> PairType get() const {
+            return PairType(*_a_it, *_b_it);
+        };
+    private:
+        bool _verbose, _auto;
+        PixelIterable _a, _b;
+        PixelIterator _a_it, _b_it;
+    }; // BrutePairSearch
 
-	typedef BrutePairSearch<Pixels> BruteSearch;
+    typedef BrutePairSearch<Pixels> BruteSearch;
 
 } // turbooctospice
 

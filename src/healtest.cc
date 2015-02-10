@@ -47,6 +47,8 @@ lk::BinnedGrid const &grid, bool rmu, double maxAng, double x1min, double x1max,
 
     long neighborBucketCounter(0), neighborQuasarCounter(0);
 
+    std::vector<double> separation(2);
+
     for(int i = 0; i < quasars.size(); ++i) {
         QuasarSpectrum qi = quasars[i];
 
@@ -76,7 +78,18 @@ lk::BinnedGrid const &grid, bool rmu, double maxAng, double x1min, double x1max,
                         dtype sj = qj.lambdas[jpix];
                         double distSq = si*si + sj*sj - 2*si*sj*cosij;
                         if(distSq < x1minSq || distSq > x1maxSq) continue;
-                        npixelpairsused++;
+                        try {
+                            separation[0] = std::sqrt(distSq);
+                            separation[1] = 0.5;
+                            int index = grid.getIndex(separation);
+                            double wgt = wi*qj.weights[jpix];
+                            dsum[index] += wgt*di*qj.spectrum[jpix];
+                            wsum[index] += wgt;
+                            npixelpairsused++;
+                        }
+                        catch(lk::RuntimeError const &e) {
+                            std::cerr << "no xi bin found for i,j = " << i << ',' << j << std::endl;
+                        }
                     }
                 }
             }
@@ -125,6 +138,8 @@ int main(int argc, char **argv) {
             "Present-day value of OmegaMatter or zero for 1-OmegaLambda.")
         ("input,i", po::value<std::string>(&infile)->default_value(""),
             "Filename to read from")
+        ("output,o", po::value<std::string>(&outfile)->default_value("healxi_out.txt"),
+            "Output filename")
         ("z-min", po::value<double>(&zmin)->default_value(2.1),
             "Minimum z value, sets spherical bin surface distance")
         ("r-max", po::value<double>(&rmax)->default_value(200),
@@ -141,7 +156,7 @@ int main(int argc, char **argv) {
             "Number of wavelength bins to combine in fake spectra.")
         ("axis1", po::value<std::string>(&axis1)->default_value("[0:200]*50"),
             "Axis-1 binning")
-        ("axis2", po::value<std::string>(&axis2)->default_value("[0:200]*50"),
+        ("axis2", po::value<std::string>(&axis2)->default_value("[0:1]*1"),
             "Axis-2 binning")
         ("rmu", "Use (r,mu) binning instead of (rP,rT) binning")
 
@@ -266,7 +281,7 @@ int main(int argc, char **argv) {
         double x1min(bins1->getBinLowEdge(0)), x1max(bins1->getBinHighEdge(bins1->getNBins()-1));
         double x2min(bins2->getBinLowEdge(0)), x2max(bins2->getBinHighEdge(bins2->getNBins()-1));
         lk::BinnedGrid grid(bins1,bins2);
-        healxi(map, buckets,quasars,grid,rmu,maxAng,x1min,x1max,x2min,x2max,xi);
+        healxi(map,buckets,quasars,grid,rmu,maxAng,x1min,x1max,x2min,x2max,xi);
     }
     catch(std::exception const &e) {
         std::cerr << "Error while running the estimator: " << e.what() << std::endl;

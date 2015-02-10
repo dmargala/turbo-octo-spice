@@ -100,16 +100,20 @@ int main(int argc, char **argv) {
 
 	std::vector<int> myInts;
 
-	myInts.push_back(1);
-	myInts.push_back(2);
-	myInts.push_back(3);
+	for(int i = 0; i < 10000; ++i){
+		myInts.push_back(i);
+	}
+
+	// myInts.push_back(1);
+	// myInts.push_back(2);
+	// myInts.push_back(3);
 
 	std::cout << "Testing coroutine generator..." << std::endl;
 
 	boost::shared_ptr<const SearchPolicy> sp(new SearchPolicy(myInts));
 	coro_t::pull_type generator(boost::bind(&SearchPolicy::findInts, sp, _1));
 	BOOST_FOREACH(PairType& i, generator){
-		std::cout << i.first << " " << i.second << std::endl;
+		//std::cout << i.first << " " << i.second << std::endl;
 	}
 
 	// std::cout << "Testing boost generator..." << std::endl;
@@ -124,9 +128,10 @@ int main(int argc, char **argv) {
 	std::cout << "Testing simple generator..." << std::endl;
 
 	SimpleGenerator<int> simpleGen(myInts);
+
 	while(simpleGen.valid()) {
 		PairType i(simpleGen.get());
-		std::cout << i.first << " " << i.second << std::endl;
+		//std::cout << i.first << " " << i.second << std::endl;
 		simpleGen.next();
 	}
 

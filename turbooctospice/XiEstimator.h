@@ -40,25 +40,23 @@ namespace turbooctospice {
         /// @param xi output xi estimate
         /// @param normalize divide bin totals by weights (turn off to count pairs as a function of distance)
         ///
-        std::vector<double> run(bool normalize = true) const {
+        std::vector<double> run(bool normalize = true) {
             // create internal accumulation vectors
             int nbins = _bp->getNBins();
             std::vector<double> dsum(nbins,0.), wsum(nbins,0.);
 
             // Loop over pixel pairs
-            // Binds the PairSearchPolicy findPairs method to a generator of PixelPairs
-            typename PairGenerator::pull_type pairs(boost::bind(&PairSearchPolicy::template findPairs<PairGenerator, PairType>, _psp, _1));
-
             long npair(0), nused(0);
-            //while(pairs){ // Check completion status
-            BOOST_FOREACH(PairType &pair, pairs) {
+            while(_psp->valid()) {
+                PairType pair(_psp->template get<PairType>());
                 npair++;
                 _bp->binPair(pair, dsum, wsum, nused);
+                _psp->next();
             }
 
-            if (_verbose) std::cout << "used " << nused << " of " << npair << " pairs." << std::endl;
+            if(_verbose) std::cout << "used " << nused << " of " << npair << " pairs." << std::endl;
             // Compute xi and swap result with xi reference argument
-            if (normalize) {
+            if(normalize) {
                 for(int index = 0; index < nbins; ++index) {
                     if(wsum[index] > 0) dsum[index] /= wsum[index];
                 }
@@ -66,8 +64,8 @@ namespace turbooctospice {
             return dsum;
         }
     private:
-        boost::shared_ptr<const PairSearchPolicy> _psp;    
-        boost::shared_ptr<const BinPolicy> _bp;     
+        boost::shared_ptr<PairSearchPolicy> _psp;    
+        boost::shared_ptr<BinPolicy> _bp;     
         bool _verbose;             
 
     }; // XiEstimator

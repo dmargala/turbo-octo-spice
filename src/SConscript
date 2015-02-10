@@ -3,7 +3,7 @@ import os
 Import('env')
 
 ## Build turbooctospice library
-env.Library('turbooctospice', Glob('#turbooctospice/*.cc'))
+env.Library('turbooctospice', Glob('#turbooctospice/*.cc'), LIBS=['hdf5','hdf5_cpp'])
 
 tos = ['turbooctospice']
 tosCppPath = ['../turbooctospice']
@@ -13,7 +13,7 @@ common = ['likely', 'cosmo', 'boost_program_options', 'boost_system', 'boost_thr
 
 ### Common libs only
 bucketxi = env.Program('bucketxi', 'bucketxi.cc', LIBS=common)
-coroutinetest = env.Program('coroutinetest', 'coroutinetest.cc',LIBS=common)
+coroutinetest = env.Program('coroutinetest', 'coroutinetest.cc', LIBS=common)
 
 ### Requires kdtree library
 kdtreetest = env.Program('kdtreetest', 'kdtreetest.cc', LIBS=common+['kdtree'])
@@ -21,14 +21,23 @@ kdtreetest = env.Program('kdtreetest', 'kdtreetest.cc', LIBS=common+['kdtree'])
 ### Requires HealPix library
 healCppPath = ['/Users/daniel/source/Healpix_3.11/src/cxx/basic_gcc/include']
 healLibPath = ['/Users/daniel/source/Healpix_3.11/src/cxx/basic_gcc/lib']
-healLibs = ['healpix_cxx','cxxsupport']
+healLibs = ['healpix_cxx', 'cxxsupport']
 # healOptions = {'LIBS':healLibs, 'LIBPATH':healLibs, 'CPPPATH':healCppPath}
+
+h5Libs = ['hdf5','hdf5_cpp']
+read_delta = env.Program('read_delta', 'read_delta.cc', LIBS=common+h5Libs)
 
 # healtest = env.Program('healtest', 'healtest.cc',**healOptions)
 healtest = env.Program('healtest', 'healtest.cc', LIBS=common+healLibs, LIBPATH=healLibPath, CPPPATH=healCppPath )
 
 ### Requires tos library
-bucketsky = env.Program('bucketsky', 'bucketsky.cc',LIBS=common+tos, LIBPATH=tosLibPath, CPPPATH=tosCppPath)
+bucketsky = env.Program('bucketsky', 'bucketsky.cc', LIBS=common+tos, LIBPATH=tosLibPath, CPPPATH=tosCppPath)
+
+h5healxi = env.Program('h5healxi', 'h5healxi.cc',
+    LIBS=common+tos+healLibs+h5Libs+['cfitsio','CCfits'],
+    LIBPATH=tosLibPath+healLibPath,
+    CPPPATH=tosCppPath+healCppPath,
+    CPPDEFINES = ['HAVE_LIBHEAL'])
 
 templatexi = env.Program('templatexi', 'templatexi.cc',
 	LIBS=common+tos+healLibs, 

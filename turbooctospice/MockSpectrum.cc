@@ -13,9 +13,10 @@
 #include <algorithm>
 #include <string>
 
-
-
 namespace local = turbooctospice;
+
+const double PI = std::atan(1.0)*4;
+const double DEG2RAD = PI/180.0;
 
 local::MockSpectrum::MockSpectrum(std::string target, bool verbose) : 
 _target(target) {
@@ -30,7 +31,7 @@ void local::MockSpectrum::loadTarget(bool verbose) {
             std::cout << "Reading raw mock file " << rawFilename << std::endl;
         }
         // Read fits file
-        std::auto_ptr<CCfits::FITS> rawMockFile(new CCfits::FITS(rawFilename,CCfits::Read));
+        std::unique_ptr<CCfits::FITS> rawMockFile(new CCfits::FITS(rawFilename, CCfits::Read));
         // Read header keywords
         CCfits::PHDU& header = rawMockFile->pHDU();
         header.readKey("m_z", _z);
@@ -47,30 +48,39 @@ void local::MockSpectrum::loadTarget(bool verbose) {
     }
 }
 
-std::vector<local::QuasarPixel> local::MockSpectrum::getTrimmedSpectrum(
-int ncombine, float forestlo, float foresthi, float speclo) {
-    // init quasar pixels
-    std::vector<QuasarPixel> pixels;
+local::Forest local::MockSpectrum::getForest(
+    int ncombine, float forestlo, float foresthi, float speclo) {
+    // init forest pixels
+    Forest forest;
+    double theta((90.0-_dec)*DEG2RAD), phi(_ra*DEG2RAD);
+    forest.phi = phi;
+    forest.theta = theta;
+    forest.sth = std::sin(theta);
+    forest.cth = std::cos(theta);
+    forest.sph = std::sin(phi);
+    forest.cph = std::cos(phi);
     // Max and min wavelength defined by lyman alpha forest range and spec cutoff
-    float minlam(std::max(forestlo*(1+_z), speclo));
-    float maxlam(foresthi*(1+_z));
+    float minLogLambda(std::log10(std::max(forestlo*(1+_z), speclo)));
+    float maxLogLambda(std::log10(foresthi*(1+_z)));
     // Iterate over raw mock pixels
-    float lam;
-    QuasarPixel qp;
-    for(int i = 0; i < _frac.size(); ++i) {
-        // Calculate current pixel's wavelength
-        lam = std::pow(10,_coeff0+i*_coeff1);
+    float logLambda, frac, weight, distance;
+    for(int i = 0; i < _frac.size()-ncombine+1; i+=ncombine) {
+        logLambda = 0; frac = 0; weight = 0; distance = 0;
+        for(int j = 0; j < ncombine; ++j) {
+            logLambda += _coeff0+_coeff1*(i+j);
+            frac += _frac[i+j];
+            weight += 1.0;
+            distance += 0;
+        }
+        logLambda /= ncombine;
         // If below forest, skip to next pixel
-        if (lam < minlam) continue;
+        if (logLambda < minLogLambda) continue;
         // If beyond forest, we're done
-        if (lam > maxlam) break;
+        if (logLambda > maxLogLambda) break;
         // Save the pixel
-        qp.frac = _frac[i];
-        qp.lam = lam;
-        qp.wgt = 1.0;
-        pixels.push_back(qp);
+        forest.pixels.push_back( {frac/ncombine, logLambda, weight/ncombine, distance/ncombine} );
     }
-    return pixels;
+    return forest;
 }
 
 

@@ -1,6 +1,6 @@
 import os
 
-env = Environment(CXX='clang++', CCFLAGS=['-stdlib=libc++'])
+env = Environment(CXX='clang++', CCFLAGS=['-std=c++11','-stdlib=libc++'])
 
 useC11 = False
 
@@ -9,7 +9,7 @@ if useC11:
     env.Replace(CXX='clang++')
     env.Append(CCFLAGS = ['-std=c++11'])
 
-env.Append(CCFLAGS='-O2', CPPPATH='#turbooctospice', LIBPATH='#turbooctospice')
+env.Append(CCFLAGS=['-O2','-g3'], CPPPATH='#turbooctospice', LIBPATH='#turbooctospice')
 
 # # Check for required libraries unless we're cleaning up
 # if not env.GetOption('clean'):

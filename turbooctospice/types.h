@@ -8,6 +8,10 @@
 
 #include "boost/coroutine/coroutine.hpp"
 
+#include "boost/smart_ptr.hpp"
+
+#include <vector>
+
 namespace turbooctospice {
 	// Represents a 3D point in Cartesisna coordinates.
 	typedef boost::geometry::model::point<float, 3, boost::geometry::cs::cartesian> point;
@@ -33,6 +37,20 @@ namespace turbooctospice {
     /// This is the Pixels typedef.
     ///
     typedef std::vector<Pixel> Pixels;
+
+    struct ForestPixel {
+        float value, wavelength, weight, distance;
+        ForestPixel(float val, float wave, float wgt, float dist) 
+        : value(val), wavelength(wave), weight(wgt), distance(dist) {};
+    };
+
+    struct Forest {
+        double theta, phi, sth, cth, sph, cph;
+        std::vector<ForestPixel> pixels;
+    };
+
+    class AbsTwoPointGrid;
+    typedef boost::shared_ptr<AbsTwoPointGrid> AbsTwoPointGridPtr;
 
 
 }

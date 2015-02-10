@@ -16,7 +16,9 @@ var searchData=
   ['point',['point',['../namespaceturbooctospice.html#acbc0b91baf2973e2c047441bd0c4304d',1,'turbooctospice']]],
   ['pointiterator',['PointIterator',['../classturbooctospice_1_1_bucket_pair_search.html#a66ad51170c6f9772e04badc7adf9fa07',1,'turbooctospice::BucketPairSearch']]],
   ['points',['points',['../classturbooctospice_1_1_triangle_mesh.html#ac9ad98d2b01e3efd2e0ccf10564cd6e4',1,'turbooctospice::TriangleMesh']]],
-  ['polargrid',['PolarGrid',['../classturbooctospice_1_1_polar_grid.html#adcbe9fb5f0a31fea32fb5273dcc564b8',1,'turbooctospice::PolarGrid']]],
   ['polargrid',['PolarGrid',['../classturbooctospice_1_1_polar_grid.html',1,'turbooctospice']]],
+  ['polargrid',['PolarGrid',['../classturbooctospice_1_1_polar_grid.html#adcbe9fb5f0a31fea32fb5273dcc564b8',1,'turbooctospice::PolarGrid']]],
+  ['polargrid_2ecc',['PolarGrid.cc',['../_polar_grid_8cc.html',1,'']]],
+  ['polargrid_2eh',['PolarGrid.h',['../_polar_grid_8h.html',1,'']]],
   ['product',['product',['../classturbooctospice_1_1_pair.html#acf3403f994349ca3c0adfc8fee1d64ff',1,'turbooctospice::Pair::product()'],['../classturbooctospice_1_1_ang_pair.html#a78983778f63e1a4884787e5de6b719f4',1,'turbooctospice::AngPair::product()']]]
 ];

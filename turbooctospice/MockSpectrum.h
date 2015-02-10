@@ -20,8 +20,8 @@ namespace turbooctospice {
 	    float getCoeff0();
 	    float getCoeff1();
 
-	    std::vector<QuasarPixel> getTrimmedSpectrum(
-	    	int ncombine=1, float forestlo=1040, float foresthi=1200, float speclo=3650);
+	    Forest getForest(
+	    	int ncombine=4, float forestlo=1040, float foresthi=1200, float speclo=3650);
 	private:
 		void loadTarget(bool verbose);
 	    float _z, _ra, _dec, _coeff0, _coeff1;

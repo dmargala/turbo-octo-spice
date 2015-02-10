@@ -5,11 +5,22 @@
 #include "TriangleMesh.h"
 
 #include "MockSpectrum.h"
+#include "HDF5Delta.h"
+
+#include "Pixel.h"
+#include "Pair.h"
 
 #include "BrutePairSearch.h"
 #include "BucketPairSearch.h"
 
+#include "AbsTwoPointGrid.h"
+
+#ifdef HAVE_LIBHEAL
+#include "HealPairSearch.h"
+#include "HealpixBins.h"
+#endif
+
 #include "IgnorePair.h"
-#include "BinXYZPair.h"
+#include "BinPair.h"
 
 #include "XiEstimator.h"

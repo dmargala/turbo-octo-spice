@@ -6,6 +6,9 @@
 #include <iostream> 
 
 #include "boost/bind.hpp"
+#include "boost/coroutine/coroutine.hpp"
+#include "boost/shared_ptr.hpp"
+#include "boost/foreach.hpp"
 
 #include "types.h"
 
@@ -15,75 +18,67 @@ namespace lk = likely;
 
 namespace turbooctospice {
     /// Represents a templated algorithm for estimating a correlation function from a set of pixels.
-    /// \tparam PairSearchPolicy psp
-    /// \tparam BinPolicy bp
+    /// @tparam PairSearchPolicy policy class must expose a findPairs member function
+    /// @tparam BinPolicy policy class must expose an inner type called PairType and a binPair member function
     ///
-    template <
-        class PixelType, class PixelIterable,
-        template <class> class PairSearchPolicy, 
-        template <class> class BinPolicy
-    > 
+    template <class PairSearchPolicy, class BinPolicy> 
     class XiEstimator {
+        typedef typename BinPolicy::PairType PairType;
+        typedef typename PairType::PairGenerator PairGenerator;
     public:
-        typedef std::pair<PixelType,PixelType> PixelPair;
-        typedef boost::coroutines::coroutine<PixelPair()> PairGenerator;
         /// Creates a new algorithm templated on the specified PairSearchPolicy and BinPolicy.
         /// Set the verbose option to true to print pair statistics to console.
         /// @param psp a PairSearchPolicy pointer
         /// @param bp a BinPolicy pointer
         /// @param verbose a boolean argument.
         ///
-        XiEstimator(PairSearchPolicy<PixelIterable> *psp, BinPolicy<PixelType> *bp, bool verbose = false) : 
-        _psp(psp), _bp(bp), _verbose(verbose) {};
-        void run(PixelIterable const &a, PixelIterable const &b, std::vector<double> &xi, bool normalize = true) const {
+        XiEstimator(PairSearchPolicy *psp, BinPolicy *bp, bool verbose = false) : _psp(psp), _bp(bp), _verbose(verbose) {};
+
+        /// Perform xi estimate
+        /// @param a iterable container of pixel data
+        /// @param b iterable container of pixel data
+        /// @param xi output xi estimate
+        /// @param normalize divide bin totals by weights (turn off to count pairs as a function of distance)
+        ///
+        std::vector<double> run(bool normalize = true) {
             // create internal accumulation vectors
-            int nbins = _bp->getNBinsTotal();
+            int nbins = _bp->getNBins();
             std::vector<double> dsum(nbins,0.), wsum(nbins,0.);
 
             // Loop over pixel pairs
-            PairGenerator pairs = getGenerator(a, b);
-
             long npair(0), nused(0);
-            while(pairs){ // Check completion status
+            while(_psp->valid()) {
+                PairType pair(_psp->template get<PairType>());
                 npair++;
-                // Extract yielded result
-                _bp->binPair(pairs.get().first, pairs.get().second, dsum, wsum, nused);
-                // Fire up the generator?
-                pairs();
+                _bp->binPair(pair, dsum, wsum, nused);
+                _psp->next();
             }
 
-            if (_verbose) std::cout << "used " << nused << " of " << npair << " pairs." << std::endl;
+            if(_verbose) std::cout << "used " << nused << " of " << npair << " pairs." << std::endl;
             // Compute xi and swap result with xi reference argument
-            if (normalize) {
+            if(normalize) {
                 for(int index = 0; index < nbins; ++index) {
                     if(wsum[index] > 0) dsum[index] /= wsum[index];
                 }
             }
-            dsum.swap(xi);
-        }
-        PairGenerator getGenerator(PixelIterable const &a, PixelIterable const &b) const {
-            if(&a == &b) {
-                int n(a.size());
-                if (_verbose) std::cout << "Number of distinct pairs : " << n*(n-1)/2 << std::endl;
-                return PairGenerator(boost::bind(&PairSearchPolicy<PixelIterable>::template findPairs<PairGenerator>, _psp, _1, a));
-            }
-            else {
-                int n(a.size()), m(b.size());
-                if (_verbose) std::cout << "Number of distinct pairs : " << n*m << std::endl;
-                return PairGenerator(boost::bind(&PairSearchPolicy<PixelIterable>::template findPairs<PairGenerator>, _psp, _1, a, b));
-            }
+            return dsum;
         }
     private:
-        boost::shared_ptr<const PairSearchPolicy<PixelIterable> > _psp;     ///< PairSearchPolicy pointer
-        boost::shared_ptr<const BinPolicy<PixelType> > _bp;             ///< BinPolicy pointer
-        bool _verbose;                                      ///< verbose
+        boost::shared_ptr<PairSearchPolicy> _psp;    
+        boost::shared_ptr<BinPolicy> _bp;     
+        bool _verbose;             
 
     }; // XiEstimator
     
-    typedef XiEstimator<Pixel, Pixels, BrutePairSearch, IgnorePair> BruteIgnoreXi;
-    typedef XiEstimator<Pixel, Pixels, BrutePairSearch, BinXYZPair> BruteBinXi;
-    typedef XiEstimator<Pixel, Pixels, BucketPairSearch, IgnorePair> BucketIgnoreXi;
-    typedef XiEstimator<Pixel, Pixels, BucketPairSearch, BinXYZPair> BucketBinXi; 
+    typedef XiEstimator<BruteSearch, Ignore> BruteIgnoreXi;
+    typedef XiEstimator<BruteSearch, BinXYZ> BruteBinXi;
+    typedef XiEstimator<BucketSearch, Ignore> BucketIgnoreXi;
+    typedef XiEstimator<BucketSearch, BinXYZ> BucketBinXi;
+
+#ifdef HAVE_LIBHEAL
+    typedef XiEstimator<HealSearch, IgnoreAng > HealIgnoreXi;
+    typedef XiEstimator<HealSearch, BinAng> HealBinXi;
+#endif
 
 } // turbooctospice 
 

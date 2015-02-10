@@ -62,17 +62,14 @@ int main(int argc, char **argv) {
         return -3;
     }
     if(verbose) {
-        std::cout << "Read " << targetlist.size() << " rows from " << infile
-            << std::endl;
+        std::cout << "Read " << targetlist.size() << " rows from " << infile << std::endl;
     }
 
-    std::vector<tos::MockSpectrum> quasars;
-
     long npixels(0);
-    for(int i = 0; i < targetlist.size(); ++i ){
-        tos::MockSpectrum mock(targetlist[i]);
-        std::vector<tos::QuasarPixel> pixels(mock.getTrimmedSpectrum());
-        npixels += pixels.size();
+    for(int i = 0; i < targetlist.size(); ++i){
+        tos::MockSpectrum spectrum(targetlist[i], verbose);
+        auto forest = spectrum.getForest();
+        npixels += forest.pixels.size();
     }
 
     std::cout << "Number of pixels: " << npixels << std::endl;

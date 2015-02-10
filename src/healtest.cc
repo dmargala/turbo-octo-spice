@@ -21,80 +21,74 @@ const double lyA = 1216;
 
 typedef std::map<int, std::vector<int> > BucketToPixels;
 
-struct QuasarSpectrum {
-    double s, sth, cth, sph, cph;
-    pointing p;
-    std::vector<double> spectrum;
-    std::vector<double> lambdas;
-    std::vector<double> weights;
-};
+typedef double dtype;
 
+struct QuasarSpectrum {
+    dtype s, sth, cth, sph, cph;
+    pointing p;
+    std::vector<dtype> spectrum;
+    std::vector<dtype> lambdas;
+    std::vector<dtype> weights;
+};
 
 void healxi(Healpix_Map<double> const &map, BucketToPixels &buckets, std::vector<QuasarSpectrum> &quasars,
 lk::BinnedGrid const &grid, bool rmu, double maxAng, double x1min, double x1max, double x2min, double x2max, std::vector<double> &xi) {
     // create internal accumulation vectors
+    double x1minSq(x1min*x1min), x1maxSq(x1max*x1max);
+    double cosmax = std::cos(maxAng);
+
     int nbins = grid.getNBinsTotal();
     std::vector<double> dsum(nbins,0.), wsum(nbins,0.);
 
     rangeset<int> neighbors_rangeset;
     std::vector<int> neighbors;
 
+    long nuniquepairs(0), nlospairsused(0), totalpixels(0), npixelpairs(0), npixelpairsused(0);
+
+    long neighborBucketCounter(0), neighborQuasarCounter(0);
+
     std::vector<double> separation(2);
-    long npair(0), nused(0), totalpixels(0), npixelpairs(0), npixelpairsused(0);
-    double cosmax = std::cos(maxAng);
 
-    BOOST_FOREACH(BucketToPixels::value_type &pixels, buckets) {
-        // Loop over all points in each bucket
-        BOOST_FOREACH(int i, pixels.second) {
-            double s_i = quasars[i].s;
-            double sth_i = quasars[i].sth;
-            double cth_i = quasars[i].cth;
-            double sph_i = quasars[i].sph;
-            double cph_i = quasars[i].cph;
+    for(int i = 0; i < quasars.size(); ++i) {
+        QuasarSpectrum qi = quasars[i];
 
-            totalpixels += quasars[i].spectrum.size();
+        totalpixels += qi.spectrum.size();
 
-            map.query_disc_inclusive(quasars[i].p, maxAng, neighbors_rangeset);
-            neighbors_rangeset.toVector(neighbors);
-            // Compare this point to all points in neighboring buckets
-            BOOST_FOREACH(int neighbor, neighbors) {
-                // Loop over all points in neighboring bucket
-                BOOST_FOREACH(int j, buckets[neighbor]) {
-                    // Only count pairs once
-                    if(j <= i) continue;
-                    npair++;
-                    double cosij = sth_i*quasars[j].sth*(cph_i*quasars[i].cph + sph_i*quasars[j].sph) + cth_i*quasars[j].cth;
-                    if(cosij < cosmax) continue;
-                    nused++;
-                    for(int ipix = 0; ipix < quasars[i].spectrum.size(); ++ipix) {
-                        double si = quasars[i].lambdas[ipix];
-                        double di = quasars[i].spectrum[ipix];
-                        double wi = quasars[i].weights[ipix];
-                        for(int jpix = 0; jpix < quasars[j].spectrum.size(); ++jpix) {
-                            npixelpairs++;
-                            double sj = quasars[i].lambdas[jpix];
-                            double dist = std::sqrt(si*si + sj*sj - 2*si*sj*cosij);
-                            if(rmu) {
-                                separation[0] = dist;
-                                separation[1] = std::fabs(cosij);
-                            }
-                            else {
-                                separation[0] = std::fabs(si-sj)/2;
-                                separation[1] = dist*cosij;
-                            }
-                            if(separation[0] < x1min || separation[0] >= x1max) continue;
-                            if(separation[1] < x2min || separation[1] >= x2max) continue;
-                            try {
-                                std::cout << separation[0] << ", " << separation[1] << std::endl;
-                                int index = grid.getIndex(separation);
-                                double wgt = wi*quasars[j].weights[jpix];
-                                dsum[index] += wgt*di*quasars[j].spectrum[jpix];
-                                wsum[index] += wgt;
-                                npixelpairsused++;
-                            }
-                            catch(lk::RuntimeError const &e) {
-                                std::cerr << "no bin found for i,j = " << i << ',' << j << std::endl;
-                            }
+        map.query_disc_inclusive(qi.p, maxAng, neighbors_rangeset);
+        neighbors_rangeset.toVector(neighbors);
+        // Compare this point to all points in neighboring buckets
+        BOOST_FOREACH(int neighbor, neighbors) {
+            neighborBucketCounter++;
+            // Loop over all points in neighboring bucket
+            BOOST_FOREACH(int j, buckets[neighbor]) {
+                neighborQuasarCounter++;
+                // Only count pairs once
+                if(j <= i) continue;
+                nuniquepairs++;
+                QuasarSpectrum qj = quasars[j];
+                double cosij = qi.sth*qj.sth*(qi.cph*qj.cph + qi.sph*qj.sph) + qi.cth*qj.cth;
+                if(cosij < cosmax) continue;
+                nlospairsused++;
+                for(int ipix = 0; ipix < qi.spectrum.size(); ++ipix) {
+                    dtype si = qi.lambdas[ipix];
+                    dtype di = qi.spectrum[ipix];
+                    dtype wi = qi.weights[ipix];
+                    for(int jpix = 0; jpix < quasars[j].spectrum.size(); ++jpix) {
+                        npixelpairs++;
+                        dtype sj = qj.lambdas[jpix];
+                        double distSq = si*si + sj*sj - 2*si*sj*cosij;
+                        if(distSq < x1minSq || distSq > x1maxSq) continue;
+                        try {
+                            separation[0] = std::sqrt(distSq);
+                            separation[1] = 0.5;
+                            int index = grid.getIndex(separation);
+                            double wgt = wi*qj.weights[jpix];
+                            dsum[index] += wgt*di*qj.spectrum[jpix];
+                            wsum[index] += wgt;
+                            npixelpairsused++;
+                        }
+                        catch(lk::RuntimeError const &e) {
+                            std::cerr << "no xi bin found for i,j = " << i << ',' << j << std::endl;
                         }
                     }
                 }
@@ -103,13 +97,15 @@ lk::BinnedGrid const &grid, bool rmu, double maxAng, double x1min, double x1max,
     }
 
     // Write quasar pair statistics to console
-    long n(quasars.size());
-    long ndistinct = (n*(n-1))/2;
-    double consideredFrac = float(npair)/ndistinct;
-    double usedFrac = float(nused)/npair;
+    long nquasars(quasars.size());
+    long ndistinct = (nquasars*(nquasars-1))/2;
+    double consideredFrac = float(nuniquepairs)/ndistinct;
+    double usedFrac = float(nlospairsused)/nuniquepairs;
+    std::cout << "neighboring buckets: " << neighborBucketCounter << std::endl;
+    std::cout << "neighboring quasars: " << neighborQuasarCounter << std::endl;
     std::cout << "Number of distinct los pairs " << ndistinct << std::endl;
-    std::cout << "considered " << npair << " of distinct los pairs. (" << consideredFrac << ")" << std::endl;
-    std::cout << "used " << nused << " of los pairs considered. (" << usedFrac << ")" << std::endl;
+    std::cout << "considered " << nuniquepairs << " of distinct los pairs. (" << consideredFrac << ")" << std::endl;
+    std::cout << "used " << nlospairsused << " of los pairs considered. (" << usedFrac << ")" << std::endl;
     // Write pixel pair statistics to console
     long ndistinctpixels = (totalpixels*(totalpixels-1))/2;
     double consideredPixelsFrac = float(npixelpairs)/ndistinctpixels;
@@ -142,6 +138,8 @@ int main(int argc, char **argv) {
             "Present-day value of OmegaMatter or zero for 1-OmegaLambda.")
         ("input,i", po::value<std::string>(&infile)->default_value(""),
             "Filename to read from")
+        ("output,o", po::value<std::string>(&outfile)->default_value("healxi_out.txt"),
+            "Output filename")
         ("z-min", po::value<double>(&zmin)->default_value(2.1),
             "Minimum z value, sets spherical bin surface distance")
         ("r-max", po::value<double>(&rmax)->default_value(200),
@@ -158,7 +156,7 @@ int main(int argc, char **argv) {
             "Number of wavelength bins to combine in fake spectra.")
         ("axis1", po::value<std::string>(&axis1)->default_value("[0:200]*50"),
             "Axis-1 binning")
-        ("axis2", po::value<std::string>(&axis2)->default_value("[0:200]*50"),
+        ("axis2", po::value<std::string>(&axis2)->default_value("[0:1]*1"),
             "Axis-2 binning")
         ("rmu", "Use (r,mu) binning instead of (rP,rT) binning")
 
@@ -225,7 +223,7 @@ int main(int argc, char **argv) {
 
     double m = std::pow(std::pow(10,0.0001),combine);
 
-    long sumlength = 0;
+    long totalpixels = 0;
 
     for(int i = 0; i < columns[0].size(); ++i) {
         double ra(deg2rad*columns[0][i]);
@@ -238,16 +236,16 @@ int main(int argc, char **argv) {
         double zhi = foresthi/lyA*(1+z)-1;
 
         double zpix = zlo;
-        std::vector<double> spectrum;
-        std::vector<double> weights;
-        std::vector<double> lambdas;
+        std::vector<dtype> spectrum;
+        std::vector<dtype> weights;
+        std::vector<dtype> lambdas;
         while(zpix < zhi) {
             lambdas.push_back(cosmology->getLineOfSightComovingDistance(zpix));
             weights.push_back(1);
             spectrum.push_back(1);
             zpix = (1 + zpix)*m - 1;
         }
-        sumlength += spectrum.size();
+        totalpixels += spectrum.size();
 
         QuasarSpectrum qso;
         qso.spectrum = spectrum;
@@ -271,7 +269,7 @@ int main(int argc, char **argv) {
         }
     }
 
-    std::cout << "Average forest size: " <<  float(sumlength)/quasars.size() <<  " pixels" << std::endl;
+    std::cout << "Average forest size: " <<  double(totalpixels)/quasars.size() <<  " pixels" << std::endl;
 
     int nbuckets = buckets.size();
     std::cout << "We have " << nbuckets << " buckets w/ data" << std::endl;
@@ -283,7 +281,7 @@ int main(int argc, char **argv) {
         double x1min(bins1->getBinLowEdge(0)), x1max(bins1->getBinHighEdge(bins1->getNBins()-1));
         double x2min(bins2->getBinLowEdge(0)), x2max(bins2->getBinHighEdge(bins2->getNBins()-1));
         lk::BinnedGrid grid(bins1,bins2);
-        healxi(map, buckets,quasars,grid,rmu,maxAng,x1min,x1max,x2min,x2max,xi);
+        healxi(map,buckets,quasars,grid,rmu,maxAng,x1min,x1max,x2min,x2max,xi);
     }
     catch(std::exception const &e) {
         std::cerr << "Error while running the estimator: " << e.what() << std::endl;

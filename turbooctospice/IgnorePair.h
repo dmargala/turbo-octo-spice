@@ -11,17 +11,19 @@ namespace lk = likely;
 
 namespace turbooctospice {
 
-	template <typename PixelType>
+	template <class T>
 	class IgnorePair {
 	public:
-		void binPair(PixelType const &first, PixelType const &second, std::vector<double> &dsum, std::vector<double> &wsum, long &nused) const {
+		typedef T PairType;
+		void binPair(PairType const &pair, std::vector<double> &dsum, std::vector<double> &wsum, long &nused) const {
 			nused++;
 		};
-		int getNBinsTotal() const { return 0; };
+		int getNBins() const { return 0; };
 	private:
 	}; // IgnorePair
 
-    typedef IgnorePair<Pixel> Ignore;
+    typedef IgnorePair<XYZPixelPair> Ignore;
+    typedef IgnorePair<AngPixelPair> IgnoreAng;
 
 } // turbooctospice
 

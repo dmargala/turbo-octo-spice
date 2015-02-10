@@ -3,25 +3,52 @@ import os
 Import('env')
 
 ## Build turbooctospice library
-env.Library('turbooctospice', Glob('#turbooctospice/*.cc'))
+env.Library('turbooctospice', Glob('#turbooctospice/*.cc'), LIBS=['hdf5','hdf5_cpp'])
 
-## Compile C++ programs
-common_libs = ['likely', 'cosmo', 'boost_program_options', 'boost_system', 'boost_thread','boost_coroutine']
+tos = ['turbooctospice']
+tosCppPath = ['../turbooctospice']
+tosLibPath = ['../build']
 
+common = ['likely', 'cosmo', 'boost_program_options', 'boost_system', 'boost_thread', 'boost_coroutine']
 
-templatexi = env.Program('templatexi', 'templatexi.cc', LIBS=common_libs+['turbooctospice'], LIBPATH='.')
+### Common libs only
+bucketxi = env.Program('bucketxi', 'bucketxi.cc', LIBS=common)
+coroutinetest = env.Program('coroutinetest', 'coroutinetest.cc', LIBS=common)
 
+### Requires kdtree library
+kdtreetest = env.Program('kdtreetest', 'kdtreetest.cc', LIBS=common+['kdtree'])
 
-bucketxi = env.Program('bucketxi', 'bucketxi.cc', LIBS=common_libs)
-kdtreetest = env.Program('kdtreetest', 'kdtreetest.cc', LIBS=common_libs + ['kdtree'])
-bucketsky = env.Program('bucketsky', 'bucketsky.cc', LIBS=common_libs + ['turbooctospice'],LIBPATH='.')
+### Requires HealPix library
+healCppPath = ['/Users/daniel/source/Healpix_3.11/src/cxx/basic_gcc/include']
+healLibPath = ['/Users/daniel/source/Healpix_3.11/src/cxx/basic_gcc/lib']
+healLibs = ['healpix_cxx', 'cxxsupport']
+# healOptions = {'LIBS':healLibs, 'LIBPATH':healLibs, 'CPPPATH':healCppPath}
 
-healCpp = '/Users/daniel/source/Healpix_3.11/src/cxx/basic_gcc/include'
-healLib = '/Users/daniel/source/Healpix_3.11/src/cxx/basic_gcc/lib'
-healtest = env.Program('healtest', 'healtest.cc', LIBS=common_libs + ['healpix_cxx','cxxsupport'],
-	LIBPATH=healLib, CPPPATH=healCpp )
-mockdata = env.Program('mockdata', 'mockdata.cc', 
-	LIBS=common_libs+['cfitsio','CCfits','turbooctospice'],LIBPATH='.')
+h5Libs = ['hdf5','hdf5_cpp']
+read_delta = env.Program('read_delta', 'read_delta.cc', LIBS=common+h5Libs)
+
+# healtest = env.Program('healtest', 'healtest.cc',**healOptions)
+healtest = env.Program('healtest', 'healtest.cc', LIBS=common+healLibs, LIBPATH=healLibPath, CPPPATH=healCppPath )
+
+### Requires tos library
+bucketsky = env.Program('bucketsky', 'bucketsky.cc', LIBS=common+tos, LIBPATH=tosLibPath, CPPPATH=tosCppPath)
+
+h5healxi = env.Program('h5healxi', 'h5healxi.cc',
+    LIBS=common+tos+healLibs+h5Libs+['cfitsio','CCfits'],
+    LIBPATH=tosLibPath+healLibPath,
+    CPPPATH=tosCppPath+healCppPath,
+    CPPDEFINES = ['HAVE_LIBHEAL'])
+
+templatexi = env.Program('templatexi', 'templatexi.cc',
+	LIBS=common+tos+healLibs, 
+	LIBPATH=tosLibPath+healLibPath, 
+	CPPPATH=tosCppPath+healCppPath,
+	CPPDEFINES = ['HAVE_LIBHEAL','BOOST_COROUTINES_UNIDIRECT'])
+
+### Requires fits / ccfits libraries
+cfitsLibs = ['cfitsio','CCfits']
+mockdata = env.Program('mockdata', 'mockdata.cc', LIBS=common+tos+cfitsLibs, LIBPATH=tosLibPath, CPPPATH=tosCppPath)
+
 ## Compile CUDA programs
 
 #env['BUILDERS']['CudaProgram'] = Builder(action = '/usr/local/cuda/bin/nvcc -m64 -arch=sm_20 -o $TARGET $SOURCE $LIBS', src_suffix = '.cu', suffix = '')
@@ -31,9 +58,9 @@ cudaEnv.Replace(CC='nvcc')
 
 cudaEnv.Append(CCFLAGS=['-02'])
 # Atomic add requires minimum architecture
-cudaEnv.Append(LINKFLAGS=['-m64', '-arch=sm_20', '-DBOOST_NOINLINE=__attribute__ ((noinline))'])
-cudaEnv.Program('deviceQuery', 'deviceQuery.cu')
-cudaEnv.Program('gpuxi', 'gpuxi.cu', LIBS=['likely', 'boost_program_options'])
+cudaEnv.Append(LINKFLAGS=['-m64', '-arch=sm_20','-D__int128=long -DBOOST_NOINLINE=__attribute__ ((noinline))'])
+# cudaEnv.Program('deviceQuery', 'deviceQuery.cu')
+# cudaEnv.Program('gpuxi', 'gpuxi.cu', LIBS=['likely', 'boost_program_options'])
 
 # Custom install directory
 

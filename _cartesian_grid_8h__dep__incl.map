@@ -1,8 +1,6 @@
 <map id="turbooctospice/CartesianGrid.h" name="turbooctospice/CartesianGrid.h">
 <area shape="rect" id="node2" href="$_cartesian_grid_8cc.html" title="turbooctospice/Cartesian\lGrid.cc" alt="" coords="5,97,173,138"/>
 <area shape="rect" id="node3" href="$turbooctospice_8h.html" title="turbooctospice/turbooctospice.h" alt="" coords="199,104,409,131"/>
-<area shape="rect" id="node4" href="$bucketsky_8cc.html" title="src/bucketsky.cc" alt="" coords="35,187,155,213"/>
-<area shape="rect" id="node5" href="$h5healxi_8cc.html" title="src/h5healxi.cc" alt="" coords="179,187,289,213"/>
-<area shape="rect" id="node6" href="$mockdata_8cc.html" title="src/mockdata.cc" alt="" coords="314,187,432,213"/>
-<area shape="rect" id="node7" href="$templatexi_8cc.html" title="src/templatexi.cc" alt="" coords="457,187,577,213"/>
+<area shape="rect" id="node4" href="$h5healxi_8cc.html" title="src/h5healxi.cc" alt="" coords="179,187,289,213"/>
+<area shape="rect" id="node5" href="$mockdata_8cc.html" title="src/mockdata.cc" alt="" coords="314,187,432,213"/>
 </map>

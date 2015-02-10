@@ -1,20 +1,11 @@
 <map id="src/h5healxi.cc" name="src/h5healxi.cc">
-<area shape="rect" id="node9" href="$turbooctospice_8h.html" title="turbooctospice.h" alt="" coords="721,80,841,107"/>
-<area shape="rect" id="node10" href="$types_8h.html" title="types.h" alt="" coords="630,304,695,331"/>
-<area shape="rect" id="node15" href="$constants_8h.html" title="constants.h" alt="" coords="1552,304,1643,331"/>
-<area shape="rect" id="node17" href="$_triangle_8h.html" title="Triangle.h" alt="" coords="707,229,788,256"/>
-<area shape="rect" id="node18" href="$_triangle_mesh_8h.html" title="TriangleMesh.h" alt="" coords="605,155,717,181"/>
-<area shape="rect" id="node19" href="$_mock_spectrum_8h.html" title="MockSpectrum.h" alt="" coords="221,229,344,256"/>
-<area shape="rect" id="node20" href="$_h_d_f5_delta_8h.html" title="HDF5Delta.h" alt="" coords="99,229,197,256"/>
-<area shape="rect" id="node22" href="$_pixel_8h.html" title="Pixel.h" alt="" coords="466,155,528,181"/>
-<area shape="rect" id="node23" href="$_pair_8h.html" title="Pair.h" alt="" coords="369,229,425,256"/>
-<area shape="rect" id="node25" href="$_brute_pair_search_8h.html" title="BrutePairSearch.h" alt="" coords="501,229,632,256"/>
-<area shape="rect" id="node28" href="$_bucket_pair_search_8h.html" title="BucketPairSearch.h" alt="" coords="1031,229,1171,256"/>
-<area shape="rect" id="node30" href="$_abs_two_point_grid_8h.html" title="AbsTwoPointGrid.h" alt="" coords="1195,229,1332,256"/>
-<area shape="rect" id="node31" href="$_cartesian_grid_8h.html" title="CartesianGrid.h" alt="" coords="997,155,1112,181"/>
-<area shape="rect" id="node32" href="$_polar_grid_8h.html" title="PolarGrid.h" alt="" coords="1137,155,1225,181"/>
-<area shape="rect" id="node33" href="$_quasar_grid_8h.html" title="QuasarGrid.h" alt="" coords="1250,155,1352,181"/>
-<area shape="rect" id="node34" href="$_ignore_pair_8h.html" title="IgnorePair.h" alt="" coords="813,229,907,256"/>
-<area shape="rect" id="node35" href="$_bin_pair_8h.html" title="BinPair.h" alt="" coords="931,229,1007,256"/>
-<area shape="rect" id="node36" href="$_xi_estimator_8h.html" title="XiEstimator.h" alt="" coords="1459,229,1560,256"/>
+<area shape="rect" id="node9" href="$turbooctospice_8h.html" title="turbooctospice.h" alt="" coords="533,80,653,107"/>
+<area shape="rect" id="node10" href="$types_8h.html" title="types.h" alt="" coords="687,304,752,331"/>
+<area shape="rect" id="node12" href="$constants_8h.html" title="constants.h" alt="" coords="396,304,487,331"/>
+<area shape="rect" id="node14" href="$_mock_spectrum_8h.html" title="MockSpectrum.h" alt="" coords="880,229,1003,256"/>
+<area shape="rect" id="node15" href="$_h_d_f5_delta_8h.html" title="HDF5Delta.h" alt="" coords="757,229,856,256"/>
+<area shape="rect" id="node17" href="$_abs_two_point_grid_8h.html" title="AbsTwoPointGrid.h" alt="" coords="411,229,548,256"/>
+<area shape="rect" id="node18" href="$_cartesian_grid_8h.html" title="CartesianGrid.h" alt="" coords="295,155,411,181"/>
+<area shape="rect" id="node19" href="$_polar_grid_8h.html" title="PolarGrid.h" alt="" coords="435,155,524,181"/>
+<area shape="rect" id="node20" href="$_quasar_grid_8h.html" title="QuasarGrid.h" alt="" coords="549,155,651,181"/>
 </map>

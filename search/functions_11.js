@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['triangle',['Triangle',['../classturbooctospice_1_1_triangle.html#ab02182bd36152f77769343193ce1b41a',1,'turbooctospice::Triangle']]],
-  ['trianglemesh',['TriangleMesh',['../classturbooctospice_1_1_triangle_mesh.html#afbcfb859f1a999c98830223a418f096c',1,'turbooctospice::TriangleMesh']]]
+  ['xientry',['XiEntry',['../struct_xi_entry.html#adae32397772b2237633df05389f2d91b',1,'XiEntry::XiEntry()'],['../struct_xi_entry.html#a9e93d7974487bc4bb60da3dcc957e17c',1,'XiEntry::XiEntry(double _di, double _dj, double _wgt)']]]
 ];

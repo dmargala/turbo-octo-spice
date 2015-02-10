@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['ignore',['Ignore',['../namespaceturbooctospice.html#aac1636fbef44da8c6243b1806de3ce4b',1,'turbooctospice']]],
-  ['ignoreang',['IgnoreAng',['../namespaceturbooctospice.html#a3d6897561e7fee81fc47ad7baaa2c3ba',1,'turbooctospice']]]
+  ['pairgenerator',['PairGenerator',['../class_pair.html#a8be35f8ecc430a969e5de098dd5a59bc',1,'Pair']]],
+  ['pairtype',['PairType',['../coroutinetest_8cc.html#a7d8ae1324f9eceb53f726cfcefb80d8c',1,'coroutinetest.cc']]]
 ];

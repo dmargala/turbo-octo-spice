@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['operator_21_3d',['operator!=',['../structturbooctospice_1_1_l_o_s_pixel.html#a54271ae407267414e6af85660e9d677e',1,'turbooctospice::LOSPixel::operator!=()'],['../classturbooctospice_1_1_pixel.html#aaa4a77db007a4ff4122e4d8ee9e6b970',1,'turbooctospice::Pixel::operator!=()']]],
-  ['operator_28_29',['operator()',['../class_boost_generator.html#a80982d68fd7ffb142f1cc999707da21e',1,'BoostGenerator']]],
-  ['operator_3d_3d',['operator==',['../structturbooctospice_1_1_l_o_s_pixel.html#a0183682acbb13bef6ae4af1fb0967b3e',1,'turbooctospice::LOSPixel::operator==()'],['../classturbooctospice_1_1_pixel.html#a7dd53150abe180ff3887824a39113ad6',1,'turbooctospice::Pixel::operator==()']]]
+  ['wavelength',['wavelength',['../structturbooctospice_1_1_forest_pixel.html#a22a7e4bdff61f8283558989bd1df268d',1,'turbooctospice::ForestPixel']]],
+  ['weight',['weight',['../structturbooctospice_1_1_forest_pixel.html#ab075b3e01e9e155fe649920f14a04041',1,'turbooctospice::ForestPixel']]],
+  ['wgt',['wgt',['../struct_xi_entry.html#a737c3ff14dcacdd92bfd9cf6b738f061',1,'XiEntry']]]
 ];

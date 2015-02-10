@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['file_5finfo',['file_info',['../read__delta_8cc.html#aaba2c47b65195188060b2cf56017b1ea',1,'read_delta.cc']]],
-  ['findints',['findInts',['../class_search_policy.html#a1b2e2055c819c5a954e176245555b016',1,'SearchPolicy']]],
-  ['forestpixel',['ForestPixel',['../structturbooctospice_1_1_forest_pixel.html#aff569b3cf4f07f139103c07c930beecb',1,'turbooctospice::ForestPixel']]]
+  ['hdf5delta',['HDF5Delta',['../classturbooctospice_1_1_h_d_f5_delta.html#ac99a93f555911c000097dcb99cba868d',1,'turbooctospice::HDF5Delta']]],
+  ['healpixbins',['HealpixBins',['../classturbooctospice_1_1_healpix_bins.html#a7aada12dbb30eceaf076c5bfd13918cd',1,'turbooctospice::HealpixBins']]],
+  ['healxi',['healxi',['../h5healxi_8cc.html#a07876a34b22560336f18aa25f689bd45',1,'h5healxi.cc']]]
 ];

@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['ra',['ra',['../structturbooctospice_1_1_l_o_s_pixel.html#a6747a4112259c170b832cb385ef1151c',1,'turbooctospice::LOSPixel']]],
-  ['rad2arcmin',['rad2arcmin',['../namespaceturbooctospice.html#a27e2148d7f77015974a1739a8e842e32',1,'turbooctospice']]]
+  ['xmax',['xmax',['../classturbooctospice_1_1_abs_two_point_grid.html#a90e3db49aedf0f03f1bf9688bf280a84',1,'turbooctospice::AbsTwoPointGrid']]],
+  ['xmin',['xmin',['../classturbooctospice_1_1_abs_two_point_grid.html#acf73f131d1aba20cefe7804491be0e65',1,'turbooctospice::AbsTwoPointGrid']]]
 ];

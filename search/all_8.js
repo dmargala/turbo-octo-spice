@@ -1,22 +1,11 @@
 var searchData=
 [
-  ['h5healxi_2ecc',['h5healxi.cc',['../h5healxi_8cc.html',1,'']]],
-  ['hdf5delta',['HDF5Delta',['../classturbooctospice_1_1_h_d_f5_delta.html',1,'turbooctospice']]],
-  ['hdf5delta',['HDF5Delta',['../classturbooctospice_1_1_h_d_f5_delta.html#ac99a93f555911c000097dcb99cba868d',1,'turbooctospice::HDF5Delta']]],
-  ['hdf5delta_2ecc',['HDF5Delta.cc',['../_h_d_f5_delta_8cc.html',1,'']]],
-  ['hdf5delta_2eh',['HDF5Delta.h',['../_h_d_f5_delta_8h.html',1,'']]],
-  ['hdf5deltafield',['HDF5DeltaField',['../class_h_d_f5_delta_field.html',1,'HDF5DeltaField'],['../class_h_d_f5_delta_field.html#a36cdd9c8ff90cf1cd83991ea7e3b2be3',1,'HDF5DeltaField::HDF5DeltaField()']]],
-  ['healmap',['HealMap',['../namespaceturbooctospice.html#a1295dc84a7d8d60ea2b7cb788c241c7b',1,'turbooctospice']]],
-  ['healmapptr',['HealMapPtr',['../namespaceturbooctospice.html#af14ffad04a22d74e32d29573c81c16f7',1,'turbooctospice']]],
-  ['healpairsearch',['HealPairSearch',['../classturbooctospice_1_1_heal_pair_search.html#a628b3283784e704a6beeb59ebc781ae4',1,'turbooctospice::HealPairSearch']]],
-  ['healpairsearch',['HealPairSearch',['../classturbooctospice_1_1_heal_pair_search.html',1,'turbooctospice']]],
-  ['healpairsearch_2eh',['HealPairSearch.h',['../_heal_pair_search_8h.html',1,'']]],
-  ['healpixbins',['HealpixBins',['../classturbooctospice_1_1_healpix_bins.html',1,'turbooctospice']]],
-  ['healpixbins',['HealpixBins',['../classturbooctospice_1_1_healpix_bins.html#a7aada12dbb30eceaf076c5bfd13918cd',1,'turbooctospice::HealpixBins']]],
-  ['healpixbins_2eh',['HealpixBins.h',['../_healpix_bins_8h.html',1,'']]],
-  ['healpixbinsi',['HealpixBinsI',['../namespaceturbooctospice.html#ac96bcfc8a9dea36364faf59ca506c926',1,'turbooctospice']]],
-  ['healpixmap',['HealpixMap',['../classturbooctospice_1_1_healpix_bins.html#ac86fdc7c5299333d681ec051c72a332e',1,'turbooctospice::HealpixBins']]],
-  ['healsearch',['HealSearch',['../namespaceturbooctospice.html#a98c9aeea5e5c07ccc2dba3f8cb047fde',1,'turbooctospice']]],
-  ['healtest_2ecc',['healtest.cc',['../healtest_8cc.html',1,'']]],
-  ['healxi',['healxi',['../h5healxi_8cc.html#a07876a34b22560336f18aa25f689bd45',1,'healxi(tos::HealpixBinsI const &amp;healbins, std::vector&lt; tos::Forest &gt; const &amp;forests, tos::AbsTwoPointGridPtr const &amp;grid, double minAng, double maxAng, std::vector&lt; XiEntry &gt; &amp;xi, std::vector&lt; XiEntry &gt; &amp;xibin):&#160;h5healxi.cc'],['../healtest_8cc.html#abe05cd103f881cb2245d079d7934079b',1,'healxi(Healpix_Map&lt; double &gt; const &amp;map, BucketToPixels &amp;buckets, std::vector&lt; QuasarSpectrum &gt; &amp;quasars, lk::BinnedGrid const &amp;grid, bool rmu, double maxAng, double x1min, double x1max, double x2min, double x2max, std::vector&lt; double &gt; &amp;xi):&#160;healtest.cc']]]
+  ['main',['main',['../bucketxi_8cc.html#a3c04138a5bfe5d72780bb7e82a18e627',1,'main(int argc, char **argv):&#160;bucketxi.cc'],['../h5healxi_8cc.html#a3c04138a5bfe5d72780bb7e82a18e627',1,'main(int argc, char **argv):&#160;h5healxi.cc'],['../mockdata_8cc.html#a3c04138a5bfe5d72780bb7e82a18e627',1,'main(int argc, char **argv):&#160;mockdata.cc']]],
+  ['maxangularscale',['maxAngularScale',['../classturbooctospice_1_1_abs_two_point_grid.html#ae5e3c0faa41ac56cba2eb36f6005b223',1,'turbooctospice::AbsTwoPointGrid::maxAngularScale()'],['../classturbooctospice_1_1_cartesian_grid.html#af16e8abeb7d7fd50affb55fec6f25b97',1,'turbooctospice::CartesianGrid::maxAngularScale()'],['../classturbooctospice_1_1_polar_grid.html#a8f98332c7e7da2573ed0cd3ebe4c804c',1,'turbooctospice::PolarGrid::maxAngularScale()'],['../classturbooctospice_1_1_quasar_grid.html#ae4ccaa35465c0cced6fb0bcfe4ce5b9d',1,'turbooctospice::QuasarGrid::maxAngularScale()']]],
+  ['minangularscale',['minAngularScale',['../classturbooctospice_1_1_abs_two_point_grid.html#a68269eda2024edd42f234ce4125a8dee',1,'turbooctospice::AbsTwoPointGrid::minAngularScale()'],['../classturbooctospice_1_1_cartesian_grid.html#a8a9d572606dcb08ccb55c75653c5bdf6',1,'turbooctospice::CartesianGrid::minAngularScale()'],['../classturbooctospice_1_1_polar_grid.html#a8c3973a5312bfb4604623bdbaf70d70f',1,'turbooctospice::PolarGrid::minAngularScale()'],['../classturbooctospice_1_1_quasar_grid.html#aacf02462782867cb5ea92b07a3264f00',1,'turbooctospice::QuasarGrid::minAngularScale()']]],
+  ['mockdata_2ecc',['mockdata.cc',['../mockdata_8cc.html',1,'']]],
+  ['mockspectrum',['MockSpectrum',['../classturbooctospice_1_1_mock_spectrum.html',1,'turbooctospice']]],
+  ['mockspectrum',['MockSpectrum',['../classturbooctospice_1_1_mock_spectrum.html#aeeb89df66ab9060ca3f39708df6142fa',1,'turbooctospice::MockSpectrum']]],
+  ['mockspectrum_2ecc',['MockSpectrum.cc',['../_mock_spectrum_8cc.html',1,'']]],
+  ['mockspectrum_2eh',['MockSpectrum.h',['../_mock_spectrum_8h.html',1,'']]]
 ];

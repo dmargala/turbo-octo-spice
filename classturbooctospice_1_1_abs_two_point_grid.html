@@ -78,7 +78,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -95,7 +95,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pro-types">Protected Types</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classturbooctospice_1_1_abs_two_point_grid-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -103,13 +102,16 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 
+<p>Represents a grid for binning two point functions for LyA BAO analyses.  
+ <a href="classturbooctospice_1_1_abs_two_point_grid.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="_abs_two_point_grid_8h_source.html">AbsTwoPointGrid.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for turbooctospice::AbsTwoPointGrid:</div>
 <div class="dyncontent">
 <div class="center"><img src="classturbooctospice_1_1_abs_two_point_grid__inherit__graph.png" border="0" usemap="#turbooctospice_1_1_abs_two_point_grid_inherit__map" alt="Inheritance graph"/></div>
 <map name="turbooctospice_1_1_abs_two_point_grid_inherit__map" id="turbooctospice_1_1_abs_two_point_grid_inherit__map">
-<area shape="rect" id="node2" href="classturbooctospice_1_1_cartesian_grid.html" title="turbooctospice::CartesianGrid" alt="" coords="5,80,203,107"/><area shape="rect" id="node3" href="classturbooctospice_1_1_polar_grid.html" title="turbooctospice::PolarGrid" alt="" coords="227,80,399,107"/><area shape="rect" id="node4" href="classturbooctospice_1_1_quasar_grid.html" title="turbooctospice::QuasarGrid" alt="" coords="423,80,608,107"/></map>
+<area shape="rect" id="node2" href="classturbooctospice_1_1_cartesian_grid.html" title="Represents a Cartesian grid for binning two point functions for LyA BAO analyses. ..." alt="" coords="5,80,203,107"/><area shape="rect" id="node3" href="classturbooctospice_1_1_polar_grid.html" title="Represents a Polar grid for binning two point functions for LyA BAO analyses. " alt="" coords="227,80,399,107"/><area shape="rect" id="node4" href="classturbooctospice_1_1_quasar_grid.html" title="Represents a Quasar grid for binning two point functions for LyA BAO analyses. " alt="" coords="423,80,608,107"/></map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
 Collaboration diagram for turbooctospice::AbsTwoPointGrid:</div>
@@ -119,11 +121,12 @@ Collaboration diagram for turbooctospice::AbsTwoPointGrid:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a298431d24fbcf195fba355b85e0bfa41"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classturbooctospice_1_1_abs_two_point_grid.html#a298431d24fbcf195fba355b85e0bfa41">AbsTwoPointGrid</a> (lk::AbsBinningCPtr axis1, lk::AbsBinningCPtr axis2, lk::AbsBinningCPtr axis3)</td></tr>
-<tr class="separator:a298431d24fbcf195fba355b85e0bfa41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28d47ae4c9fb9cb708ba502db9aa08e8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classturbooctospice_1_1_abs_two_point_grid.html#a28d47ae4c9fb9cb708ba502db9aa08e8">AbsTwoPointGrid</a> (likely::AbsBinningCPtr axis1, likely::AbsBinningCPtr axis2, likely::AbsBinningCPtr axis3)</td></tr>
+<tr class="separator:a28d47ae4c9fb9cb708ba502db9aa08e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac274367246a2faa06621f6e10aafc5ce"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classturbooctospice_1_1_abs_two_point_grid.html#ac274367246a2faa06621f6e10aafc5ce">~AbsTwoPointGrid</a> ()</td></tr>
 <tr class="separator:ac274367246a2faa06621f6e10aafc5ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad7cc33105a27801cef92152dfdb9db8a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classturbooctospice_1_1_abs_two_point_grid.html#ad7cc33105a27801cef92152dfdb9db8a">getNBinsTotal</a> () const </td></tr>
+<tr class="memdesc:ad7cc33105a27801cef92152dfdb9db8a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the total number of bins covering the rectangular volume of this grid.  <a href="#ad7cc33105a27801cef92152dfdb9db8a">More...</a><br/></td></tr>
 <tr class="separator:ad7cc33105a27801cef92152dfdb9db8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa55e11e8e11d161455c5b29c3d594890"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classturbooctospice_1_1_abs_two_point_grid.html#aa55e11e8e11d161455c5b29c3d594890">getIndexNoCheck</a> (std::vector&lt; double &gt; const &amp;values, std::vector&lt; int &gt; &amp;binIndices) const </td></tr>
 <tr class="separator:aa55e11e8e11d161455c5b29c3d594890"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -136,14 +139,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:adb1dd7c8410c269257d3581886fef86f"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classturbooctospice_1_1_abs_two_point_grid.html#adb1dd7c8410c269257d3581886fef86f">getSeparation</a> (<a class="el" href="structturbooctospice_1_1_forest_pixel.html">ForestPixel</a> const &amp;a, <a class="el" href="structturbooctospice_1_1_forest_pixel.html">ForestPixel</a> const &amp;b, double const &amp;cosij, double const &amp;thetaij, std::vector&lt; double &gt; &amp;separation) const =0</td></tr>
 <tr class="separator:adb1dd7c8410c269257d3581886fef86f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-types"></a>
-Protected Types</h2></td></tr>
-<tr class="memitem:a2d22b380e00ac223f4cba0a8768864b7"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <a class="el" href="classturbooctospice_1_1_abs_two_point_grid.html#a2d22b380e00ac223f4cba0a8768864b7ab74a0d6dc2d8e24d7fd35d6694a4a469">LOS</a> = 0, 
-<a class="el" href="classturbooctospice_1_1_abs_two_point_grid.html#a2d22b380e00ac223f4cba0a8768864b7aff87d2cc79095f2417bcbb9423e5e869">TRANSVERSE</a> = 1, 
-<a class="el" href="classturbooctospice_1_1_abs_two_point_grid.html#a2d22b380e00ac223f4cba0a8768864b7a478140a187d7ef0731ac3afe89fae47e">REDSHIFT</a> = 2
- }</td></tr>
-<tr class="separator:a2d22b380e00ac223f4cba0a8768864b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:acf73f131d1aba20cefe7804491be0e65"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classturbooctospice_1_1_abs_two_point_grid.html#acf73f131d1aba20cefe7804491be0e65">xmin</a></td></tr>
@@ -151,56 +146,29 @@ Protected Attributes</h2></td></tr>
 <tr class="memitem:a90e3db49aedf0f03f1bf9688bf280a84"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classturbooctospice_1_1_abs_two_point_grid.html#a90e3db49aedf0f03f1bf9688bf280a84">xmax</a></td></tr>
 <tr class="separator:a90e3db49aedf0f03f1bf9688bf280a84"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Enumeration Documentation</h2>
-<a class="anchor" id="a2d22b380e00ac223f4cba0a8768864b7"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">anonymous enum</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a class="anchor" id="a2d22b380e00ac223f4cba0a8768864b7ab74a0d6dc2d8e24d7fd35d6694a4a469"></a>LOS&#160;</td><td class="fielddoc">
-</td></tr>
-<tr><td class="fieldname"><a class="anchor" id="a2d22b380e00ac223f4cba0a8768864b7aff87d2cc79095f2417bcbb9423e5e869"></a>TRANSVERSE&#160;</td><td class="fielddoc">
-</td></tr>
-<tr><td class="fieldname"><a class="anchor" id="a2d22b380e00ac223f4cba0a8768864b7a478140a187d7ef0731ac3afe89fae47e"></a>REDSHIFT&#160;</td><td class="fielddoc">
-</td></tr>
-</table>
-
-</div>
-</div>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a298431d24fbcf195fba355b85e0bfa41"></a>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Represents a grid for binning two point functions for LyA BAO analyses. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="a28d47ae4c9fb9cb708ba502db9aa08e8"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">turbooctospice::AbsTwoPointGrid::AbsTwoPointGrid </td>
           <td>(</td>
-          <td class="paramtype">lk::AbsBinningCPtr&#160;</td>
+          <td class="paramtype">likely::AbsBinningCPtr&#160;</td>
           <td class="paramname"><em>axis1</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">lk::AbsBinningCPtr&#160;</td>
+          <td class="paramtype">likely::AbsBinningCPtr&#160;</td>
           <td class="paramname"><em>axis2</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">lk::AbsBinningCPtr&#160;</td>
+          <td class="paramtype">likely::AbsBinningCPtr&#160;</td>
           <td class="paramname"><em>axis3</em>&#160;</td>
         </tr>
         <tr>
@@ -210,6 +178,15 @@ Protected Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Creates a new grid with three axes. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">axis1</td><td>Line of sight separation axis binning </td></tr>
+    <tr><td class="paramname">axis2</td><td>Transverse separation axis binning </td></tr>
+    <tr><td class="paramname">axis3</td><td>Mean distance axis binning </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -268,6 +245,14 @@ Protected Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Fills the vector provided with the bin centers along each axis for the specified global index. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>Global bin index. </td></tr>
+    <tr><td class="paramname">binCenters</td><td>Output vector containing bin centers for the specified bin index. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -302,6 +287,14 @@ Protected Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Returns the global index corresponding to the specified coordinate values along each axis. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">values</td><td>Coordinate values. </td></tr>
+    <tr><td class="paramname">binIndices</td><td>Temporary vector used to store bin indices. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -325,6 +318,8 @@ Protected Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Returns the total number of bins covering the rectangular volume of this grid. </p>
 
 </div>
 </div>
@@ -377,8 +372,19 @@ Protected Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Tests if the pair of pixels are binable and fills the vector provided with coordinate values along each axis. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">a</td><td>First <a class="el" href="structturbooctospice_1_1_forest_pixel.html" title="Represents a LyA forest pixel. ">ForestPixel</a> of pair </td></tr>
+    <tr><td class="paramname">b</td><td>Second <a class="el" href="structturbooctospice_1_1_forest_pixel.html" title="Represents a LyA forest pixel. ">ForestPixel</a> of pair </td></tr>
+    <tr><td class="paramname">cosij</td><td>Cosine of the angular separation between the line of sights to each pixel </td></tr>
+    <tr><td class="paramname">thetaij</td><td>Angular separation between the line of sights to each pixel </td></tr>
+    <tr><td class="paramname">separation</td><td>Output vector containing the separation of the pixel pairs along each axis </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p>Implemented in <a class="el" href="classturbooctospice_1_1_polar_grid.html#aebbd21abdc93f51a5df2eb1f4bc10cc6">turbooctospice::PolarGrid</a>, <a class="el" href="classturbooctospice_1_1_quasar_grid.html#a3f0418236618a3f5075b7f40e317fa10">turbooctospice::QuasarGrid</a>, and <a class="el" href="classturbooctospice_1_1_cartesian_grid.html#a9a3a5fc19ddd5d096c27e883259b6c74">turbooctospice::CartesianGrid</a>.</p>
+<p>Implemented in <a class="el" href="classturbooctospice_1_1_cartesian_grid.html#a9a3a5fc19ddd5d096c27e883259b6c74">turbooctospice::CartesianGrid</a>, <a class="el" href="classturbooctospice_1_1_polar_grid.html#aebbd21abdc93f51a5df2eb1f4bc10cc6">turbooctospice::PolarGrid</a>, and <a class="el" href="classturbooctospice_1_1_quasar_grid.html#a3f0418236618a3f5075b7f40e317fa10">turbooctospice::QuasarGrid</a>.</p>
 
 </div>
 </div>
@@ -403,8 +409,15 @@ Protected Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Returns the maximum angular scale of the grid in radians from the provided transervse comving scale. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">scale</td><td>Transverse comoving distance (Mpc/h) at minimum redshift </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p>Implemented in <a class="el" href="classturbooctospice_1_1_polar_grid.html#a8f98332c7e7da2573ed0cd3ebe4c804c">turbooctospice::PolarGrid</a>, <a class="el" href="classturbooctospice_1_1_quasar_grid.html#ae4ccaa35465c0cced6fb0bcfe4ce5b9d">turbooctospice::QuasarGrid</a>, and <a class="el" href="classturbooctospice_1_1_cartesian_grid.html#af16e8abeb7d7fd50affb55fec6f25b97">turbooctospice::CartesianGrid</a>.</p>
+<p>Implemented in <a class="el" href="classturbooctospice_1_1_cartesian_grid.html#af16e8abeb7d7fd50affb55fec6f25b97">turbooctospice::CartesianGrid</a>, <a class="el" href="classturbooctospice_1_1_polar_grid.html#a8f98332c7e7da2573ed0cd3ebe4c804c">turbooctospice::PolarGrid</a>, and <a class="el" href="classturbooctospice_1_1_quasar_grid.html#ae4ccaa35465c0cced6fb0bcfe4ce5b9d">turbooctospice::QuasarGrid</a>.</p>
 
 </div>
 </div>
@@ -429,8 +442,15 @@ Protected Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Returns the minimum angular scale of the grid in radians from the provided transervse comving scale. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">scale</td><td>Transverse comoving distance (Mpc/h) at minimum redshift </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p>Implemented in <a class="el" href="classturbooctospice_1_1_polar_grid.html#a8c3973a5312bfb4604623bdbaf70d70f">turbooctospice::PolarGrid</a>, <a class="el" href="classturbooctospice_1_1_quasar_grid.html#aacf02462782867cb5ea92b07a3264f00">turbooctospice::QuasarGrid</a>, and <a class="el" href="classturbooctospice_1_1_cartesian_grid.html#a8a9d572606dcb08ccb55c75653c5bdf6">turbooctospice::CartesianGrid</a>.</p>
+<p>Implemented in <a class="el" href="classturbooctospice_1_1_cartesian_grid.html#a8a9d572606dcb08ccb55c75653c5bdf6">turbooctospice::CartesianGrid</a>, <a class="el" href="classturbooctospice_1_1_polar_grid.html#a8c3973a5312bfb4604623bdbaf70d70f">turbooctospice::PolarGrid</a>, and <a class="el" href="classturbooctospice_1_1_quasar_grid.html#aacf02462782867cb5ea92b07a3264f00">turbooctospice::QuasarGrid</a>.</p>
 
 </div>
 </div>
@@ -482,7 +502,7 @@ Protected Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Feb 9 2015 18:31:54 for turbo-octo-spice by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Feb 9 2015 19:54:39 for turbo-octo-spice by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

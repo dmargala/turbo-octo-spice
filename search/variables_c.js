@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['value',['value',['../structturbooctospice_1_1_forest_pixel.html#a5cd20429f53c07fd72e5cba4e834c07a',1,'turbooctospice::ForestPixel']]]
+  ['xmax',['xmax',['../classturbooctospice_1_1_abs_two_point_grid.html#a90e3db49aedf0f03f1bf9688bf280a84',1,'turbooctospice::AbsTwoPointGrid']]],
+  ['xmin',['xmin',['../classturbooctospice_1_1_abs_two_point_grid.html#acf73f131d1aba20cefe7804491be0e65',1,'turbooctospice::AbsTwoPointGrid']]]
 ];

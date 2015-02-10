@@ -1,21 +1,5 @@
 var searchData=
 [
-  ['get',['get',['../class_simple_generator.html#a103f72b93a59818ae205af0fdf27584e',1,'SimpleGenerator::get()'],['../classturbooctospice_1_1_brute_pair_search.html#aab740cdac18cd55ff4726f001245ee81',1,'turbooctospice::BrutePairSearch::get()'],['../classturbooctospice_1_1_bucket_pair_search.html#ac592a23424ba8e9e273310c38c7040e8',1,'turbooctospice::BucketPairSearch::get()'],['../classturbooctospice_1_1_heal_pair_search.html#a3afbd502a2265063c11b353ab67faccc',1,'turbooctospice::HealPairSearch::get()']]],
-  ['getbincenter',['getBinCenter',['../classturbooctospice_1_1_bin_pair.html#ae7a05c14430c95697749636fac5bd0f4',1,'turbooctospice::BinPair']]],
-  ['getbincenters',['getBinCenters',['../classturbooctospice_1_1_abs_two_point_grid.html#a675249b3e43b91e57e5efa0a2c8eeada',1,'turbooctospice::AbsTwoPointGrid']]],
-  ['getbincontents',['getBinContents',['../classturbooctospice_1_1_healpix_bins.html#a25abb8b763ccc146af9c4c619cd7a1f1',1,'turbooctospice::HealpixBins']]],
-  ['getbinindex',['getBinIndex',['../classturbooctospice_1_1_bin_pair.html#a605734d7cc8669aa50695d9e39354f66',1,'turbooctospice::BinPair']]],
-  ['getbinindiceswithinradius',['getBinIndicesWithinRadius',['../classturbooctospice_1_1_healpix_bins.html#ad30e2b0d6cff6a501c00197664259831',1,'turbooctospice::HealpixBins']]],
-  ['getcoeff0',['getCoeff0',['../classturbooctospice_1_1_mock_spectrum.html#a6d21421f0d7714e439c335fb7c42f51e',1,'turbooctospice::MockSpectrum']]],
-  ['getcoeff1',['getCoeff1',['../classturbooctospice_1_1_mock_spectrum.html#a645cded191582348f70d19dcd946b8c8',1,'turbooctospice::MockSpectrum']]],
-  ['getdec',['getDec',['../classturbooctospice_1_1_mock_spectrum.html#a6398ce927a648186132bf7e8c432e706',1,'turbooctospice::MockSpectrum']]],
-  ['getforest',['getForest',['../classturbooctospice_1_1_mock_spectrum.html#a48f5dc73232db5170a9044a8be23efbe',1,'turbooctospice::MockSpectrum']]],
-  ['getindexnocheck',['getIndexNoCheck',['../classturbooctospice_1_1_abs_two_point_grid.html#aa55e11e8e11d161455c5b29c3d594890',1,'turbooctospice::AbsTwoPointGrid']]],
-  ['getmockfilename',['getMockFilename',['../namespaceturbooctospice.html#acd669eafbdc2b855b4fe3d916f37f54a',1,'turbooctospice']]],
-  ['getnbins',['getNBins',['../classturbooctospice_1_1_bin_pair.html#a01c3f4524eb37a79229f26746ee630e8',1,'turbooctospice::BinPair::getNBins()'],['../classturbooctospice_1_1_healpix_bins.html#a6cf1ff94c674ec66cc7fe2a7591c5e22',1,'turbooctospice::HealpixBins::getNBins()'],['../classturbooctospice_1_1_ignore_pair.html#a8a0209d8a42eb13b465f902789170a27',1,'turbooctospice::IgnorePair::getNBins()']]],
-  ['getnbinstotal',['getNBinsTotal',['../classturbooctospice_1_1_abs_two_point_grid.html#ad7cc33105a27801cef92152dfdb9db8a',1,'turbooctospice::AbsTwoPointGrid']]],
-  ['getra',['getRA',['../classturbooctospice_1_1_mock_spectrum.html#a5e6e69f645b337833f7dd78ca4abdae1',1,'turbooctospice::MockSpectrum']]],
-  ['getseparation',['getSeparation',['../classturbooctospice_1_1_abs_two_point_grid.html#adb1dd7c8410c269257d3581886fef86f',1,'turbooctospice::AbsTwoPointGrid::getSeparation()'],['../classturbooctospice_1_1_cartesian_grid.html#a9a3a5fc19ddd5d096c27e883259b6c74',1,'turbooctospice::CartesianGrid::getSeparation()'],['../classturbooctospice_1_1_polar_grid.html#aebbd21abdc93f51a5df2eb1f4bc10cc6',1,'turbooctospice::PolarGrid::getSeparation()'],['../classturbooctospice_1_1_quasar_grid.html#a3f0418236618a3f5075b7f40e317fa10',1,'turbooctospice::QuasarGrid::getSeparation()']]],
-  ['gettargetnames',['getTargetNames',['../class_h_d_f5_delta_field.html#a43169b253f337261ff72541d231bad36',1,'HDF5DeltaField']]],
-  ['getz',['getZ',['../classturbooctospice_1_1_mock_spectrum.html#a245be299b41aa1467223f8a4c45396df',1,'turbooctospice::MockSpectrum']]]
+  ['load_5fquasar',['load_quasar',['../_h_d_f5_delta_8cc.html#a044b6e81afb642d58e62b55f60c0baf9',1,'HDF5Delta.cc']]],
+  ['loadforests',['loadForests',['../classturbooctospice_1_1_h_d_f5_delta.html#a68709408ef420b27b2e701c836fa999d',1,'turbooctospice::HDF5Delta']]]
 ];

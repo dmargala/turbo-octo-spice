@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['forest',['Forest',['../structturbooctospice_1_1_forest.html',1,'turbooctospice']]],
-  ['forestpixel',['ForestPixel',['../structturbooctospice_1_1_forest_pixel.html',1,'turbooctospice']]]
+  ['hdf5delta',['HDF5Delta',['../classturbooctospice_1_1_h_d_f5_delta.html',1,'turbooctospice']]],
+  ['healpixbins',['HealpixBins',['../classturbooctospice_1_1_healpix_bins.html',1,'turbooctospice']]]
 ];

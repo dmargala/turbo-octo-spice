@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['initialize',['initialize',['../classturbooctospice_1_1_bucket_pair_search.html#a0869081acc9ea524e969a2a20c008116',1,'turbooctospice::BucketPairSearch']]]
+  ['polargrid',['PolarGrid',['../classturbooctospice_1_1_polar_grid.html#a693bfe81bb333df99282ac3c0770f662',1,'turbooctospice::PolarGrid']]]
 ];

@@ -16,8 +16,6 @@ namespace po = boost::program_options;
 namespace lk = likely;
 namespace tos = turbooctospice;
 
-const double lyA = 1216.0;
-
 double angularSeparation(double cth1, double sth1, double cph1, double sph1, double cth2, double sth2, double cph2, double sph2) {
     return sth1*sth2 + cth1*cth2*(cph1*cph2 + sph1*sph2);
 }
@@ -248,7 +246,7 @@ int main(int argc, char **argv) {
         totalpixels += forests[i].pixels.size();
         healbins.addItem(forests[i].theta, forests[i].phi, i);
         for(int j = 0; j < forests[i].pixels.size(); ++j) {
-            float z(std::pow(10, forests[i].pixels[j].wavelength)/lyA - 1.0);
+            float z(std::pow(10, forests[i].pixels[j].wavelength)/tos::lyA - 1.0);
             forests[i].pixels[j].distance = cosmology->getLineOfSightComovingDistance(z);
         }
     }

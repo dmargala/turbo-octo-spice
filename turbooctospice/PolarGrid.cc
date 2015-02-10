@@ -4,10 +4,22 @@
 
 namespace local = turbooctospice;
 
-local::PolarGrid::PolarGrid(lk::AbsBinningCPtr axis1, lk::AbsBinningCPtr axis2, 
-lk::AbsBinningCPtr axis3) : AbsTwoPointGrid(axis1, axis2, axis3) {
+local::PolarGrid::PolarGrid(likely::AbsBinningCPtr axis1, likely::AbsBinningCPtr axis2, 
+likely::AbsBinningCPtr axis3) : AbsTwoPointGrid(axis1, axis2, axis3) {
     x1minSq = xmin[0]*xmin[0];
     x1maxSq = xmax[0]*xmax[0];
 }
 
 local::PolarGrid::~PolarGrid() { }
+
+bool local::PolarGrid::getSeparation(ForestPixel const &a, ForestPixel const &b,
+double const &cosij, double const &thetaij, std::vector<double> &separation) const {
+    double distSq = a.distance*a.distance + b.distance*b.distance - 2*a.distance*b.distance*cosij;
+    if(distSq >= x1maxSq || distSq < x1minSq) return false;
+    separation[0] = std::sqrt(distSq);
+    separation[1] = std::fabs(a.distance-b.distance)/separation[0];
+    if(separation[1] < xmin[1] || separation[1] >= xmax[1]) return false;
+    separation[2] = 0.5*(a.wavelength+b.wavelength) - logLyA;
+    if(separation[2] < xmin[2] || separation[2] >= xmax[2]) return false;
+    return true;
+}

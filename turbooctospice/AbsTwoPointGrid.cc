@@ -5,8 +5,8 @@
 namespace local = turbooctospice;
 
 
-local::AbsTwoPointGrid::AbsTwoPointGrid(lk::AbsBinningCPtr axis1, 
-lk::AbsBinningCPtr axis2, lk::AbsBinningCPtr axis3) : _grid(axis1, axis2, axis3) {
+local::AbsTwoPointGrid::AbsTwoPointGrid(likely::AbsBinningCPtr axis1, 
+likely::AbsBinningCPtr axis2, likely::AbsBinningCPtr axis3) : _grid(axis1, axis2, axis3) {
     for(int axis = 0; axis < 3; ++axis) {
         auto bins = _grid.getAxisBinning(axis);
         xmin.push_back(bins->getBinLowEdge(0));

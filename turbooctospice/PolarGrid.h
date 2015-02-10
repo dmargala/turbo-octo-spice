@@ -6,24 +6,32 @@
 #include "AbsTwoPointGrid.h"
 
 namespace turbooctospice {
-
+    /// Represents a Polar grid for binning two point functions for LyA BAO analyses. 
     class PolarGrid : public AbsTwoPointGrid {
     public:
-        PolarGrid(lk::AbsBinningCPtr axis1, lk::AbsBinningCPtr axis2, lk::AbsBinningCPtr axis3);
+        /// Creates a new grid with three axes.
+        /// @param axis1 Line of sight separation axis binning : |r|
+        /// @param axis2 Transverse separation axis binning : mu
+        /// @param axis3 Mean distance axis binning : log(1+z)
+        PolarGrid(likely::AbsBinningCPtr axis1, likely::AbsBinningCPtr axis2, likely::AbsBinningCPtr axis3);
         virtual ~PolarGrid();
+        /// Returns the minimum angular scale of the grid in radians from the provided
+        /// transervse comving scale.
+        /// @param scale Transverse comoving distance (Mpc/h) at minimum redshift
         double minAngularScale(double scale) const;
+        /// Returns the maximum angular scale of the grid in radians from the provided
+        /// transervse comving scale.
+        /// @param scale Transverse comoving distance (Mpc/h) at minimum redshift
         double maxAngularScale(double scale) const;
+        /// Tests if the pair of pixels are binable and fills the vector provided 
+        /// with coordinate values along each axis.
+        /// @param a First ForestPixel of pair
+        /// @param b Second ForestPixel of pair
+        /// @param cosij Cosine of the angular separation between the line of sights to each pixel
+        /// @param thetaij Angular separation between the line of sights to each pixel
+        /// @param separation Output vector containing the separation of the pixel pairs along each axis
         bool getSeparation(ForestPixel const &a, ForestPixel const &b,
-        double const &cosij, double const &thetaij, std::vector<double> &separation) const {
-            double distSq = a.distance*a.distance + b.distance*b.distance - 2*a.distance*b.distance*cosij;
-            if(distSq >= x1maxSq || distSq < x1minSq) return false;
-            separation[0] = std::sqrt(distSq);
-            separation[1] = std::fabs(a.distance-b.distance)/separation[0];
-            if(separation[1] < xmin[1] || separation[1] >= xmax[1]) return false;
-            separation[2] = 0.5*(a.wavelength+b.wavelength) - logLyA;
-            if(separation[2] < xmin[2] || separation[2] >= xmax[2]) return false;
-            return true;
-        }
+            double const &cosij, double const &thetaij, std::vector<double> &separation) const;
     private:
         double x1minSq, x1maxSq;
     }; // PolarGrid

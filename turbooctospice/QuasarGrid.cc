@@ -4,7 +4,19 @@
 
 namespace local = turbooctospice;
 
-local::QuasarGrid::QuasarGrid(lk::AbsBinningCPtr axis1, lk::AbsBinningCPtr axis2, 
-lk::AbsBinningCPtr axis3) : AbsTwoPointGrid(axis1, axis2, axis3) { }
+local::QuasarGrid::QuasarGrid(likely::AbsBinningCPtr axis1, likely::AbsBinningCPtr axis2, 
+likely::AbsBinningCPtr axis3) : AbsTwoPointGrid(axis1, axis2, axis3) { }
 
 local::QuasarGrid::~QuasarGrid() { }
+
+bool local::QuasarGrid::getSeparation(ForestPixel const &a, ForestPixel const &b,
+double const &cosij, double const &thetaij, std::vector<double> &separation) const {
+    separation[0] = std::fabs(a.wavelength-b.wavelength);
+    if(separation[0] >= xmax[0] || separation[0] < xmin[0]) return false;
+    separation[1] = thetaij*rad2arcmin;
+    // we don't need to check thetaij, we've already done this for the line of sights
+    // if(separation[1] < xmin[1] || separation[1] >= xmax[1]) return false;
+    separation[2] = 0.5*(a.wavelength+b.wavelength) - logLyA;
+    if(separation[2] < xmin[2] || separation[2] >= xmax[2]) return false;
+    return true;
+}

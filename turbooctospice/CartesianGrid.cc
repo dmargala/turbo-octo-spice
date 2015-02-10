@@ -4,8 +4,8 @@
 
 namespace local = turbooctospice;
 
-local::CartesianGrid::CartesianGrid(lk::AbsBinningCPtr axis1, lk::AbsBinningCPtr axis2, 
-lk::AbsBinningCPtr axis3) : AbsTwoPointGrid(axis1, axis2, axis3) {
+local::CartesianGrid::CartesianGrid(likely::AbsBinningCPtr axis1, likely::AbsBinningCPtr axis2, 
+likely::AbsBinningCPtr axis3) : AbsTwoPointGrid(axis1, axis2, axis3) {
     x1minSq = xmin[0]*xmin[0];
     x1maxSq = xmax[0]*xmax[0];
 };

@@ -15,6 +15,9 @@
 #include "BucketPairSearch.h"
 
 #include "AbsTwoPointGrid.h"
+#include "CartesianGrid.h"
+#include "PolarGrid.h"
+#include "QuasarGrid.h"
 
 #ifdef HAVE_LIBHEAL
 #include "HealPairSearch.h"

@@ -1,0 +1,108 @@
+\documentclass[10pt]{article}
+
+\usepackage{amsmath}
+\DeclareMathOperator\erf{erf}
+
+\begin{document}
+
+\section{Variance}
+
+The contribution to the variance of the density field per logarithmic interval k:
+
+\begin{equation}
+\Delta^2(k) \equiv (2\pi)^{-3} \times 4\pi k^3 P(k) = \frac{d\sigma}{d\ln k}
+\end{equation}
+
+per linear k:
+
+\begin{equation}
+d \sigma^2 = (2\pi)^{-3} P(k) 4 \pi k^2 dk
+\end{equation}
+
+The total variance is given by:
+
+\begin{equation}
+\sigma^2 = (2\pi)^{-3} \int_0^{\infty} 4 \pi k^2 P(k) dk
+\end{equation}
+
+That describes the variance in a shell of $dV = 4 \pi k^2 dk$, rewrite this for rectangular volume $dV = dk_1 dk_2 dk_3$
+
+\begin{equation}
+\sigma^2 = (2\pi)^{-3} \int_{-\infty}^{\infty} \int_{-\infty}^{\infty} \int_{-\infty}^{\infty} dk_1 dk_2 dk_3 P(k)
+\end{equation}
+
+For a finite volume on a grid with $N$ points per axis and separation, $d$, between points, we can rewrite this as:
+
+\begin{multline}
+\label{var3d}
+\sigma^2 = \frac{8}{(2\pi)^3} \biggl[ \int_{0}^{k_{max}} \int_{0}^{k_{max}} \int_{0}^{k_{max}} dk_1 dk_2 dk_3 P(k) \\
+ - \int_{0}^{k_{min}} \int_{0}^{k_{min}} \int_{0}^{k_{min}} dk_1 dk_2 dk_3 P(k) \biggr]
+\end{multline}
+
+where $k_{min} = 2\pi/(N d) $ and $k_{max} = \pi/(N d)$. The box in k-space spans $-k_{max}$ to $k_{max}$. 
+
+\section{Tests}
+
+\subsection{Gaussian P(k)}
+
+Gaussian power spectrum (different $\sigma$ ...): 
+
+\begin{equation}
+P(k) = P_0 e^{-\sigma^2 k^2 / 2}
+\end{equation}
+
+Plug this into equation~\ref{var3d}:
+
+\begin{multline}
+\sigma^2 = \frac{8 P_0}{(2\pi)^3} \biggl[ \int_{0}^{k_{max}} \int_{0}^{k_{max}} \int_{0}^{k_{max}} dk_1 dk_2 dk_3 e^{- \sigma^2 (k_1^2 + k_2^2 + k_3^2)/2} \\
+ - \int_{0}^{k_{min}} \int_{0}^{k_{min}} \int_{0}^{k_{min}} dk_1 dk_2 dk_3 e^{- \sigma^2 (k_1^2 + k_2^2 + k_3^2)/2} \biggr]
+\end{multline}
+
+The integration over the axes are indepent so rewrite as:
+
+\begin{equation}
+\sigma^2 = \frac{8 P_0}{(2\pi)^3} \biggl[ \left( \int_{0}^{k_{max}} dk' e^{- \sigma^2 k'^2/2} \right)^3 - \left( \int_{0}^{k_{min}} dk' e^{- \sigma^2 k'^2/2} \right)^3 \biggr]
+\end{equation}
+
+And the result:
+
+\begin{equation}
+\sigma^2 = \frac{8 P_0}{(2\pi)^3} \biggl[ \left(  \sqrt{\frac{\pi}{2 \sigma^2}} \erf(k_{max} \sigma / \sqrt{2}) \right)^3 - \left(  \sqrt{\frac{\pi}{2 \sigma^2}} \erf(k_{min} \sigma / \sqrt{2}) \right)^3 \biggr]
+\end{equation}
+
+Simplified:
+
+\begin{equation}
+\sigma^2 = \frac{P_0}{(2\pi \sigma^2)^{3/2}} \biggl[ \left(\erf(k_{max} \sigma / \sqrt{2}) \right)^3 - \left(\erf(k_{min} \sigma / \sqrt{2}) \right)^3 \biggr]
+\end{equation}
+
+\subsection{Flat P(k)}
+
+Flat power spectrum with a cutoff at $k_{lim}$:
+
+\begin{equation}
+P(k) = P_0 \Theta(1- k/k_{lim})
+\end{equation}
+
+where $\Theta$ is the Heaviside step function.
+
+Plug this into equation~\ref{var3d}:
+
+\begin{multline}
+\sigma^2 = \frac{8 P_0}{(2\pi)^3} \biggl[ \int_{0}^{k_{max}} \int_{0}^{k_{max}} \int_{0}^{k_{max}} dk_1 dk_2 dk_3 \Theta(1- k/k_{lim}) \\
+ - \int_{0}^{k_{min}} \int_{0}^{k_{min}} \int_{0}^{k_{min}} dk_1 dk_2 dk_3 \Theta(1- k/k_{lim}) \biggr]
+\end{multline}
+
+The first piece is just the volume of a single octant of a sphere with radius $k_{lim}$ and the second integral is simple for $\sqrt{3} k_{min} < k_{lim}$,  
+
+\begin{equation}
+\sigma^2 = \frac{8 P_0}{(2\pi)^3} \biggl[ \frac{1}{8} \int_0^{k_{lim}} 4 \pi k^2 dk - k_{min}^3 \biggr]
+\end{equation}
+
+And the simplified result:
+
+\begin{equation}
+\sigma^2 = \frac{P_0}{\pi^3} \biggl[ \frac{\pi}{6} k_{lim}^3 - k_{min}^3 \biggr]
+\end{equation}
+
+\end{document}

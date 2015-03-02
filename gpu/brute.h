@@ -1,5 +1,3 @@
-// #include <thrust/version.h>
-
 #ifndef BRUTEGPU
 #define BRUTEGPU
 
@@ -11,12 +9,9 @@
 
 #include <cuda_runtime.h>
 
-static void HandleError( cudaError_t err,
-                         const char *file,
-                         int line ) {
+static void HandleError(cudaError_t err, const char *file, int line) {
     if (err != cudaSuccess) {
-        printf( "%s in %s at line %d\n", cudaGetErrorString( err ),
-                file, line );
+        printf( "%s in %s at line %d\n", cudaGetErrorString( err ), file, line );
         exit( EXIT_FAILURE );
     }
 }

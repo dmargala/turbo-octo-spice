@@ -11,10 +11,10 @@ tosLibPath = ['../build']
 
 common = ['likely', 'cosmo', 'boost_program_options', 'boost_system', 'boost_thread', 'boost_coroutine']
 
+vartest = env.Program('vartest', 'vartest.cc', LIBS=common)
 ### Common libs only
 bucketxi = env.Program('bucketxi', 'bucketxi.cc', LIBS=common)
 #coroutinetest = env.Program('coroutinetest', 'coroutinetest.cc', LIBS=common)
-
 ### Requires kdtree library
 #kdtreetest = env.Program('kdtreetest', 'kdtreetest.cc', LIBS=common+['kdtree'])
 
@@ -26,6 +26,8 @@ healLibs = ['healpix_cxx', 'cxxsupport']
 
 h5Libs = ['hdf5','hdf5_cpp']
 #read_delta = env.Program('read_delta', 'read_delta.cc', LIBS=common+h5Libs)
+
+box2los = env.Program('box2los', 'box2los.cc', LIBS=common+h5Libs)
 
 # healtest = env.Program('healtest', 'healtest.cc',**healOptions)
 #healtest = env.Program('healtest', 'healtest.cc', LIBS=common+healLibs, LIBPATH=healLibPath, CPPPATH=healCppPath )
@@ -56,11 +58,27 @@ mockdata = env.Program('mockdata', 'mockdata.cc', LIBS=common+tos+cfitsLibs, LIB
 cudaEnv = Environment(ENV={'PATH' : os.environ['PATH']})
 cudaEnv.Replace(CC='nvcc')
 
-cudaEnv.Append(CCFLAGS=['-02'])
+cudaEnv.Append(CCFLAGS=['-O2'])
 # Atomic add requires minimum architecture
-cudaEnv.Append(LINKFLAGS=['-m64', '-arch=sm_20','-D__int128=long -DBOOST_NOINLINE=__attribute__ ((noinline))'])
-# cudaEnv.Program('deviceQuery', 'deviceQuery.cu')
-# cudaEnv.Program('gpuxi', 'gpuxi.cu', LIBS=['likely', 'boost_program_options'])
+cudaEnv.Append(LINKFLAGS=['-m64', '-arch=sm_20'])#,'-D__int128=long -DBOOST_NOINLINE=__attribute__ ((noinline))'])
+cudaEnv.Program('deviceQuery', 'deviceQuery.cu')
+
+# cudaEnv.Object('brute.o', '#gpu/brute.cu', CXXFILESUFFIX=['.cu'])
+# cudaEnv.Library('gpubrute', Glob('#gpu/*.cu'))
+
+# cudaEnv.Program('gpuxi', 'gpuxi.cu')#, 'boost_program_options'])
+cudaEnv.Program('gpuxi', ['gpuxi.cu','#gpu/brute.cu'],
+    LIBS=['cuda','cudart'], 
+    LIBPATH=['/usr/local/cuda/lib','#/build'],
+    CPPPATH=['/usr/local/cuda/include', '#/gpu'])
+
+# testEnv = Environment(CXX='clang++', CCFLAGS=['-stdlib=libstdc++'])
+# testEnv.Append(CCFLAGS=['-O2', '-g3'])
+
+# gpuxi = testEnv.Program('gpuxi', 'gpuxi.cc', 
+#     LIBS=['cuda','cudart','gpubrute'], 
+#     LIBPATH=['/usr/local/cuda/lib','#/build'], 
+#     CPPPATH=['/usr/local/cuda/include', '#/gpu'])
 
 # Custom install directory
 

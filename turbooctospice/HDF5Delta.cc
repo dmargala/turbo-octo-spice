@@ -41,9 +41,9 @@ template<typename T> void readAttribute(H5::Group& grp, const std::string& name,
 local::HDF5Delta::HDF5Delta(std::string filename) : _filename(filename) {};
 
 // Operator function
-extern "C" herr_t load_quasar(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *opdata);
+//extern "C" herr_t load_quasar(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *opdata);
 
-std::vector<local::Forest> local::HDF5Delta::loadForests(int ncombine, float forestlo, float foresthi, float speclo) {
+std::vector<local::Forest> local::HDF5Delta::loadForests(int ncombine, float forestlo, float foresthi, float speclo, bool debug) {
     // open delta field file
     H5::H5File file(_filename, H5F_ACC_RDONLY);
     H5::Group grp = file.openGroup("delta_field");
@@ -109,12 +109,63 @@ std::vector<local::Forest> local::HDF5Delta::loadForests(int ncombine, float for
 
             return 0;
         }
+
+        static herr_t load_delta_los(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *opdata) {
+            H5::Group targetGroup;
+            targetGroup = H5Gopen2(loc_id, name, H5P_DEFAULT);
+
+            if((nforests % 10000) == 0) std::cout << nforests << " : " << name << std::endl;
+
+            float ra, dec, z;
+            readAttribute(targetGroup, "ra", ra);
+            readAttribute(targetGroup, "dec", dec);
+            readAttribute(targetGroup, "z", z);
+
+            // Read datasets
+            std::vector<float> delta, distance;
+            readDataSet(targetGroup, "delta", delta);
+            readDataSet(targetGroup, "distance", distance);
+
+            // init forest pixels
+            Forest forest;
+            double theta((90.0-dec)*DEG2RAD), phi(ra*DEG2RAD);
+            forest.phi = phi;
+            forest.theta = theta;
+            forest.sth = std::sin(theta);
+            forest.cth = std::cos(theta);
+            forest.sph = std::sin(phi);
+            forest.cph = std::cos(phi);
+
+            // Iterate over pixels
+            float deltaSum, distanceSum, logLambda(std::log10(lyA*(1+z)));
+            for(int i = 0; i < delta.size()-n+1; i += n) {
+                deltaSum = 0; distanceSum = 0;
+                for(int j = 0; j < n; ++j) {
+                    deltaSum += delta[i+j];
+                    distanceSum += distance[i+j]; // ???
+                }
+                // Save the pixel
+                forest.pixels.push_back( {deltaSum/n, logLambda, 1.0, distanceSum/n} );
+            }
+
+            ((std::vector<Forest>*) opdata)->push_back(forest);
+            nforests++;
+
+            targetGroup.close();
+
+            return 0;
+        }
     };
 
     std::vector<Forest> forests;
 
     // Load data
-    herr_t idx = H5Literate(grp.getId(), H5_INDEX_NAME, H5_ITER_INC, NULL, kludge::load_quasar, &forests);
+    if(debug) {
+        herr_t idx = H5Literate(grp.getId(), H5_INDEX_NAME, H5_ITER_INC, NULL, kludge::load_delta_los, &forests);
+    }
+    else {
+        herr_t idx = H5Literate(grp.getId(), H5_INDEX_NAME, H5_ITER_INC, NULL, kludge::load_quasar, &forests);
+    }
 
     return forests;
 }

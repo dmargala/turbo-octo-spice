@@ -70,6 +70,7 @@ std::vector<XiEntry> &xi, std::vector<XiEntry> &xibin) {
 
     for(int i = 0; i < forests.size(); ++i) {
         if((i % 10000) == 0) std::cout << i << std::endl;
+        // if(xibin.size() > 2e7) break;
         auto qi = forests[i];
         numPixels += qi.pixels.size();
         //if(healbins.ang2pix(qi.p) != 4618) continue; // for debugging
@@ -103,13 +104,15 @@ std::vector<XiEntry> &xi, std::vector<XiEntry> &xibin) {
                             xisum[index].di += pi.value;
                             xisum[index].dj += pj.value;
                             xisum[index].wgt += 1.0;
-                            if(index == nbins-1) xibin.push_back( XiEntry{pi.value, pj.value, 1.0} );
+                            // if(index == nbins-1) {
+                            //     xibin.push_back( XiEntry{pi.value, pj.value, 1.0} );
+                            //     //xibin.push_back( XiEntry{pj.value, pi.value, 1.0} );
+                            // }
                             ++numPixelPairsUsed;
                         }
                         catch(lk::RuntimeError const &e) {
                             std::cerr << "no xi bin found for i,j = " << i << ',' << j << std::endl;
                             std::cerr << separation[0] << " " <<  separation[1] << " " << separation[2] << std::endl;
-                            throw e;
                         }
                     }
                 }
@@ -180,6 +183,7 @@ int main(int argc, char **argv) {
         ("polar", "(r,mu,z) binning")
         ("cart", "(r_perp,r_par,z) binning")
         ("fits", "read data from fits files, input must list of targets")
+        ("debug", "use to specify debugging mode")
         ;
     // do the command line parsing now
     po::variables_map vm;
@@ -195,7 +199,8 @@ int main(int argc, char **argv) {
         std::cout << cli << std::endl;
         return 1;
     }
-    bool verbose(vm.count("verbose")), polar(vm.count("polar")), cart(vm.count("cart")), fits(vm.count("fits"));
+    bool verbose(vm.count("verbose")), polar(vm.count("polar")), cart(vm.count("cart")), fits(vm.count("fits")),
+        debug(vm.count("debug"));
 
     // create grid for binning
     lk::AbsBinningCPtr bins1 = lk::createBinning(axis1), bins2 = lk::createBinning(axis2), 
@@ -237,7 +242,7 @@ int main(int argc, char **argv) {
     }
     else {
         tos::HDF5Delta file(infile);
-        forests = file.loadForests(combine, 1040.0, 1200.0, 3650.0);
+        forests = file.loadForests(combine, 1040.0, 1200.0, 3650.0, debug);
     }
 
     // add sight lines to healpix bins and calculate distances to pixels
@@ -245,9 +250,11 @@ int main(int argc, char **argv) {
     for(int i = 0; i < forests.size(); ++i) {
         totalpixels += forests[i].pixels.size();
         healbins.addItem(forests[i].theta, forests[i].phi, i);
-        for(int j = 0; j < forests[i].pixels.size(); ++j) {
-            float z(std::pow(10, forests[i].pixels[j].wavelength)/tos::lyA - 1.0);
-            forests[i].pixels[j].distance = cosmology->getLineOfSightComovingDistance(z);
+        if(!debug) {
+            for(int j = 0; j < forests[i].pixels.size(); ++j) {
+                float z(std::pow(10, forests[i].pixels[j].wavelength)/tos::lyA - 1.0);
+                forests[i].pixels[j].distance = cosmology->getLineOfSightComovingDistance(z);
+            }
         }
     }
     int numHealBinsOccupied(healbins.getNBins());
@@ -285,20 +292,20 @@ int main(int argc, char **argv) {
     }
 
     // Save the estimator results
-    try {
-        std::ofstream out("xibin.txt");
-        for(int index = 0; index < 1e7; ++index) {
-            out << index << ' ' 
-                << xibin[index].didj << ' ' 
-                << xibin[index].di << ' '
-                << xibin[index].dj << ' '
-                << xibin[index].wgt << std::endl;
-        }
-        out.close();
-    }
-    catch(std::exception const &e) {
-        std::cerr << "Error while saving results: " << e.what() << std::endl;
-    }
+    // try {
+    //     std::ofstream out("xibin.txt");
+    //     for(int index = 0; index < xibin.size(); ++index) {
+    //         out << index << ' ' 
+    //             << xibin[index].didj << ' ' 
+    //             << xibin[index].di << ' '
+    //             << xibin[index].dj << ' '
+    //             << xibin[index].wgt << std::endl;
+    //     }
+    //     out.close();
+    // }
+    // catch(std::exception const &e) {
+    //     std::cerr << "Error while saving results: " << e.what() << std::endl;
+    // }
 
     return 0;
 }

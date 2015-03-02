@@ -80,8 +80,8 @@ int nbins, std::vector<double> &xi, long chunksize) {
 
     int nchunks = nrows / chunksize;
 
-    // std::cout << "nchunks: " << nchunks << std::endl;
-    // std::cout << "chunksize: " << chunksize << std::endl;
+    std::cout << "nchunks: " << nchunks << std::endl;
+    std::cout << "chunksize: " << chunksize << std::endl;
 
     DataStruct *data = (DataStruct*) malloc(nrows * sizeof(DataStruct));
 
@@ -93,7 +93,7 @@ int nbins, std::vector<double> &xi, long chunksize) {
         data[i].w = columns[4][i];
     }
 
-    // std::cout << "sizeof data: " << nrows*sizeof(DataStruct)/1024./1024. << " MB" << std::endl;
+    std::cout << "sizeof data: " << nrows*sizeof(DataStruct)/1024./1024. << " MB" << std::endl;
 
     // Look up device properties
     cudaDeviceProp prop;
@@ -101,30 +101,30 @@ int nbins, std::vector<double> &xi, long chunksize) {
 
     // Lookup warpsize
     int warpSize = prop.warpSize;
-    // std::cout << "warp size: " << warpSize << std::endl;
+    std::cout << "warp size: " << warpSize << std::endl;
 
     // Calculate how many threads per block to use
     int maxThreadsPerBlock = prop.maxThreadsPerBlock;
     int nWarpsPerBlock = 8;
     int threadsPerBlock = nWarpsPerBlock*warpSize;
     assert(threadsPerBlock < maxThreadsPerBlock);
-    // std::cout << "threadsPerBlock (used/max): " << threadsPerBlock << "/" << maxThreadsPerBlock << std::endl;
+    std::cout << "threadsPerBlock (used/max): " << threadsPerBlock << "/" << maxThreadsPerBlock << std::endl;
 
     // Check memory requirmenets
     long maxSharedMemoryPerBlock = prop.sharedMemPerBlock;
     long sharedMemoryPerBlock = 2*threadsPerBlock*sizeof(float);
     assert(sharedMemoryPerBlock <=  maxSharedMemoryPerBlock);
-    // std::cout << "Shared memory per block (used/max): " << sharedMemoryPerBlock << "/" << maxSharedMemoryPerBlock << std::endl;
+    std::cout << "Shared memory per block (used/max): " << sharedMemoryPerBlock << "/" << maxSharedMemoryPerBlock << std::endl;
     
     // Determine number of blocks to use
     int limitBlocksDueToSMem = maxSharedMemoryPerBlock / sharedMemoryPerBlock;
     int limitBlocksDueToWarps = threadsPerBlock / warpSize;
     int blocksPerMP = std::min(limitBlocksDueToSMem, limitBlocksDueToWarps);
 
-    // std::cout << "Active thread blocks per MP: " << blocksPerMP << std::endl;
+    std::cout << "Active thread blocks per MP: " << blocksPerMP << std::endl;
     int blocks = blocksPerMP*prop.multiProcessorCount;
-    // std::cout << "Num blocks: " << blocks << std::endl;
-    // std::cout << "Total shared memory (used/max): " << sharedMemoryPerBlock*blocks << "/" << maxSharedMemoryPerBlock << std::endl;
+    std::cout << "Num blocks: " << blocks << std::endl;
+    std::cout << "Total shared memory (used/max): " << sharedMemoryPerBlock*blocks << "/" << maxSharedMemoryPerBlock << std::endl;
 
     int nhistbins = threadsPerBlock;
     
@@ -200,7 +200,7 @@ int nbins, std::vector<double> &xi, long chunksize) {
         printf( "Time to generate (%d):  %3.1f ms\n", ichunk, elapsedTime );
     }
 
-    // std::cout << "Total elapsed time: " << totalElapsedTime << " ms" << std::endl;
+    std::cout << "Total elapsed time: " << totalElapsedTime << " ms" << std::endl;
 
     long usedcounts = 0;
     for(int i = 0; i < nbins; ++i) {
@@ -210,7 +210,7 @@ int nbins, std::vector<double> &xi, long chunksize) {
 
     tempxi.swap(xi);
 
-    // std::cout << "used " << usedcounts << " of " << totalcounts << " pairs." << std::endl;
+    std::cout << "used " << usedcounts << " of " << totalcounts << " pairs." << std::endl;
 
     // Free host and device memory
     HANDLE_ERROR( cudaEventDestroy( start ) );

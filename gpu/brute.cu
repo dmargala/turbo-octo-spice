@@ -124,7 +124,7 @@ int nbins, std::vector<double> &xi, long chunksize) {
     std::cout << "Active thread blocks per MP: " << blocksPerMP << std::endl;
     int blocks = blocksPerMP*prop.multiProcessorCount;
     std::cout << "Num blocks: " << blocks << std::endl;
-    std::cout << "Total shared memory (used/max): " << sharedMemoryPerBlock*blocks << "/" << maxSharedMemoryPerBlock << std::endl;
+    std::cout << "Total shared memory (used/max): " << sharedMemoryPerBlock*blocks << "/" << maxSharedMemoryPerBlock*blocks << std::endl;
 
     int nhistbins = threadsPerBlock;
     

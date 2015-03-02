@@ -33,8 +33,8 @@
 int main(int argc, char **argv) {
 
     // Configure command-line option processing
-    std::string infile("sample-data/delta-64-10.dat"),outfile("output/gpu-xi-64-10.txt"),axis1("[0:200]*50"),axis2("[0:200]*50");
-    long chunksize(1<<12);
+    std::string infile("sample-data/delta-128-1.dat"),outfile("output/gpu-xi-128-1.txt"),axis1("[0:200]*50"),axis2("[0:200]*50");
+    long chunksize(1<<13);
     // po::options_description cli("Correlation function estimator");
     // cli.add_options()
     //     ("help,h", "Prints this info and exits.")

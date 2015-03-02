@@ -197,7 +197,7 @@ int nbins, std::vector<double> &xi, long chunksize) {
         float elapsedTime;
         HANDLE_ERROR( cudaEventElapsedTime( &elapsedTime, start, stop ) );
         totalElapsedTime += elapsedTime;
-        float eta(elapsedTime/(ichunk+1)*nchunks*nchunks*0.5*.001/60.0);
+        float eta((elapsedTime/(ichunk+1)*nchunks*nchunks*0.5-totalElapsedTime)*.001/60.0);
         printf( "Elapsed time for chunk %d:  %3.1f ms, Est. remaining: %3.1f min\n", ichunk, elapsedTime, eta);
     }
 

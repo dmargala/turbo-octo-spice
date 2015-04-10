@@ -33,18 +33,8 @@ namespace lk = likely;
 int main(int argc, char **argv) {
 
     // Configure command-line option processing
-    std::string infile("sample-data/delta-128-1.dat"),outfile("output/gpu-xi-128-1.txt"),axis1("[0:200]*50"),axis2("[0:200]*50");
+    std::string infile, outfile, axis1;
     long chunksize;
-    // if(argc > 1) { 
-    //     std::stringstream str;
-    //     str << argv[1];
-    //     int order;
-    //     str >> order;
-    //     chunksize = 1 << order;
-    // }
-    // else {
-    //     chunksize = 1<<13;
-    // }
     po::options_description cli("Correlation function estimator");
     cli.add_options()
         ("help,h", "Prints this info and exits.")
@@ -55,9 +45,6 @@ int main(int argc, char **argv) {
             "Filename to write correlation function to")
         ("axis1", po::value<std::string>(&axis1)->default_value("[0:200]*50"),
             "Axis-1 binning")
-        ("axis2", po::value<std::string>(&axis2)->default_value("[0:200]*50"),
-            "Axis-2 binning")
-        ("rmu", "Use (r,mu) binning instead of (rP,rT) binning")
         ("chunksize", po::value<long>(&chunksize)->default_value(4096),
             "Number of chunks to split the dataset into.")
         ;
@@ -76,8 +63,7 @@ int main(int argc, char **argv) {
         std::cout << cli << std::endl;
         return 1;
     }
-    // bool verbose(vm.count("verbose")),rmu(vm.count("rmu"));
-    bool verbose(true);
+    bool verbose(vm.count("verbose"));
 
     // Read the input file
     if(0 == infile.length()) {
@@ -86,28 +72,15 @@ int main(int argc, char **argv) {
     }
     std::vector<std::vector<double> > columns(5);
 
-    std::ifstream in(infile.c_str());
-    std::string line;
-    while (std::getline(in, line)) {
-        std::istringstream iss(line);
-        float x, y, z, delta, wgt;
-        if (!(iss >> x >> y >> z >> delta >> wgt)) { break; } // error
-        columns[0].push_back(x);
-        columns[1].push_back(y);
-        columns[2].push_back(z);
-        columns[3].push_back(delta);
-        columns[4].push_back(wgt);
+    try {
+        std::ifstream in(infile.c_str());
+        lk::readVectors(in, columns);
+        in.close();
     }
-
-    // try {
-    //     std::ifstream in(infile.c_str());
-    //     lk::readVectors(in, columns);
-    //     in.close();
-    // }
-    // catch(std::exception const &e) {
-    //     std::cerr << "Error while reading " << infile << ": " << e.what() << std::endl;
-    //     return -3;
-    // }
+    catch(std::exception const &e) {
+        std::cerr << "Error while reading " << infile << ": " << e.what() << std::endl;
+        return -3;
+    }
     if(verbose) {
         std::cout << "Read " << columns[0].size() << " rows from " << infile
             << std::endl;
@@ -116,14 +89,9 @@ int main(int argc, char **argv) {
     // Generate the correlation function grid and run the estimator
     std::vector<double> xi;
     try {
-        //lk::AbsBinningCPtr bins1 = lk::createBinning(axis1), bins2 = lk::createBinning(axis2);
-        // double x1min(bins1->getBinLowEdge(0)), x1max(bins1->getBinHighEdge(bins1->getNBins()-1));
-        // double x2min(bins2->getBinLowEdge(0)), x2max(bins2->getBinHighEdge(bins2->getNBins()-1));
-        // //lk::BinnedGrid grid(bins1,bins2);
-        // int x1nbins = bins1->getNBins();
-
-        double x1min(0), x1max(200);
-        int x1nbins(50);
+        lk::AbsBinningCPtr bins1 = lk::createBinning(axis1);
+        double x1min(bins1->getBinLowEdge(0)), x1max(bins1->getBinHighEdge(bins1->getNBins()-1));
+        int x1nbins = bins1->getNBins();
 
         bruteGPU(columns,x1min,x1max,x1nbins,xi,chunksize);
     }

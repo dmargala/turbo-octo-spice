@@ -40,19 +40,20 @@ def main():
 
     print 'test stuff:'
 
-    test_theta = 5./6.*np.pi/2
-    test_phi = 7./6.*np.pi
+    test_theta = 1.58853
+    test_phi = 0.154
     testvec = hp.ang2vec(test_theta, test_phi)
+    testmax = 0.03
 
     print '\ttheta, phi:', test_theta, test_phi
     print '\t3d vec:', testvec
     print '\tpixel index:', hp.ang2pix(nside, test_theta, test_phi)
     print '\tclosest neighbors:', hp.pixelfunc.get_all_neighbours(nside, test_theta, test_phi)
-    print '\tn neighbors within max ang scale:', len(hp.query_disc(nside, testvec, maxang, inclusive=True))
+    print '\tneighbors within max ang scale:', hp.query_disc(nside, testvec, testmax, inclusive=True)
 
-    include_pix = hp.query_disc(nside, hp.ang2vec(5./6.*np.pi/2, 7./6.*np.pi), 2*maxang, inclusive=True)
+    # include_pix = hp.query_disc(nside, hp.ang2vec(5./6.*np.pi/2, 7./6.*np.pi), 2*maxang, inclusive=True)
 
-    print '\tn pixels for test:', len(include_pix)
+    # print '\tn pixels for test:', len(include_pix)
 
     qso_pos = np.loadtxt(args.input)
     print 'Shape of input data: ', qso_pos.shape
@@ -79,8 +80,8 @@ def main():
         q = Quasar(theta, phi, z)
         map_index = hp.ang2pix(nside, theta, phi)
 
-        if map_index not in include_pix:
-            continue
+        # if map_index not in include_pix:
+        #     continue
         #q.map_index = map_index
         if map_index in m:
             m[map_index].append(i)
@@ -105,8 +106,7 @@ def main():
                 p_phi = qso_pos[nearby_quasars,0]
                 p_theta = qso_pos[nearby_quasars,1]
 
-                #p1.sth*p2.sth*(p1.cph*p2.cph + p1.sph*p2.sph) + p1.cth*p2.cth;
-                angdist = np.sin(q.theta)*np.sin(p_theta)*(np.cos(q.phi)*np.cos(p_phi) + np.sin(q.phi)*np.sin(p_phi)) + np.cos(q.theta)*np.cos(p_theta)
+                angdist = np.sin(q.theta)*np.sin(p_theta) + np.cos(q.theta)*np.cos(p_theta)*(np.cos(q.phi)*np.cos(p_phi) + np.sin(q.phi)*np.sin(p_phi))
 
                 for p_i, p_index in enumerate(nearby_quasars):
                     theta, phi, z = qso_pos[p_index]
@@ -126,7 +126,7 @@ def main():
 
     hp.mollview(mm.filled(), rot=(270,0,0), flip='geo')
 
-    #plt.show()
+    plt.show()
 
 
 

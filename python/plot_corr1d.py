@@ -17,10 +17,16 @@ else:
     outfilename = os.path.join(prefix, 'corr1d')
 
 def loadXi(name):
-    filename = os.path.join(prefix,'healxi-%s' % name)
+    filename = os.path.join(prefix, name)
     index, r, mu, z, didj, di, dj, wgt = np.loadtxt(filename+'.txt', unpack=True)
     err = 1.0/np.sqrt(wgt)
     return r, didj, err
+
+def loadXiSimple(name):
+    filename = os.path.join(prefix, name)
+    index, didj = np.loadtxt(filename+'.txt', unpack=True)
+    return index, didj
+
 
 def C_l(ell, beta):
     if ell == 0:
@@ -42,25 +48,25 @@ r_fid, xi4_fid = loadMultipole(4)
 beta = 0
 xi_fid = C_l(0, beta)*xi0_fid + C_l(2, beta)*xi2_fid + C_l(4, beta)*xi4_fid
 
-r, xi1024, err1024 = loadXi('1024-5')
-r, xi512, err512 = loadXi('512-10')
-r, xi512b, err512b = loadXi('512-10.2')
+r, xi512, err512 = loadXi('healxi-512-10')
+rtest, xitest, errtest = loadXi('healxi-256-2')
+gpuindex, gpuxi = loadXiSimple('gpulos-xi-256-2')
+rgpu = 4*(gpuindex+.5)
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(8, 6))
 
-plt.plot(r_fid, r_fid**2*(xi_fid/4.0), 'r', label='PlanckWPBestFitLCDM')
+plt.plot(r_fid, r_fid**2*(xi_fid), 'r', label='PlanckWPBestFitLCDM')
 
-plt.plot(r, r**2*(xi512), 'b', label='cosmo grf (512/10)')
-plt.errorbar(r, r**2*(xi512), yerr=r**2*err512, color='b')
+plt.plot(rtest, rtest**2*(xitest), 'b', label='heal xi (256-2)')
+# plt.errorbar(r, r**2*(xi512test), yerr=r**2*err512test, color='b')
 
-plt.plot(r, r**2*(2*xi512b), 'b--', label='cosmo grf (512/10)')
-
-plt.plot(r, r**2*(xi1024), 'g', label='cosmo grf (1024/5)')
-plt.errorbar(r, r**2*(xi1024), yerr=r**2*err1024, color='g')
+plt.plot(rgpu, rgpu**2*(gpuxi), 'b', label='gpu xi los (256-2)')
+# plt.errorbar(r, r**2*(xi512), yerr=r**2*err512, color='b')
 
 plt.legend()
 
 plt.xlim(0, 200)
+plt.ylim(-5,10)
 plt.ylabel('$r^2 \\xi(|r|)$')
 plt.xlabel('Comoving Separation $|r|$ (Mpc/h)')
 plt.grid(ls='-', alpha=.3)

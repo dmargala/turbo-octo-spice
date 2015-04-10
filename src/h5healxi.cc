@@ -5,6 +5,8 @@
 #include <vector>
 #include <string>
 
+#include <boost/progress.hpp>
+#include <boost/timer.hpp>
 #include "boost/program_options.hpp"
 
 #include "cosmo/cosmo.h"
@@ -17,7 +19,7 @@ namespace lk = likely;
 namespace tos = turbooctospice;
 
 double angularSeparation(double cth1, double sth1, double cph1, double sph1, double cth2, double sth2, double cph2, double sph2) {
-    return sth1*sth2 + cth1*cth2*(cph1*cph2 + sph1*sph2);
+    return sth1*sth2 + cth1*cth2*(sph1*sph2 + cph1*cph2);
 }
 
 double angularSeparation(tos::Forest const &q1, tos::Forest const &q2) {
@@ -51,6 +53,10 @@ void healxi(tos::HealpixBinsI const &healbins, std::vector<tos::Forest> const &f
 tos::AbsTwoPointGridPtr const &grid, double minAng, double maxAng,
 std::vector<XiEntry> &xi, std::vector<XiEntry> &xibin) {
 
+    unsigned long numLOS(forests.size());
+
+    std::cout << "Number of los: " << numLOS << std::endl;
+
     // stat counters
     unsigned long numHealpixBinsSearched(0), numLOSPairs(0), numLOSPairsUsed(0), 
         numPixels(0), numPixelPairs(0), numPixelPairsUsed(0);
@@ -60,16 +66,29 @@ std::vector<XiEntry> &xi, std::vector<XiEntry> &xibin) {
     //std::vector<double> dsum(nbins,0), wsum(nbins,0), disum(nbins,0), djsum(nbins,0), wisum(nbins,0);
     std::vector<XiEntry> xisum(nbins, {});
 
+    std::vector<double> dsum(nbins,0), wsum(nbins,0);
+
     // to avoid calling trig functions inside loop
     double cosmin(std::cos(maxAng)), cosmax(std::cos(minAng));
 
     // allocate temporary vectors before loop
     std::vector<int> neighbors;
+    int binIndex;
+    double distSq, pi_dist_sq, pi_projection_times_two;
+    float weight, dprod;
     std::vector<int> binIndices(3);
     std::vector<double> separation(3);
 
+    double min_dist = 0;
+    double min_distsq = min_dist*min_dist;
+    double max_distsq = 200*200;
+    double bin_width = 4;
+
+    boost::progress_display show_progress( forests.size() );
+
     for(int i = 0; i < forests.size(); ++i) {
-        if((i % 10000) == 0) std::cout << i << std::endl;
+        ++show_progress;
+        // if((i % 10000) == 0) std::cout << i << std::endl;
         // if(xibin.size() > 2e7) break;
         auto qi = forests[i];
         numPixels += qi.pixels.size();
@@ -91,19 +110,26 @@ std::vector<XiEntry> &xi, std::vector<XiEntry> &xibin) {
                 double thetaij = std::acos(cosij);
                 ++numLOSPairsUsed;
                 // accumulate statistics for pixel pairs 
-                for(auto pi : qi.pixels) {
-                    for(auto pj : qj.pixels) {
+                for(auto &pi : qi.pixels) {
+                    pi_dist_sq = pi.distance*pi.distance;
+                    pi_projection_times_two = 2*pi.distance*cosij;
+                    for(auto &pj : qj.pixels) {
                         ++numPixelPairs;
                         // check pairs are within our binning grid
-                        if(!grid->getSeparation(pi, pj, cosij, thetaij, separation)) continue;
+                        distSq = pi_dist_sq + (pj.distance - pi_projection_times_two)*pj.distance;
+                        if(distSq >= max_distsq || distSq < min_distsq) continue;
+                        binIndex = int((std::sqrt(distSq) - min_dist)/bin_width);
+                        //if(!grid->getBinIndex(pi, pj, cosij, thetaij, binIndex)) continue;
                         // if(!grid->checkSeparation(separation)) continue;
                         //
                         try {
-                            int index = grid->getIndexNoCheck(separation, binIndices);
-                            xisum[index].didj += pi.value*pj.value;
-                            xisum[index].di += pi.value;
-                            xisum[index].dj += pj.value;
-                            xisum[index].wgt += 1.0;
+                            weight = pi.weight*pj.weight;
+                            dprod = weight*pi.value*pj.value;
+                            // int binIndex = grid->getIndexNoCheck(separation, binIndices);
+                            dsum[binIndex] += dprod;
+                            // xisum[binIndex].di += pi.weight*pi.value;
+                            // xisum[binIndex].dj += pj.weight*pj.value;
+                            wsum[binIndex] += weight;
                             // if(index == nbins-1) {
                             //     xibin.push_back( XiEntry{pi.value, pj.value, 1.0} );
                             //     //xibin.push_back( XiEntry{pj.value, pi.value, 1.0} );
@@ -122,10 +148,9 @@ std::vector<XiEntry> &xi, std::vector<XiEntry> &xibin) {
 
     // copy data to output vectors
     for(int index = 0; index < nbins; ++index) {
-        if(xisum[index].wgt > 0) {
-            xisum[index].didj /= xisum[index].wgt;
-            xisum[index].di /= xisum[index].wgt;
-            xisum[index].dj /= xisum[index].wgt;
+        if(wsum[index] > 0) {
+            xisum[index].didj = dsum[index]/wsum[index];
+            xisum[index].wgt = wsum[index];
         }
     }
     xisum.swap(xi);
@@ -134,7 +159,6 @@ std::vector<XiEntry> &xi, std::vector<XiEntry> &xibin) {
     std::cout << "Number of Healpix bins searched: " << numHealpixBinsSearched << std::endl;
 
     // line of sight pair statistics 
-    unsigned long numLOS(forests.size());
     unsigned long numLOSPairsTotal = (numLOS*(numLOS-1))/2;
     double fracLOSPairsConsidered = static_cast<double>(numLOSPairs)/numLOSPairsTotal;
     double fracLOSPairsUsed = static_cast<double>(numLOSPairsUsed)/numLOSPairs;
@@ -258,7 +282,8 @@ int main(int argc, char **argv) {
         }
     }
     int numHealBinsOccupied(healbins.getNBins());
-    std::cout << "Number of Healpix bins occupied: " << numHealBinsOccupied << " (" << static_cast<double>(numHealBinsOccupied)/(12*std::pow(4, order)) << ")" << std::endl;
+    std::cout << "Number of Healpix bins occupied: " << numHealBinsOccupied 
+        << " (" << static_cast<double>(numHealBinsOccupied)/(12*std::pow(4, order)) << ")" << std::endl;
     std::cout << "Average number of pixels per LOS: " <<  static_cast<double>(totalpixels)/forests.size() << std::endl;
 
     // Generate the correlation function grid and run the estimator

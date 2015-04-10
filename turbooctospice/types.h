@@ -38,9 +38,9 @@ namespace turbooctospice {
 
     /// Represents a LyA forest pixel 
     struct ForestPixel {
-        float value, wavelength, weight, distance;
-        ForestPixel(float val, float wave, float wgt, float dist) 
-        : value(val), wavelength(wave), weight(wgt), distance(dist) {};
+        float value, loglam, weight, distance;
+        ForestPixel(float val, float loglambda, float wgt, float dist) 
+        : value(val), loglam(loglambda), weight(wgt), distance(dist) {};
     };
 
     /// Represents a LyA forest sight line

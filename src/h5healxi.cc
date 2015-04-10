@@ -50,7 +50,7 @@ struct XiEntry {
 };
 
 void healxi(tos::HealpixBinsI const &healbins, std::vector<tos::Forest> const &forests,
-tos::AbsTwoPointGridPtr const &grid, double minAng, double maxAng,
+tos::AbsTwoPointGridPtr const &grid, double maxAng,
 std::vector<XiEntry> &xi, std::vector<XiEntry> &xibin) {
 
     unsigned long numLOS(forests.size());
@@ -69,7 +69,7 @@ std::vector<XiEntry> &xi, std::vector<XiEntry> &xibin) {
     std::vector<double> dsum(nbins,0), wsum(nbins,0);
 
     // to avoid calling trig functions inside loop
-    double cosmin(std::cos(maxAng)), cosmax(std::cos(minAng));
+    double cosmin(std::cos(maxAng));
 
     // allocate temporary vectors before loop
     std::vector<int> neighbors;
@@ -88,11 +88,8 @@ std::vector<XiEntry> &xi, std::vector<XiEntry> &xibin) {
 
     for(int i = 0; i < forests.size(); ++i) {
         ++show_progress;
-        // if((i % 10000) == 0) std::cout << i << std::endl;
-        // if(xibin.size() > 2e7) break;
         auto qi = forests[i];
         numPixels += qi.pixels.size();
-        //if(healbins.ang2pix(qi.p) != 4618) continue; // for debugging
         auto neighbors = healbins.getBinIndicesWithinRadius(qi.theta, qi.phi, maxAng);
         // search neighboring healpix bins
         for(int neighbor : neighbors) {
@@ -106,7 +103,7 @@ std::vector<XiEntry> &xi, std::vector<XiEntry> &xibin) {
                 auto qj = forests[j];
                 // check angular separation
                 double cosij(angularSeparation(qi, qj));
-                if(cosij <= cosmin || cosij >= cosmax) continue;
+                if(cosij <= cosmin) continue;
                 double thetaij = std::acos(cosij);
                 ++numLOSPairsUsed;
                 // accumulate statistics for pixel pairs 
@@ -119,27 +116,13 @@ std::vector<XiEntry> &xi, std::vector<XiEntry> &xibin) {
                         distSq = pi_dist_sq + (pj.distance - pi_projection_times_two)*pj.distance;
                         if(distSq >= max_distsq || distSq < min_distsq) continue;
                         binIndex = int((std::sqrt(distSq) - min_dist)/bin_width);
-                        //if(!grid->getBinIndex(pi, pj, cosij, thetaij, binIndex)) continue;
-                        // if(!grid->checkSeparation(separation)) continue;
-                        //
-                        try {
-                            weight = pi.weight*pj.weight;
-                            dprod = weight*pi.value*pj.value;
-                            // int binIndex = grid->getIndexNoCheck(separation, binIndices);
-                            dsum[binIndex] += dprod;
-                            // xisum[binIndex].di += pi.weight*pi.value;
-                            // xisum[binIndex].dj += pj.weight*pj.value;
-                            wsum[binIndex] += weight;
-                            // if(index == nbins-1) {
-                            //     xibin.push_back( XiEntry{pi.value, pj.value, 1.0} );
-                            //     //xibin.push_back( XiEntry{pj.value, pi.value, 1.0} );
-                            // }
-                            ++numPixelPairsUsed;
-                        }
-                        catch(lk::RuntimeError const &e) {
-                            std::cerr << "no xi bin found for i,j = " << i << ',' << j << std::endl;
-                            std::cerr << separation[0] << " " <<  separation[1] << " " << separation[2] << std::endl;
-                        }
+
+                        // accumulate pixel pair
+                        weight = pi.weight*pj.weight;
+                        dprod = weight*pi.value*pj.value;
+                        dsum[binIndex] += dprod;
+                        wsum[binIndex] += weight;
+                        ++numPixelPairsUsed;
                     }
                 }
             }
@@ -207,7 +190,8 @@ int main(int argc, char **argv) {
         ("polar", "(r,mu,z) binning")
         ("cart", "(r_perp,r_par,z) binning")
         ("fits", "read data from fits files, input must list of targets")
-        ("debug", "use to specify debugging mode")
+        ("skip-ngc", "only use sgc sight lines")
+        ("skip-sgc", "only use ngc sight lines")
         ;
     // do the command line parsing now
     po::variables_map vm;
@@ -224,33 +208,17 @@ int main(int argc, char **argv) {
         return 1;
     }
     bool verbose(vm.count("verbose")), polar(vm.count("polar")), cart(vm.count("cart")), fits(vm.count("fits")),
-        debug(vm.count("debug"));
+         skip_ngc(vm.count("skip-ngc")), skip_sgc(vm.count("skip-sgc"));
 
-    // create grid for binning
-    lk::AbsBinningCPtr bins1 = lk::createBinning(axis1), bins2 = lk::createBinning(axis2), 
-        bins3 = lk::createBinning(axis3);
-    tos::AbsTwoPointGridPtr grid;
-    if(polar) { 
-        grid.reset(new tos::PolarGrid(bins1, bins2, bins3)); 
-    } 
-    else if (cart) { 
-        grid.reset(new tos::CartesianGrid(bins1, bins2, bins3)); 
-    } 
-    else {
-        grid.reset(new tos::QuasarGrid(bins1, bins2, bins3));
+    if(skip_ngc && skip_sgc) {
+        std::cerr << "Can't specify options '--skip-sgc' and '--skip-ngc' together. Use one or neither." << std::endl;
+        return -1;
     }
 
     // set up cosmology
     cosmo::AbsHomogeneousUniversePtr cosmology;
     if(OmegaMatter == 0) OmegaMatter = 1 - OmegaLambda;
     cosmology.reset(new cosmo::LambdaCdmUniverse(OmegaLambda,OmegaMatter));
-
-    // the minimum redshift sets the angular scale we will need to consider
-    double zmin(std::pow(10, bins3->getBinLowEdge(0))-1);
-    double scale(cosmology->getTransverseComovingScale(zmin));
-    double minAng(grid->minAngularScale(scale)), maxAng(grid->maxAngularScale(scale));
-    std::cout << "Transverse comoving scale at z = " << zmin <<  " (Mpc/h): " << scale << std::endl;
-    std::cout << "Max (min) angular scale at z = " << zmin <<  " (rad): " << maxAng  << " (" << minAng << ")" << std::endl;
 
     // initialize Healpix bins
     tos::HealpixBinsI healbins(order);
@@ -266,30 +234,73 @@ int main(int argc, char **argv) {
     }
     else {
         tos::HDF5Delta file(infile);
-        forests = file.loadForests(combine, 1040.0, 1200.0, 3650.0, debug);
+        forests = file.loadForests(!skip_ngc, !skip_sgc);
     }
 
     // add sight lines to healpix bins and calculate distances to pixels
     unsigned long totalpixels(0);
+    double min_loglam(forests[0].pixels[0].loglam), max_loglam(forests[0].pixels[0].loglam);
     for(int i = 0; i < forests.size(); ++i) {
-        totalpixels += forests[i].pixels.size();
+        auto los = forests[i].pixels;
+
+        totalpixels += los.size();
         healbins.addItem(forests[i].theta, forests[i].phi, i);
-        if(!debug) {
-            for(int j = 0; j < forests[i].pixels.size(); ++j) {
-                float z(std::pow(10, forests[i].pixels[j].wavelength)/tos::lyA - 1.0);
-                forests[i].pixels[j].distance = cosmology->getLineOfSightComovingDistance(z);
-            }
+
+        // find minimum loglam
+        if(los[0].loglam < min_loglam) {
+            min_loglam = los[0].loglam;
         }
+        if(los[los.size()-1].loglam > max_loglam) {
+            max_loglam = los[los.size()-1].loglam;
+        }
+
+        // for(int j = 0; j < los.size(); ++j) {
+        //     float z(std::pow(10, los[j].loglam)/tos::lyA - 1.0);
+        //     los[j].distance = cosmology->getLineOfSightComovingDistance(z);
+        // }
     }
+    double zmin(std::pow(10, min_loglam-tos::logLyA)-1);
+    double zmax(std::pow(10, max_loglam-tos::logLyA)-1);
+
     int numHealBinsOccupied(healbins.getNBins());
+    std::cout << "Read " << totalpixels << " from " << forests.size() << " lines of sight (LOS)" << std::endl;
+    std::cout << "Average number of pixels per LOS: " <<  static_cast<double>(totalpixels)/forests.size() << std::endl;
     std::cout << "Number of Healpix bins occupied: " << numHealBinsOccupied 
         << " (" << static_cast<double>(numHealBinsOccupied)/(12*std::pow(4, order)) << ")" << std::endl;
-    std::cout << "Average number of pixels per LOS: " <<  static_cast<double>(totalpixels)/forests.size() << std::endl;
+
+    // create grid for binning
+    lk::AbsBinningCPtr bins1 = lk::createBinning(axis1), bins2 = lk::createBinning(axis2), 
+        bins3 = lk::createBinning(axis3);
+    tos::AbsTwoPointGridPtr grid;
+    if(polar) { 
+        grid.reset(new tos::PolarGrid(bins1, bins2, bins3)); 
+    } 
+    else if (cart) { 
+        std::cerr << "Not implemented yet!" << std::endl;
+        return -1;
+        grid.reset(new tos::CartesianGrid(bins1, bins2, bins3)); 
+    } 
+    else {
+        std::cerr << "Not implemented yet!" << std::endl;
+        return -1;
+        grid.reset(new tos::QuasarGrid(bins1, bins2, bins3));
+    }
+    
+    // the minimum redshift sets the angular scale we will need to consider
+    double scale(cosmology->getTransverseComovingScale(zmin));
+    double maxAng(grid->maxAngularScale(scale));
+    std::cout << "Transverse comoving scale at z = " << zmin <<  " (Mpc/h): " << scale << std::endl;
+    std::cout << "Max angular scale at z = " << zmin <<  " (rad): " << maxAng  << std::endl;
+
+    std::cout << "Transverse comoving scale at z = " << zmax <<  " (Mpc/h): " 
+        << cosmology->getTransverseComovingScale(zmax) << std::endl;
+    std::cout << "Max angular scale at z = " << zmax <<  " (rad): " 
+        << grid->maxAngularScale(cosmology->getTransverseComovingScale(zmax))  << std::endl;
 
     // Generate the correlation function grid and run the estimator
     std::vector<XiEntry> xi, xibin;
     try {
-        healxi(healbins, forests, grid, minAng, maxAng, xi, xibin);//, weights, meani, meanj);
+        healxi(healbins, forests, grid, maxAng, xi, xibin);//, weights, meani, meanj);
     }
     catch(std::exception const &e) {
         std::cerr << "Error while running the estimator: " << e.what() << std::endl;
@@ -315,22 +326,6 @@ int main(int argc, char **argv) {
     catch(std::exception const &e) {
         std::cerr << "Error while saving results: " << e.what() << std::endl;
     }
-
-    // Save the estimator results
-    // try {
-    //     std::ofstream out("xibin.txt");
-    //     for(int index = 0; index < xibin.size(); ++index) {
-    //         out << index << ' ' 
-    //             << xibin[index].didj << ' ' 
-    //             << xibin[index].di << ' '
-    //             << xibin[index].dj << ' '
-    //             << xibin[index].wgt << std::endl;
-    //     }
-    //     out.close();
-    // }
-    // catch(std::exception const &e) {
-    //     std::cerr << "Error while saving results: " << e.what() << std::endl;
-    // }
 
     return 0;
 }

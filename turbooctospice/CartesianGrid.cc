@@ -21,7 +21,7 @@ double const &cosij, double const &thetaij, std::vector<double> &separation) con
     separation[1] = std::sqrt(distSq - separation[0]*separation[0]);
     // separation[1] = thetaij*cosmology->getTransverseComovingScale(separation[2]);
     if(separation[1] < xmin[1] || separation[1] >= xmax[1]) return false;
-    separation[2] = 0.5*(a.wavelength+b.wavelength) - logLyA;
+    separation[2] = 0.5*(a.loglam+b.loglam) - logLyA;
     if(separation[2] < xmin[2] || separation[2] >= xmax[2]) return false;
     return true;
 }

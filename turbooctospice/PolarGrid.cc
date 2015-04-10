@@ -23,3 +23,19 @@ double const &cosij, double const &thetaij, std::vector<double> &separation) con
     if(separation[2] < xmin[2] || separation[2] >= xmax[2]) return false;
     return true;
 }
+
+bool local::PolarGrid::getBinIndex(ForestPixel const &a, ForestPixel const &b,
+double const &cosij, double const &thetaij, int &binIndex) const {
+    binIndex = 0;
+    double distSq = a.distance*a.distance + b.distance*b.distance - 2*a.distance*b.distance*cosij;
+    if(distSq >= x1maxSq || distSq < x1minSq) return false;
+    double dist = std::sqrt(distSq);
+    binIndex = int((dist - 0)/4.0);
+    // double mu = std::fabs(a.distance-b.distance)/dist;
+    // if(mu < xmin[1] || mu >= xmax[1]) return false;
+    // binIndex = int((mu - 0)/1.0) + binIndex*50;
+    // double z = 0.5*(a.wavelength+b.wavelength) - logLyA;
+    // if(z < xmin[2] || z >= xmax[2]) return false;
+    // binIndex = 0 + binIndex*1;
+    return true;
+}

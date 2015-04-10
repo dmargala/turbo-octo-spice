@@ -32,6 +32,9 @@ namespace turbooctospice {
         /// @param separation Output vector containing the separation of the pixel pairs along each axis
         bool getSeparation(ForestPixel const &a, ForestPixel const &b,
             double const &cosij, double const &thetaij, std::vector<double> &separation) const;
+
+        bool getBinIndex(ForestPixel const &a, ForestPixel const &b, 
+            double const &cosij, double const &thetaij, int &binIndex) const;
     private:
         double x1minSq, x1maxSq;
     }; // PolarGrid

@@ -48,6 +48,9 @@ namespace turbooctospice {
         /// @param separation Output vector containing the separation of the pixel pairs along each axis
         virtual bool getSeparation(ForestPixel const &a, ForestPixel const &b, 
             double const &cosij, double const &thetaij, std::vector<double> &separation) const = 0;
+
+        virtual bool getBinIndex(ForestPixel const &a, ForestPixel const &b, 
+            double const &cosij, double const &thetaij, int &binIndex) const = 0;
     protected:
         std::vector<double> xmin, xmax;
         //enum { LOS = 0, TRANSVERSE = 1, REDSHIFT = 2 };

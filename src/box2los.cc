@@ -48,8 +48,8 @@ void writeFloatDSet(H5::Group &group, std::string const &name, std::vector<float
 int main(int argc, char **argv) {
 
     // Configure command-line option processing
-    int nx,ny,nz,nlos;
-    double spacing;
+    int nx, ny, nz, nlos, nforest;
+    double spacing, rmin, rmax, redshift;
     std::string infile, outfile;
     po::options_description cli("Tri-cubic interpolation test program");
     cli.add_options()
@@ -65,10 +65,18 @@ int main(int argc, char **argv) {
             "Number of subdivisions along grid y axis.")
         ("nz", po::value<int>(&nz)->default_value(0),
             "Number of subdivisions along grid z axis.")
-        ("spacing", po::value<double>(&spacing)->default_value(20),
+        ("spacing", po::value<double>(&spacing)->default_value(2),
             "Spacing between grid points")
         ("nlos", po::value<int>(&nlos)->default_value(1000),
             "Number of random points for testing the interpolator.")
+        ("rmin", po::value<double>(&rmin)->default_value(4000),
+            "Min forest distance")
+        ("rmax", po::value<double>(&rmax)->default_value(4300),
+            "Max forest distance")
+        ("nforest", po::value<int>(&nforest)->default_value(100),
+            "Number of forest pixels")
+        ("redshift", po::value<double>(&redshift)->default_value(3),
+            "Default quasar redshift")
         ;
 
     // do the command line parsing now
@@ -131,14 +139,12 @@ int main(int argc, char **argv) {
             }
         }
         // Interpolate in this datacube at random points.
-        lk::TriCubicInterpolator interpolator(data,spacing,nx,ny,nz);
+        lk::TriCubicInterpolator interpolator(data, spacing, nx, ny, nz);
         lk::RandomPtr random = lk::Random::instance();
         random->setSeed(1234);
         lk::WeightedAccumulator stats;
-        double lx(nx*spacing), ly(ny*spacing), lz(nz*spacing);
-        double rmin(4000.0), rmax(4300.0);
-        int nforest(100);
         double dr = (rmax-rmin)/(nforest+1);
+        std::cout << "rmin, rmax, dr: " << rmin << ", " << rmax << ", " << dr << std::endl;
         for(int trial = 0; trial < nlos; ++trial) {
             double phi = piovertwo*random->getUniform();
             double theta = std::acos(random->getUniform());
@@ -150,7 +156,7 @@ int main(int argc, char **argv) {
 
             writeFloatAttr(target, "ra", rad2deg*phi);
             writeFloatAttr(target, "dec", rad2deg*(piovertwo-theta));
-            writeFloatAttr(target, "z", 3.0);
+            writeFloatAttr(target, "z", redshift);
 
             std::vector<float> delta, distance;
             for(int i = 0; i < nforest; ++i) {

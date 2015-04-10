@@ -25,3 +25,9 @@ double const &cosij, double const &thetaij, std::vector<double> &separation) con
     if(separation[2] < xmin[2] || separation[2] >= xmax[2]) return false;
     return true;
 }
+
+
+bool local::CartesianGrid::getBinIndex(ForestPixel const &a, ForestPixel const &b,
+double const &cosij, double const &thetaij, int &binIndex) const {
+    return false;
+}

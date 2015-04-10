@@ -19,8 +19,8 @@ bucketxi = env.Program('bucketxi', 'bucketxi.cc', LIBS=common)
 #kdtreetest = env.Program('kdtreetest', 'kdtreetest.cc', LIBS=common+['kdtree'])
 
 ### Requires HealPix library
-healCppPath = ['/Users/daniel/source/Healpix_3.11/src/cxx/basic_gcc/include']
-healLibPath = ['/Users/daniel/source/Healpix_3.11/src/cxx/basic_gcc/lib']
+healCppPath = ['/Users/daniel/source/Healpix_3.20/src/cxx/osx/include']
+healLibPath = ['/Users/daniel/source/Healpix_3.20/src/cxx/osx/lib']
 healLibs = ['healpix_cxx', 'cxxsupport']
 # healOptions = {'LIBS':healLibs, 'LIBPATH':healLibs, 'CPPPATH':healCppPath}
 
@@ -28,6 +28,7 @@ h5Libs = ['hdf5','hdf5_cpp']
 #read_delta = env.Program('read_delta', 'read_delta.cc', LIBS=common+h5Libs)
 
 box2los = env.Program('box2los', 'box2los.cc', LIBS=common+h5Libs)
+box2los_text = env.Program('box2los_text', 'box2los_text.cc', LIBS=common)
 
 # healtest = env.Program('healtest', 'healtest.cc',**healOptions)
 #healtest = env.Program('healtest', 'healtest.cc', LIBS=common+healLibs, LIBPATH=healLibPath, CPPPATH=healCppPath )
@@ -67,10 +68,10 @@ cudaEnv.Program('deviceQuery', 'deviceQuery.cu')
 # cudaEnv.Library('gpubrute', Glob('#gpu/*.cu'))
 
 # cudaEnv.Program('gpuxi', 'gpuxi.cu')#, 'boost_program_options'])
-cudaEnv.Program('gpuxi', ['gpuxi.cu','#gpu/brute.cu'],
-    LIBS=['cuda','cudart'], 
-    LIBPATH=['/usr/local/cuda/lib','#/build'],
-    CPPPATH=['/usr/local/cuda/include', '#/gpu'])
+# cudaEnv.Program('gpuxi', ['gpuxi.cu','#gpu/brute.cu'],
+#     LIBS=['cuda','cudart'], 
+#     LIBPATH=['/usr/local/cuda/lib','#/build'],
+#     CPPPATH=['/usr/local/cuda/include', '#/gpu'])
 
 # testEnv = Environment(CXX='clang++', CCFLAGS=['-stdlib=libstdc++'])
 # testEnv.Append(CCFLAGS=['-O2', '-g3'])

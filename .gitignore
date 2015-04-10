@@ -6,6 +6,11 @@
 .sconsign.dblite
 .sconf_temp
 *.log
+*.ipynb
+*.hdf5
+*sublime*
+*.npy
+*.out
 /output
 /html
 /bin

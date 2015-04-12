@@ -141,8 +141,8 @@ std::vector<local::Forest> local::HDF5Delta::loadForests(bool keep_ngc, bool kee
                 double theta((90.0-dec)*DEG2RAD), phi(ra*DEG2RAD);
                 forest.phi = phi;
                 forest.theta = theta;
-                forest.sth = std::sin(theta);
-                forest.cth = std::cos(theta);
+                forest.sdec = std::sin(dec*DEG2RAD);
+                forest.cdec = std::cos(dec*DEG2RAD);
                 forest.sph = std::sin(phi);
                 forest.cph = std::cos(phi);
 

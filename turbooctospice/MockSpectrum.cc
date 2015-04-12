@@ -55,8 +55,8 @@ local::Forest local::MockSpectrum::getForest(
     double theta((90.0-_dec)*DEG2RAD), phi(_ra*DEG2RAD);
     forest.phi = phi;
     forest.theta = theta;
-    forest.sth = std::sin(theta);
-    forest.cth = std::cos(theta);
+    forest.sdec = std::sin(_dec*DEG2RAD);
+    forest.cdec = std::cos(_dec*DEG2RAD);
     forest.sph = std::sin(phi);
     forest.cph = std::cos(phi);
     // Max and min wavelength defined by lyman alpha forest range and spec cutoff

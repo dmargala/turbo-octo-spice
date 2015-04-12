@@ -45,7 +45,7 @@ namespace turbooctospice {
 
     /// Represents a LyA forest sight line
     struct Forest {
-        double theta, phi, sth, cth, sph, cph;
+        double theta, phi, sdec, cdec, sph, cph;
         std::vector<ForestPixel> pixels;
     };
 

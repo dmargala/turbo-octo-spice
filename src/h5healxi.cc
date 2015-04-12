@@ -18,12 +18,12 @@ namespace po = boost::program_options;
 namespace lk = likely;
 namespace tos = turbooctospice;
 
-double angularSeparation(double cth1, double sth1, double cph1, double sph1, double cth2, double sth2, double cph2, double sph2) {
-    return sth1*sth2 + cth1*cth2*(sph1*sph2 + cph1*cph2);
+double angularSeparation(double cdec1, double sdec1, double cph1, double sph1, double cdec2, double sdec2, double cph2, double sph2) {
+    return sdec1*sdec2 + cdec1*cdec2*(sph1*sph2 + cph1*cph2);
 }
 
 double angularSeparation(tos::Forest const &q1, tos::Forest const &q2) {
-    return angularSeparation(q1.cth, q1.sth, q1.cph, q1.sph, q2.cth, q2.sth, q2.cph, q2.sph);
+    return angularSeparation(q1.cdec, q1.sdec, q1.cph, q1.sph, q2.cdec, q2.sdec, q2.cph, q2.sph);
 }
 
 std::vector<std::string> readTargetList(std::string const &infile) {

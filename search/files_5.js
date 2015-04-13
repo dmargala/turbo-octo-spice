@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['polargrid_2ecc',['PolarGrid.cc',['../_polar_grid_8cc.html',1,'']]],
-  ['polargrid_2eh',['PolarGrid.h',['../_polar_grid_8h.html',1,'']]]
+  ['mockdata_2ecc',['mockdata.cc',['../mockdata_8cc.html',1,'']]],
+  ['mockspectrum_2ecc',['MockSpectrum.cc',['../_mock_spectrum_8cc.html',1,'']]],
+  ['mockspectrum_2eh',['MockSpectrum.h',['../_mock_spectrum_8h.html',1,'']]]
 ];

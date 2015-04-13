@@ -76,7 +76,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -107,26 +107,26 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">namespace </span>turbooctospice {</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
 <div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="classturbooctospice_1_1_h_d_f5_delta.html">   14</a></span>&#160;    <span class="keyword">class </span><a class="code" href="classturbooctospice_1_1_h_d_f5_delta.html">HDF5Delta</a> {</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;        <a class="code" href="classturbooctospice_1_1_h_d_f5_delta.html#ac99a93f555911c000097dcb99cba868d">HDF5Delta</a>(std::string filename);</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;        std::vector&lt;Forest&gt; <a class="code" href="classturbooctospice_1_1_h_d_f5_delta.html#a68709408ef420b27b2e701c836fa999d">loadForests</a>(<span class="keywordtype">int</span> ncombine, <span class="keywordtype">float</span> forestlo, <span class="keywordtype">float</span> foresthi, <span class="keywordtype">float</span> speclo);</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;        std::string _filename;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    }; <span class="comment">// HDF5Delta</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;} <span class="comment">// turbooctospice</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;        <a class="code" href="classturbooctospice_1_1_h_d_f5_delta.html#ac99a93f555911c000097dcb99cba868d">HDF5Delta</a>(std::string filename);</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        std::vector&lt;Forest&gt; <a class="code" href="classturbooctospice_1_1_h_d_f5_delta.html#a53a6b49974db8c410e49f532fdb7d548">loadForests</a>(<span class="keywordtype">bool</span> keep_ngc=<span class="keyword">true</span>, <span class="keywordtype">bool</span> keep_sgc=<span class="keyword">true</span>);</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;        <span class="comment">// std::vector&lt;Forest&gt; loadForests(int ncombine, float forestlo, float foresthi, float speclo, bool debug=false);</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;        std::string _filename;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    }; <span class="comment">// HDF5Delta</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;} <span class="comment">// turbooctospice</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="ttc" id="types_8h_html"><div class="ttname"><a href="types_8h.html">types.h</a></div></div>
-<div class="ttc" id="classturbooctospice_1_1_h_d_f5_delta_html"><div class="ttname"><a href="classturbooctospice_1_1_h_d_f5_delta.html">turbooctospice::HDF5Delta</a></div><div class="ttdef"><b>Definition:</b> HDF5Delta.h:14</div></div>
+<div class="ttc" id="classturbooctospice_1_1_h_d_f5_delta_html_a53a6b49974db8c410e49f532fdb7d548"><div class="ttname"><a href="classturbooctospice_1_1_h_d_f5_delta.html#a53a6b49974db8c410e49f532fdb7d548">turbooctospice::HDF5Delta::loadForests</a></div><div class="ttdeci">std::vector&lt; Forest &gt; loadForests(bool keep_ngc=true, bool keep_sgc=true)</div><div class="ttdef"><b>Definition:</b> HDF5Delta.cc:46</div></div>
+<div class="ttc" id="classturbooctospice_1_1_h_d_f5_delta_html"><div class="ttname"><a href="classturbooctospice_1_1_h_d_f5_delta.html">turbooctospice::HDF5Delta</a></div><div class="ttdoc">Represents an HDF5 delta field file. </div><div class="ttdef"><b>Definition:</b> HDF5Delta.h:14</div></div>
 <div class="ttc" id="classturbooctospice_1_1_h_d_f5_delta_html_ac99a93f555911c000097dcb99cba868d"><div class="ttname"><a href="classturbooctospice_1_1_h_d_f5_delta.html#ac99a93f555911c000097dcb99cba868d">turbooctospice::HDF5Delta::HDF5Delta</a></div><div class="ttdeci">HDF5Delta(std::string filename)</div><div class="ttdef"><b>Definition:</b> HDF5Delta.cc:41</div></div>
-<div class="ttc" id="classturbooctospice_1_1_h_d_f5_delta_html_a68709408ef420b27b2e701c836fa999d"><div class="ttname"><a href="classturbooctospice_1_1_h_d_f5_delta.html#a68709408ef420b27b2e701c836fa999d">turbooctospice::HDF5Delta::loadForests</a></div><div class="ttdeci">std::vector&lt; Forest &gt; loadForests(int ncombine, float forestlo, float foresthi, float speclo)</div><div class="ttdef"><b>Definition:</b> HDF5Delta.cc:46</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Feb 9 2015 19:54:38 for turbo-octo-spice by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Apr 13 2015 16:39:01 for turbo-octo-spice by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

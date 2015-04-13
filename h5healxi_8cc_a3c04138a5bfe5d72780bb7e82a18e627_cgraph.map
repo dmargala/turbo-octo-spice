@@ -1,15 +1,12 @@
 <map id="main" name="main">
-<area shape="rect" id="node2" href="$h5healxi_8cc.html#ab49d9cd9d97936c82df9e45d9b196f89" title="readTargetList" alt="" coords="153,5,261,32"/>
-<area shape="rect" id="node3" href="$classturbooctospice_1_1_mock_spectrum.html#a48f5dc73232db5170a9044a8be23efbe" title="turbooctospice::MockSpectrum\l::getForest" alt="" coords="104,57,309,98"/>
-<area shape="rect" id="node4" href="$classturbooctospice_1_1_h_d_f5_delta.html#a68709408ef420b27b2e701c836fa999d" title="turbooctospice::HDF5Delta\l::loadForests" alt="" coords="115,122,298,163"/>
-<area shape="rect" id="node8" href="$classturbooctospice_1_1_healpix_bins.html#ac105e207caaf341ec0a5f9c3045b49fd" title="turbooctospice::HealpixBins\l::addItem" alt="" coords="113,187,300,229"/>
-<area shape="rect" id="node9" href="$classturbooctospice_1_1_healpix_bins.html#a6cf1ff94c674ec66cc7fe2a7591c5e22" title="turbooctospice::HealpixBins\l::getNBins" alt="" coords="113,253,300,294"/>
-<area shape="rect" id="node10" href="$h5healxi_8cc.html#a07876a34b22560336f18aa25f689bd45" title="healxi" alt="" coords="178,319,235,345"/>
-<area shape="rect" id="node5" href="$_h_d_f5_delta_8cc.html#a044b6e81afb642d58e62b55f60c0baf9" title="load_quasar" alt="" coords="404,79,500,105"/>
-<area shape="rect" id="node6" href="$_h_d_f5_delta_8cc.html#a06cc94c4b797196fe3befaee0c532707" title="readAttribute" alt="" coords="403,129,501,156"/>
-<area shape="rect" id="node7" href="$_h_d_f5_delta_8cc.html#af4522629973ef16c6c9b5a742e050301" title="readDataSet" alt="" coords="403,180,501,207"/>
-<area shape="rect" id="node11" href="$classturbooctospice_1_1_healpix_bins.html#ad30e2b0d6cff6a501c00197664259831" title="turbooctospice::HealpixBins\l::getBinIndicesWithinRadius" alt="" coords="358,238,546,279"/>
-<area shape="rect" id="node12" href="$classturbooctospice_1_1_healpix_bins.html#a9ade3c79cf11c09dc0af104da03b53a6" title="turbooctospice::HealpixBins\l::checkBinExists" alt="" coords="359,303,545,345"/>
-<area shape="rect" id="node13" href="$classturbooctospice_1_1_healpix_bins.html#a25abb8b763ccc146af9c4c619cd7a1f1" title="turbooctospice::HealpixBins\l::getBinContents" alt="" coords="359,369,545,410"/>
-<area shape="rect" id="node14" href="$h5healxi_8cc.html#ac06e4df7120d9ee67574209588176e94" title="angularSeparation" alt="" coords="387,435,517,461"/>
+<area shape="rect" id="node2" href="$classturbooctospice_1_1_h_d_f5_delta.html#a53a6b49974db8c410e49f532fdb7d548" title="turbooctospice::HDF5Delta\l::loadForests" alt="" coords="106,46,289,87"/>
+<area shape="rect" id="node5" href="$classturbooctospice_1_1_healpix_bins.html#ac105e207caaf341ec0a5f9c3045b49fd" title="turbooctospice::HealpixBins\l::addItem" alt="" coords="104,111,291,153"/>
+<area shape="rect" id="node7" href="$classturbooctospice_1_1_healpix_bins.html#a6cf1ff94c674ec66cc7fe2a7591c5e22" title="Return the number of bins that contain at least one item. " alt="" coords="104,177,291,218"/>
+<area shape="rect" id="node8" href="$h5healxi_8cc.html#aaddc16668e51a3c7421c07136d3e1227" title="healxi" alt="" coords="169,245,226,272"/>
+<area shape="rect" id="node3" href="$_h_d_f5_delta_8cc.html#a06cc94c4b797196fe3befaee0c532707" title="readAttribute" alt="" coords="384,5,483,32"/>
+<area shape="rect" id="node4" href="$_h_d_f5_delta_8cc.html#af4522629973ef16c6c9b5a742e050301" title="readDataSet" alt="" coords="385,56,482,83"/>
+<area shape="rect" id="node6" href="$classturbooctospice_1_1_healpix_bins.html#aec12d46f6eed38fabfa8d2602efb2166" title="turbooctospice::HealpixBins\l::ang2pix" alt="" coords="340,109,527,150"/>
+<area shape="rect" id="node9" href="$classturbooctospice_1_1_healpix_bins.html#a1e0589f2d2a02bdf2677d274ebccebc9" title="turbooctospice::HealpixBins\l::getBinIndicesWithinRadius" alt="" coords="339,174,527,215"/>
+<area shape="rect" id="node10" href="$classturbooctospice_1_1_healpix_bins.html#a9ade3c79cf11c09dc0af104da03b53a6" title="turbooctospice::HealpixBins\l::checkBinExists" alt="" coords="340,239,527,281"/>
+<area shape="rect" id="node11" href="$classturbooctospice_1_1_healpix_bins.html#a25abb8b763ccc146af9c4c619cd7a1f1" title="turbooctospice::HealpixBins\l::getBinContents" alt="" coords="340,305,527,346"/>
 </map>

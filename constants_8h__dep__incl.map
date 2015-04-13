@@ -3,11 +3,12 @@
 <area shape="rect" id="node6" href="$turbooctospice_8h.html" title="turbooctospice/turbooctospice.h" alt="" coords="228,269,439,296"/>
 <area shape="rect" id="node3" href="$_abs_two_point_grid_8cc.html" title="turbooctospice/AbsTwoPoint\lGrid.cc" alt="" coords="323,171,513,213"/>
 <area shape="rect" id="node4" href="$_cartesian_grid_8h.html" title="turbooctospice/Cartesian\lGrid.h" alt="" coords="538,171,707,213"/>
-<area shape="rect" id="node9" href="$_polar_grid_8h.html" title="turbooctospice/PolarGrid.h" alt="" coords="731,179,911,205"/>
-<area shape="rect" id="node11" href="$_quasar_grid_8h.html" title="turbooctospice/QuasarGrid.h" alt="" coords="56,179,248,205"/>
+<area shape="rect" id="node10" href="$_polar_grid_8h.html" title="turbooctospice/PolarGrid.h" alt="" coords="731,179,911,205"/>
+<area shape="rect" id="node12" href="$_quasar_grid_8h.html" title="turbooctospice/QuasarGrid.h" alt="" coords="56,179,248,205"/>
 <area shape="rect" id="node5" href="$_cartesian_grid_8cc.html" title="turbooctospice/Cartesian\lGrid.cc" alt="" coords="537,262,705,303"/>
-<area shape="rect" id="node7" href="$h5healxi_8cc.html" title="src/h5healxi.cc" alt="" coords="209,352,319,379"/>
-<area shape="rect" id="node8" href="$mockdata_8cc.html" title="src/mockdata.cc" alt="" coords="343,352,461,379"/>
-<area shape="rect" id="node10" href="$_polar_grid_8cc.html" title="turbooctospice/PolarGrid.cc" alt="" coords="730,269,915,296"/>
-<area shape="rect" id="node12" href="$_quasar_grid_8cc.html" title="turbooctospice/QuasarGrid.cc" alt="" coords="5,269,203,296"/>
+<area shape="rect" id="node7" href="$h5healxi_8cc.html" title="src/h5healxi.cc" alt="" coords="135,352,245,379"/>
+<area shape="rect" id="node8" href="$healsearch_8cc.html" title="src/healsearch.cc" alt="" coords="271,352,396,379"/>
+<area shape="rect" id="node9" href="$mockdata_8cc.html" title="src/mockdata.cc" alt="" coords="421,352,539,379"/>
+<area shape="rect" id="node11" href="$_polar_grid_8cc.html" title="turbooctospice/PolarGrid.cc" alt="" coords="730,269,915,296"/>
+<area shape="rect" id="node13" href="$_quasar_grid_8cc.html" title="turbooctospice/QuasarGrid.cc" alt="" coords="5,269,203,296"/>
 </map>

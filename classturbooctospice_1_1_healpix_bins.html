@@ -78,7 +78,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -118,8 +118,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a7aada12dbb30eceaf076c5bfd13918cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac105e207caaf341ec0a5f9c3045b49fd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classturbooctospice_1_1_healpix_bins.html#ac105e207caaf341ec0a5f9c3045b49fd">addItem</a> (double theta, double phi, const T &amp;item)</td></tr>
 <tr class="separator:ac105e207caaf341ec0a5f9c3045b49fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad30e2b0d6cff6a501c00197664259831"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classturbooctospice_1_1_healpix_bins.html#ad30e2b0d6cff6a501c00197664259831">getBinIndicesWithinRadius</a> (double theta, double phi, double radius) const </td></tr>
-<tr class="separator:ad30e2b0d6cff6a501c00197664259831"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e0589f2d2a02bdf2677d274ebccebc9"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classturbooctospice_1_1_healpix_bins.html#a1e0589f2d2a02bdf2677d274ebccebc9">getBinIndicesWithinRadius</a> (double theta, double phi, double radius, int fact=4) const </td></tr>
+<tr class="separator:a1e0589f2d2a02bdf2677d274ebccebc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ade3c79cf11c09dc0af104da03b53a6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classturbooctospice_1_1_healpix_bins.html#a9ade3c79cf11c09dc0af104da03b53a6">checkBinExists</a> (int index) const </td></tr>
 <tr class="separator:a9ade3c79cf11c09dc0af104da03b53a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25abb8b763ccc146af9c4c619cd7a1f1"><td class="memItemLeft" align="right" valign="top">const Bins::mapped_type &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classturbooctospice_1_1_healpix_bins.html#a25abb8b763ccc146af9c4c619cd7a1f1">getBinContents</a> (const typename Bins::key_type &amp;k) const </td></tr>
@@ -127,7 +127,14 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aec12d46f6eed38fabfa8d2602efb2166"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classturbooctospice_1_1_healpix_bins.html#aec12d46f6eed38fabfa8d2602efb2166">ang2pix</a> (double theta, double phi) const </td></tr>
 <tr class="separator:aec12d46f6eed38fabfa8d2602efb2166"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6cf1ff94c674ec66cc7fe2a7591c5e22"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classturbooctospice_1_1_healpix_bins.html#a6cf1ff94c674ec66cc7fe2a7591c5e22">getNBins</a> () const </td></tr>
+<tr class="memdesc:a6cf1ff94c674ec66cc7fe2a7591c5e22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of bins that contain at least one item.  <a href="#a6cf1ff94c674ec66cc7fe2a7591c5e22">More...</a><br/></td></tr>
 <tr class="separator:a6cf1ff94c674ec66cc7fe2a7591c5e22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22d03ef70448b625ce96ae311c240bb1"><td class="memItemLeft" align="right" valign="top">unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classturbooctospice_1_1_healpix_bins.html#a22d03ef70448b625ce96ae311c240bb1">getNEntries</a> () const </td></tr>
+<tr class="memdesc:a22d03ef70448b625ce96ae311c240bb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the total number of entries.  <a href="#a22d03ef70448b625ce96ae311c240bb1">More...</a><br/></td></tr>
+<tr class="separator:a22d03ef70448b625ce96ae311c240bb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2a2232cabd2fabcb867fcf204268f34"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classturbooctospice_1_1_healpix_bins.html#ae2a2232cabd2fabcb867fcf204268f34">printBinCenter</a> (const int index) const </td></tr>
+<tr class="memdesc:ae2a2232cabd2fabcb867fcf204268f34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print bin center of specified index.  <a href="#ae2a2232cabd2fabcb867fcf204268f34">More...</a><br/></td></tr>
+<tr class="separator:ae2a2232cabd2fabcb867fcf204268f34"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Typedef Documentation</h2>
 <a class="anchor" id="abf2b7926a34294cd6ac6f6a27dbfba2a"></a>
@@ -182,6 +189,13 @@ template&lt;typename T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Create a new <a class="el" href="classturbooctospice_1_1_healpix_bins.html">HealpixBins</a> object </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">order</td><td>The HEALPix resolution order </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -225,6 +239,24 @@ template&lt;typename T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Add an item's index to the bin containing the specified angular position </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">theta</td><td>The altitude coordinate in radians (0 &lt; theta &lt; pi). </td></tr>
+    <tr><td class="paramname">phi</td><td>The azimuth coordinate in radians (0 &lt; phi &lt; 2*pi). </td></tr>
+    <tr><td class="paramname">item</td><td>The item to add </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classturbooctospice_1_1_healpix_bins_ac105e207caaf341ec0a5f9c3045b49fd_cgraph.png" border="0" usemap="#classturbooctospice_1_1_healpix_bins_ac105e207caaf341ec0a5f9c3045b49fd_cgraph" alt=""/></div>
+<map name="classturbooctospice_1_1_healpix_bins_ac105e207caaf341ec0a5f9c3045b49fd_cgraph" id="classturbooctospice_1_1_healpix_bins_ac105e207caaf341ec0a5f9c3045b49fd_cgraph">
+<area shape="rect" id="node2" href="classturbooctospice_1_1_healpix_bins.html#aec12d46f6eed38fabfa8d2602efb2166" title="turbooctospice::HealpixBins\l::ang2pix" alt="" coords="240,5,427,46"/></map>
+</div>
+</p>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
@@ -270,6 +302,23 @@ template&lt;typename T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Return the Healpix bin index containing the specified angular position </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">theta</td><td>The altitude coordinate in radians (0 &lt; theta &lt; pi). </td></tr>
+    <tr><td class="paramname">phi</td><td>The azimuth coordinate in radians (0 &lt; phi &lt; 2*pi). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classturbooctospice_1_1_healpix_bins_aec12d46f6eed38fabfa8d2602efb2166_icgraph.png" border="0" usemap="#classturbooctospice_1_1_healpix_bins_aec12d46f6eed38fabfa8d2602efb2166_icgraph" alt=""/></div>
+<map name="classturbooctospice_1_1_healpix_bins_aec12d46f6eed38fabfa8d2602efb2166_icgraph" id="classturbooctospice_1_1_healpix_bins_aec12d46f6eed38fabfa8d2602efb2166_icgraph">
+<area shape="rect" id="node2" href="classturbooctospice_1_1_healpix_bins.html#ac105e207caaf341ec0a5f9c3045b49fd" title="turbooctospice::HealpixBins\l::addItem" alt="" coords="240,5,427,46"/><area shape="rect" id="node3" href="h5healxi_8cc.html#a3c04138a5bfe5d72780bb7e82a18e627" title="main" alt="" coords="475,12,525,39"/></map>
+</div>
+</p>
 
 </div>
 </div>
@@ -296,13 +345,20 @@ template&lt;typename T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Return true if the specified bin index has any contents </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td><a class="el" href="classturbooctospice_1_1_healpix_bins.html">HealpixBins</a> index </td></tr>
+  </table>
+  </dd>
+</dl>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="classturbooctospice_1_1_healpix_bins_a9ade3c79cf11c09dc0af104da03b53a6_icgraph.png" border="0" usemap="#classturbooctospice_1_1_healpix_bins_a9ade3c79cf11c09dc0af104da03b53a6_icgraph" alt=""/></div>
 <map name="classturbooctospice_1_1_healpix_bins_a9ade3c79cf11c09dc0af104da03b53a6_icgraph" id="classturbooctospice_1_1_healpix_bins_a9ade3c79cf11c09dc0af104da03b53a6_icgraph">
-<area shape="rect" id="node2" href="h5healxi_8cc.html#a07876a34b22560336f18aa25f689bd45" title="healxi" alt="" coords="241,12,298,39"/><area shape="rect" id="node3" href="h5healxi_8cc.html#a3c04138a5bfe5d72780bb7e82a18e627" title="main" alt="" coords="347,12,397,39"/></map>
+<area shape="rect" id="node2" href="h5healxi_8cc.html#aaddc16668e51a3c7421c07136d3e1227" title="healxi" alt="" coords="241,12,298,39"/><area shape="rect" id="node3" href="h5healxi_8cc.html#a3c04138a5bfe5d72780bb7e82a18e627" title="main" alt="" coords="347,12,397,39"/></map>
 </div>
 </p>
 
@@ -331,19 +387,26 @@ template&lt;typename T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Return the contents of a bin </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">k</td><td>Map key </td></tr>
+  </table>
+  </dd>
+</dl>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="classturbooctospice_1_1_healpix_bins_a25abb8b763ccc146af9c4c619cd7a1f1_icgraph.png" border="0" usemap="#classturbooctospice_1_1_healpix_bins_a25abb8b763ccc146af9c4c619cd7a1f1_icgraph" alt=""/></div>
 <map name="classturbooctospice_1_1_healpix_bins_a25abb8b763ccc146af9c4c619cd7a1f1_icgraph" id="classturbooctospice_1_1_healpix_bins_a25abb8b763ccc146af9c4c619cd7a1f1_icgraph">
-<area shape="rect" id="node2" href="h5healxi_8cc.html#a07876a34b22560336f18aa25f689bd45" title="healxi" alt="" coords="241,12,298,39"/><area shape="rect" id="node3" href="h5healxi_8cc.html#a3c04138a5bfe5d72780bb7e82a18e627" title="main" alt="" coords="347,12,397,39"/></map>
+<area shape="rect" id="node2" href="h5healxi_8cc.html#aaddc16668e51a3c7421c07136d3e1227" title="healxi" alt="" coords="241,12,298,39"/><area shape="rect" id="node3" href="h5healxi_8cc.html#a3c04138a5bfe5d72780bb7e82a18e627" title="main" alt="" coords="347,12,397,39"/></map>
 </div>
 </p>
 
 </div>
 </div>
-<a class="anchor" id="ad30e2b0d6cff6a501c00197664259831"></a>
+<a class="anchor" id="a1e0589f2d2a02bdf2677d274ebccebc9"></a>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
@@ -368,7 +431,13 @@ template&lt;typename T &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>radius</em>&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>fact</em> = <code>4</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -382,13 +451,23 @@ template&lt;typename T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Return bin indices within radius of an angular position </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">theta</td><td>The altitude coordinate in radians (0 &lt; theta &lt; pi). </td></tr>
+    <tr><td class="paramname">phi</td><td>The azimuth coordinate in radians (0 &lt; phi &lt; 2*pi). </td></tr>
+    <tr><td class="paramname">radius</td><td>The angular radius to query in radians. </td></tr>
+    <tr><td class="paramname">fact</td><td>HEALPix search precision parameter </td></tr>
+  </table>
+  </dd>
+</dl>
 
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classturbooctospice_1_1_healpix_bins_ad30e2b0d6cff6a501c00197664259831_icgraph.png" border="0" usemap="#classturbooctospice_1_1_healpix_bins_ad30e2b0d6cff6a501c00197664259831_icgraph" alt=""/></div>
-<map name="classturbooctospice_1_1_healpix_bins_ad30e2b0d6cff6a501c00197664259831_icgraph" id="classturbooctospice_1_1_healpix_bins_ad30e2b0d6cff6a501c00197664259831_icgraph">
-<area shape="rect" id="node2" href="h5healxi_8cc.html#a07876a34b22560336f18aa25f689bd45" title="healxi" alt="" coords="243,12,301,39"/><area shape="rect" id="node3" href="h5healxi_8cc.html#a3c04138a5bfe5d72780bb7e82a18e627" title="main" alt="" coords="349,12,400,39"/></map>
+<div class="center"><img src="classturbooctospice_1_1_healpix_bins_a1e0589f2d2a02bdf2677d274ebccebc9_icgraph.png" border="0" usemap="#classturbooctospice_1_1_healpix_bins_a1e0589f2d2a02bdf2677d274ebccebc9_icgraph" alt=""/></div>
+<map name="classturbooctospice_1_1_healpix_bins_a1e0589f2d2a02bdf2677d274ebccebc9_icgraph" id="classturbooctospice_1_1_healpix_bins_a1e0589f2d2a02bdf2677d274ebccebc9_icgraph">
+<area shape="rect" id="node2" href="h5healxi_8cc.html#aaddc16668e51a3c7421c07136d3e1227" title="healxi" alt="" coords="243,12,301,39"/><area shape="rect" id="node3" href="h5healxi_8cc.html#a3c04138a5bfe5d72780bb7e82a18e627" title="main" alt="" coords="349,12,400,39"/></map>
 </div>
 </p>
 
@@ -417,6 +496,8 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 
+<p>Return the number of bins that contain at least one item. </p>
+
 <p><div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -428,13 +509,77 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
+<a class="anchor" id="a22d03ef70448b625ce96ae311c240bb1"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned long <a class="el" href="classturbooctospice_1_1_healpix_bins.html">turbooctospice::HealpixBins</a>&lt; T &gt;::getNEntries </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the total number of entries. </p>
+
+<p><div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classturbooctospice_1_1_healpix_bins_a22d03ef70448b625ce96ae311c240bb1_icgraph.png" border="0" usemap="#classturbooctospice_1_1_healpix_bins_a22d03ef70448b625ce96ae311c240bb1_icgraph" alt=""/></div>
+<map name="classturbooctospice_1_1_healpix_bins_a22d03ef70448b625ce96ae311c240bb1_icgraph" id="classturbooctospice_1_1_healpix_bins_a22d03ef70448b625ce96ae311c240bb1_icgraph">
+<area shape="rect" id="node2" href="healsearch_8cc.html#a3c04138a5bfe5d72780bb7e82a18e627" title="main" alt="" coords="240,12,291,39"/></map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="ae2a2232cabd2fabcb867fcf204268f34"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classturbooctospice_1_1_healpix_bins.html">turbooctospice::HealpixBins</a>&lt; T &gt;::printBinCenter </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Print bin center of specified index. </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>turbooctospice/<a class="el" href="_healpix_bins_8h_source.html">HealpixBins.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Feb 9 2015 19:54:39 for turbo-octo-spice by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Apr 13 2015 16:39:01 for turbo-octo-spice by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

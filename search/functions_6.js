@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['load_5fquasar',['load_quasar',['../_h_d_f5_delta_8cc.html#a044b6e81afb642d58e62b55f60c0baf9',1,'HDF5Delta.cc']]],
-  ['loadforests',['loadForests',['../classturbooctospice_1_1_h_d_f5_delta.html#a68709408ef420b27b2e701c836fa999d',1,'turbooctospice::HDF5Delta']]]
+  ['handleerror',['HandleError',['../brute_8h.html#a9d6ad2bdede10ef9931ccf2f53b9ef83',1,'brute.h']]],
+  ['hdf5delta',['HDF5Delta',['../classturbooctospice_1_1_h_d_f5_delta.html#ac99a93f555911c000097dcb99cba868d',1,'turbooctospice::HDF5Delta']]],
+  ['healpixbins',['HealpixBins',['../classturbooctospice_1_1_healpix_bins.html#a7aada12dbb30eceaf076c5bfd13918cd',1,'turbooctospice::HealpixBins']]],
+  ['healxi',['healxi',['../h5healxi_8cc.html#aaddc16668e51a3c7421c07136d3e1227',1,'healxi(tos::HealpixBinsI const &amp;healbins, std::vector&lt; tos::Forest &gt; const &amp;sight_lines, tos::AbsTwoPointGridPtr const &amp;grid, double max_ang, std::vector&lt; tos::XiBin &gt; &amp;xi):&#160;h5healxi.cc'],['../healsearch_8cc.html#af5a4bbfa274315d7b432eee356d2d27d',1,'healxi(tos::HealpixBinsI const &amp;healbins, std::vector&lt; AngularPosition &gt; const &amp;forests, double maxAng):&#160;healsearch.cc']]]
 ];

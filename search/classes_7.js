@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['xientry',['XiEntry',['../struct_xi_entry.html',1,'']]]
+  ['xibin',['XiBin',['../structturbooctospice_1_1_xi_bin.html',1,'turbooctospice']]]
 ];

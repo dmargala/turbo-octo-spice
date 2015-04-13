@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['quasargrid',['QuasarGrid',['../classturbooctospice_1_1_quasar_grid.html#a9877f3e49ebf9194d0e89262e4f2b340',1,'turbooctospice::QuasarGrid']]]
+  ['polargrid',['PolarGrid',['../classturbooctospice_1_1_polar_grid.html#a693bfe81bb333df99282ac3c0770f662',1,'turbooctospice::PolarGrid']]],
+  ['printbincenter',['printBinCenter',['../classturbooctospice_1_1_healpix_bins.html#ae2a2232cabd2fabcb867fcf204268f34',1,'turbooctospice::HealpixBins']]]
 ];

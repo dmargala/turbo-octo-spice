@@ -78,7 +78,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -94,6 +94,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="structturbooctospice_1_1_forest-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -111,56 +112,123 @@ Collaboration diagram for turbooctospice::Forest:</div>
 <div class="center"><img src="structturbooctospice_1_1_forest__coll__graph.png" border="0" usemap="#turbooctospice_1_1_forest_coll__map" alt="Collaboration graph"/></div>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:abb41a09488a10109498dd6f8d714e9b3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structturbooctospice_1_1_forest.html#abb41a09488a10109498dd6f8d714e9b3">Forest</a> (double _ra, double _dec)</td></tr>
+<tr class="separator:abb41a09488a10109498dd6f8d714e9b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf31e62518f8a94030c6b0eee3f8db0c"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structturbooctospice_1_1_forest.html#acf31e62518f8a94030c6b0eee3f8db0c">angularSeparation</a> (<a class="el" href="structturbooctospice_1_1_forest.html">Forest</a> const &amp;other) const </td></tr>
+<tr class="separator:acf31e62518f8a94030c6b0eee3f8db0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:af805ef9905dfd92badb636c260346588"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structturbooctospice_1_1_forest.html#af805ef9905dfd92badb636c260346588">theta</a></td></tr>
-<tr class="separator:af805ef9905dfd92badb636c260346588"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aba010aafd943804a99aa5676de422178"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structturbooctospice_1_1_forest.html#aba010aafd943804a99aa5676de422178">phi</a></td></tr>
-<tr class="separator:aba010aafd943804a99aa5676de422178"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad81a57284275d533abfcfa9688740d91"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structturbooctospice_1_1_forest.html#ad81a57284275d533abfcfa9688740d91">sth</a></td></tr>
-<tr class="separator:ad81a57284275d533abfcfa9688740d91"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abf8dd7bae1708b85c4291024f59505fe"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structturbooctospice_1_1_forest.html#abf8dd7bae1708b85c4291024f59505fe">cth</a></td></tr>
-<tr class="separator:abf8dd7bae1708b85c4291024f59505fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8ba65a26e9f6ecc897523099a3e545f6"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structturbooctospice_1_1_forest.html#a8ba65a26e9f6ecc897523099a3e545f6">sph</a></td></tr>
-<tr class="separator:a8ba65a26e9f6ecc897523099a3e545f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afeec73aadec6d2f812ec4d27794c3c49"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structturbooctospice_1_1_forest.html#afeec73aadec6d2f812ec4d27794c3c49">cph</a></td></tr>
-<tr class="separator:afeec73aadec6d2f812ec4d27794c3c49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4211fc7264f4f6e360f4c8734ac3c3e4"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structturbooctospice_1_1_forest.html#a4211fc7264f4f6e360f4c8734ac3c3e4">dec</a></td></tr>
+<tr class="separator:a4211fc7264f4f6e360f4c8734ac3c3e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed0bd2f95c02665b55e3db6c07e8a054"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structturbooctospice_1_1_forest.html#aed0bd2f95c02665b55e3db6c07e8a054">ra</a></td></tr>
+<tr class="separator:aed0bd2f95c02665b55e3db6c07e8a054"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d7ed13acd3167c5979de1ebf6d39b74"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structturbooctospice_1_1_forest.html#a9d7ed13acd3167c5979de1ebf6d39b74">sin_dec</a></td></tr>
+<tr class="separator:a9d7ed13acd3167c5979de1ebf6d39b74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4c605660127bb83f83ea36333b1ab9d"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structturbooctospice_1_1_forest.html#ae4c605660127bb83f83ea36333b1ab9d">cos_dec</a></td></tr>
+<tr class="separator:ae4c605660127bb83f83ea36333b1ab9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43446173728488328354ceb3da08f91c"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structturbooctospice_1_1_forest.html#a43446173728488328354ceb3da08f91c">sin_ra</a></td></tr>
+<tr class="separator:a43446173728488328354ceb3da08f91c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ebeca51b26884301875f4a8c8df7844"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structturbooctospice_1_1_forest.html#a2ebeca51b26884301875f4a8c8df7844">cos_ra</a></td></tr>
+<tr class="separator:a2ebeca51b26884301875f4a8c8df7844"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aafc1354fae7b781aab2b3dc2ea3e2bec"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structturbooctospice_1_1_forest_pixel.html">ForestPixel</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structturbooctospice_1_1_forest.html#aafc1354fae7b781aab2b3dc2ea3e2bec">pixels</a></td></tr>
 <tr class="separator:aafc1354fae7b781aab2b3dc2ea3e2bec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents a LyA forest sight line. </p>
-</div><h2 class="groupheader">Member Data Documentation</h2>
-<a class="anchor" id="afeec73aadec6d2f812ec4d27794c3c49"></a>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="abb41a09488a10109498dd6f8d714e9b3"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">turbooctospice::Forest::Forest </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>_ra</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>_dec</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="acf31e62518f8a94030c6b0eee3f8db0c"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double turbooctospice::Forest::angularSeparation </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structturbooctospice_1_1_forest.html">Forest</a> const &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="ae4c605660127bb83f83ea36333b1ab9d"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double turbooctospice::Forest::cph</td>
+          <td class="memname">double turbooctospice::Forest::cos_dec</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a class="anchor" id="abf8dd7bae1708b85c4291024f59505fe"></a>
+<a class="anchor" id="a2ebeca51b26884301875f4a8c8df7844"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double turbooctospice::Forest::cth</td>
+          <td class="memname">double turbooctospice::Forest::cos_ra</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a class="anchor" id="aba010aafd943804a99aa5676de422178"></a>
+<a class="anchor" id="a4211fc7264f4f6e360f4c8734ac3c3e4"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double turbooctospice::Forest::phi</td>
+          <td class="memname">double turbooctospice::Forest::dec</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -179,36 +247,36 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a8ba65a26e9f6ecc897523099a3e545f6"></a>
+<a class="anchor" id="aed0bd2f95c02665b55e3db6c07e8a054"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double turbooctospice::Forest::sph</td>
+          <td class="memname">double turbooctospice::Forest::ra</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a class="anchor" id="ad81a57284275d533abfcfa9688740d91"></a>
+<a class="anchor" id="a9d7ed13acd3167c5979de1ebf6d39b74"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double turbooctospice::Forest::sth</td>
+          <td class="memname">double turbooctospice::Forest::sin_dec</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a class="anchor" id="af805ef9905dfd92badb636c260346588"></a>
+<a class="anchor" id="a43446173728488328354ceb3da08f91c"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double turbooctospice::Forest::theta</td>
+          <td class="memname">double turbooctospice::Forest::sin_ra</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -221,7 +289,7 @@ Public Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Feb 9 2015 19:54:39 for turbo-octo-spice by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Apr 13 2015 16:39:01 for turbo-octo-spice by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

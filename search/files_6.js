@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['quasargrid_2ecc',['QuasarGrid.cc',['../_quasar_grid_8cc.html',1,'']]],
-  ['quasargrid_2eh',['QuasarGrid.h',['../_quasar_grid_8h.html',1,'']]]
+  ['polargrid_2ecc',['PolarGrid.cc',['../_polar_grid_8cc.html',1,'']]],
+  ['polargrid_2eh',['PolarGrid.h',['../_polar_grid_8h.html',1,'']]]
 ];

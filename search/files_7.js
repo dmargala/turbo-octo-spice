@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['readme_2emd',['README.md',['../_r_e_a_d_m_e_8md.html',1,'']]]
+  ['quasargrid_2ecc',['QuasarGrid.cc',['../_quasar_grid_8cc.html',1,'']]],
+  ['quasargrid_2eh',['QuasarGrid.h',['../_quasar_grid_8h.html',1,'']]]
 ];

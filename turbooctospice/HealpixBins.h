@@ -31,7 +31,7 @@ namespace turbooctospice {
         // Return bin indices within radius of an angular position
         std::vector<int> getBinIndicesWithinRadius(double theta, double phi, double radius, int fact = 4) const {
             std::vector<int> neighbors;
-            _map.query_disc_inclusive({theta, phi}, radius + _map.max_pixrad(), neighbors, fact);
+            _map.query_disc_inclusive({theta, phi}, radius, neighbors, fact);
             return neighbors;
         };
         // Return true if the specified bin index has any contents

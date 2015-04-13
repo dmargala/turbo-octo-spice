@@ -18,47 +18,13 @@ namespace po = boost::program_options;
 namespace lk = likely;
 namespace tos = turbooctospice;
 
-const double piovertwo = std::atan(1.0)*2;
+const double piovertwo = 0.5*tos::pi;
 
-// double angularSeparation(double cdec1, double sdec1, double cph1, double sph1, double cdec2, double sdec2, double cph2, double sph2) {
-//     return sdec1*sdec2 + cdec1*cdec2*(sph1*sph2 + cph1*cph2);
-// }
+void healxi(tos::HealpixBinsI const &healbins, std::vector<tos::Forest> const &sight_lines,
+tos::AbsTwoPointGridPtr const &grid, double max_ang, std::vector<tos::XiBin> &xi) {
 
-double angularSeparation(tos::Forest const &f1, tos::Forest const &f2) {
-    return f1.sin_dec*f2.sin_dec + f1.cos_dec*f2.cos_dec*(f1.sin_ra*f2.sin_ra + f1.cos_ra*f2.cos_ra);
-    // return angularSeparation(q1.cdec, q1.sdec, q1.cph, q1.sph, q2.cdec, q2.sdec, q2.cph, q2.sph);
-}
-
-std::vector<std::string> readTargetList(std::string const &infile) {
-    // Read the input file
-    std::vector<std::string> targetlist;
-    try {
-        std::ifstream in(infile.c_str());
-        std::string line;
-        while (std::getline(in, line)) {
-            targetlist.push_back(line);
-        }
-        in.close();
-    }
-    catch(std::exception const &e) {
-        std::cerr << "Error while reading " << infile << ": " << e.what() << std::endl;
-    }
-    return targetlist;
-}
-
-struct XiEntry {
-    double didj, di, dj, wgt;
-    XiEntry() : didj(0), di(0), dj(0), wgt(0) {};
-    XiEntry(double _di, double _dj, double _wgt) : didj(_di*_dj), di(_di), dj(_dj), wgt(_wgt) {};
-};
-
-void healxi(tos::HealpixBinsI const &healbins, std::vector<tos::Forest> const &forests,
-tos::AbsTwoPointGridPtr const &grid, double maxAng,
-std::vector<XiEntry> &xi, std::vector<XiEntry> &xibin) {
-
-    unsigned long numLOS(forests.size());
-
-    std::cout << "Number of los: " << numLOS << std::endl;
+    unsigned long numLOS(sight_lines.size());
+    std::cout << "Number of sight lines: " << numLOS << std::endl;
 
     // stat counters
     unsigned long numHealpixBinsSearched(0), numLOSPairs(0), numLOSPairsUsed(0), 
@@ -66,34 +32,38 @@ std::vector<XiEntry> &xi, std::vector<XiEntry> &xibin) {
 
     // create internal accumulation vectors
     int nbins = grid->getNBinsTotal();
-    //std::vector<double> dsum(nbins,0), wsum(nbins,0), disum(nbins,0), djsum(nbins,0), wisum(nbins,0);
-    std::vector<XiEntry> xisum(nbins, {});
-
+    std::cout << "Number of bins: " << nbins << std::endl;
+    std::vector<tos::XiBin> xisum(nbins, {});
     std::vector<double> dsum(nbins,0), wsum(nbins,0);
 
     // to avoid calling trig functions inside loop
-    double cosmin(std::cos(maxAng));
+    double cos_max_ang(std::cos(max_ang));
 
     // allocate temporary vectors before loop
     std::vector<int> neighbors;
+
+    // temporary variables for separation calculation
+    float los_pixel_dist_sq, los_pixel_projection_times_two, distSq, dist, mu;
+    float weight, product;
+
+    // bin index variables
     int binIndex;
-    double distSq, pi_dist_sq, pi_projection_times_two;
-    float weight, dprod;
-    std::vector<int> binIndices(3);
-    std::vector<double> separation(3);
 
-    double min_dist = 0;
-    double min_distsq = min_dist*min_dist;
-    double max_distsq = 200*200;
-    double bin_width = 4;
+    // axis 1
+    float min_dist(0), max_dist(200), bin_width(4), nbins1(50);
+    float min_distsq(min_dist*min_dist), max_distsq(max_dist*max_dist);
+    // axis 2
+    // double min_mu(0), max_mu(1), dmu(1.0/3.0), nbins2(3);
+    // axis 3
+    // todo
 
-    boost::progress_display show_progress( forests.size() );
+    boost::progress_display show_progress(sight_lines.size());
 
-    for(int i = 0; i < forests.size(); ++i) {
+    for(int i = 0; i < sight_lines.size(); ++i) {
         ++show_progress;
-        auto qi = forests[i];
-        numPixels += qi.pixels.size();
-        auto neighbors = healbins.getBinIndicesWithinRadius(piovertwo-qi.dec, qi.ra, maxAng);
+        auto line_of_sight = sight_lines[i];
+        numPixels += line_of_sight.pixels.size();
+        auto neighbors = healbins.getBinIndicesWithinRadius(piovertwo-line_of_sight.dec, line_of_sight.ra, max_ang);
         // search neighboring healpix bins
         for(int neighbor : neighbors) {
             ++numHealpixBinsSearched;
@@ -103,27 +73,38 @@ std::vector<XiEntry> &xi, std::vector<XiEntry> &xibin) {
                 // only count pairs once
                 if(j <= i) continue;
                 ++numLOSPairs;
-                auto qj = forests[j];
+                auto other_los = sight_lines[j];
                 // check angular separation
-                double cosij(angularSeparation(qi, qj));
-                if(cosij <= cosmin) continue;
-                double thetaij = std::acos(cosij);
+                double cos_separation(line_of_sight.angularSeparation(other_los));
+                if(cos_separation <= cos_max_ang) continue;
+                double separation = std::acos(cos_separation);
                 ++numLOSPairsUsed;
                 // accumulate statistics for pixel pairs 
-                for(auto &pi : qi.pixels) {
-                    pi_dist_sq = pi.distance*pi.distance;
-                    pi_projection_times_two = 2*pi.distance*cosij;
-                    for(auto &pj : qj.pixels) {
+                for(auto& los_pixel : line_of_sight.pixels) {
+                    los_pixel_dist_sq = los_pixel.distance*los_pixel.distance;
+                    los_pixel_projection_times_two = 2*los_pixel.distance*cos_separation;
+                    for(auto& other_pixel : other_los.pixels) {
                         ++numPixelPairs;
                         // check pairs are within our binning grid
-                        distSq = pi_dist_sq + (pj.distance - pi_projection_times_two)*pj.distance;
+
+                        // check parallel separation 
+                        distSq = los_pixel_dist_sq + (other_pixel.distance - los_pixel_projection_times_two)*other_pixel.distance;
                         if(distSq >= max_distsq || distSq < min_distsq) continue;
-                        binIndex = int((std::sqrt(distSq) - min_dist)/bin_width);
+                        dist = std::sqrt(distSq);
+                        binIndex = int((dist - min_dist)/bin_width);
+
+                        // check transverse separation
+                        // mu = std::fabs(pj.distance-pi.distance)/dist;
+                        // if(mu >= max_mu || mu <= min_mu) continue;
+                        // binIndex = int((mu - min_mu)/dmu) + binIndex*nbins2;
+
+                        // check average pair distance
+                        // todo
 
                         // accumulate pixel pair
-                        weight = pi.weight*pj.weight;
-                        dprod = weight*pi.value*pj.value;
-                        dsum[binIndex] += dprod;
+                        weight = los_pixel.weight*other_pixel.weight;
+                        product = weight*los_pixel.value*other_pixel.value;
+                        dsum[binIndex] += product;
                         wsum[binIndex] += weight;
                         ++numPixelPairsUsed;
                     }
@@ -165,7 +146,7 @@ std::vector<XiEntry> &xi, std::vector<XiEntry> &xibin) {
 
 int main(int argc, char **argv) {
 
-    int order, combine;
+    int order;
     double OmegaLambda, OmegaMatter;
     std::string infile, outfile, axis1, axis2, axis3;
     po::options_description cli("Correlation function estimator");
@@ -182,17 +163,14 @@ int main(int argc, char **argv) {
             "Filename to read from")
         ("output,o", po::value<std::string>(&outfile)->default_value("healxi_out.txt"),
             "Output filename")
-        ("combine", po::value<int>(&combine)->default_value(10),
-            "Number of wavelength bins to combine in fake spectra.")
         ("axis1", po::value<std::string>(&axis1)->default_value("[0:0.05]*25"),
             "Axis-1 binning, r_par (Mpc/h), r (Mpc/h), or dloglam")
         ("axis2", po::value<std::string>(&axis2)->default_value("[5:175]*1"),
             "Axis-2 binning, r_perp (Mpc/h), mu (r_par/r), or dtheta (arcmin)")
-        ("axis3", po::value<std::string>(&axis3)->default_value("[0.4393:0.6284]*1"),
-            "Axis-3 binning, redshift")
+        ("axis3", po::value<std::string>(&axis3)->default_value("[0.46:.65]*1"),
+            "Axis-3 binning, log10(z+1)")
         ("polar", "(r,mu,z) binning")
         ("cart", "(r_perp,r_par,z) binning")
-        ("fits", "read data from fits files, input must list of targets")
         ("skip-ngc", "only use sgc sight lines")
         ("skip-sgc", "only use ngc sight lines")
         ;
@@ -226,28 +204,19 @@ int main(int argc, char **argv) {
     // initialize Healpix bins
     tos::HealpixBinsI healbins(order);
 
-    // load forests
-    std::vector<tos::Forest> forests;
-    if(fits) {
-        auto targetlist = readTargetList(infile);
-        for(int i = 0; i < targetlist.size(); ++i){
-            tos::MockSpectrum spectrum(targetlist[i], verbose);
-            forests.push_back(spectrum.getForest(combine, 1040.0, 1200.0, 3650.0));
-        }
-    }
-    else {
-        tos::HDF5Delta file(infile);
-        forests = file.loadForests(!skip_ngc, !skip_sgc);
-    }
+    // load forest sight lines
+    std::vector<tos::Forest> sight_lines;
+    tos::HDF5Delta file(infile);
+    sight_lines = file.loadForests(!skip_ngc, !skip_sgc);
 
-    // add sight lines to healpix bins and calculate distances to pixels
+    // add sight lines to healpix bins
     unsigned long totalpixels(0);
-    double min_loglam(forests[0].pixels[0].loglam), max_loglam(forests[0].pixels[0].loglam);
-    for(int i = 0; i < forests.size(); ++i) {
-        auto los = forests[i].pixels;
+    double min_loglam(sight_lines[0].pixels[0].loglam), max_loglam(sight_lines[0].pixels[0].loglam);
+    for(int i = 0; i < sight_lines.size(); ++i) {
+        auto los = sight_lines[i].pixels;
 
         totalpixels += los.size();
-        healbins.addItem(piovertwo - forests[i].dec, forests[i].ra, i);
+        healbins.addItem(piovertwo - sight_lines[i].dec, sight_lines[i].ra, i);
 
         // find minimum loglam
         if(los[0].loglam < min_loglam) {
@@ -256,18 +225,13 @@ int main(int argc, char **argv) {
         if(los[los.size()-1].loglam > max_loglam) {
             max_loglam = los[los.size()-1].loglam;
         }
-
-        // for(int j = 0; j < los.size(); ++j) {
-        //     float z(std::pow(10, los[j].loglam)/tos::lyA - 1.0);
-        //     los[j].distance = cosmology->getLineOfSightComovingDistance(z);
-        // }
     }
     double zmin(std::pow(10, min_loglam-tos::logLyA)-1);
     double zmax(std::pow(10, max_loglam-tos::logLyA)-1);
 
     int numHealBinsOccupied(healbins.getNBins());
-    std::cout << "Read " << totalpixels << " from " << forests.size() << " lines of sight (LOS)" << std::endl;
-    std::cout << "Average number of pixels per LOS: " <<  static_cast<double>(totalpixels)/forests.size() << std::endl;
+    std::cout << "Read " << totalpixels << " from " << sight_lines.size() << " lines of sight (LOS)" << std::endl;
+    std::cout << "Average number of pixels per LOS: " <<  static_cast<double>(totalpixels)/sight_lines.size() << std::endl;
     std::cout << "Number of Healpix bins occupied: " << numHealBinsOccupied 
         << " (" << static_cast<double>(numHealBinsOccupied)/(12*std::pow(4, order)) << ")" << std::endl;
 
@@ -281,29 +245,27 @@ int main(int argc, char **argv) {
     else if (cart) { 
         std::cerr << "Not implemented yet!" << std::endl;
         return -1;
-        grid.reset(new tos::CartesianGrid(bins1, bins2, bins3)); 
+        // grid.reset(new tos::CartesianGrid(bins1, bins2, bins3)); 
     } 
     else {
         std::cerr << "Not implemented yet!" << std::endl;
         return -1;
-        grid.reset(new tos::QuasarGrid(bins1, bins2, bins3));
+        // grid.reset(new tos::QuasarGrid(bins1, bins2, bins3));
     }
     
     // the minimum redshift sets the angular scale we will need to consider
     double scale(cosmology->getTransverseComovingScale(zmin));
-    double maxAng(grid->maxAngularScale(scale));
+    double max_ang(grid->maxAngularScale(scale));
     std::cout << "Transverse comoving scale at z = " << zmin <<  " (Mpc/h): " << scale << std::endl;
-    std::cout << "Max angular scale at z = " << zmin <<  " (rad): " << maxAng  << std::endl;
+    std::cout << "Max angular scale at z = " << zmin <<  " (rad): " << max_ang  << std::endl;
 
-    std::cout << "Transverse comoving scale at z = " << zmax <<  " (Mpc/h): " 
-        << cosmology->getTransverseComovingScale(zmax) << std::endl;
-    std::cout << "Max angular scale at z = " << zmax <<  " (rad): " 
-        << grid->maxAngularScale(cosmology->getTransverseComovingScale(zmax))  << std::endl;
+    std::cout << "Transverse comoving scale at z = " << zmax <<  " (Mpc/h): " << cosmology->getTransverseComovingScale(zmax) << std::endl;
+    std::cout << "Max angular scale at z = " << zmax <<  " (rad): " << grid->maxAngularScale(cosmology->getTransverseComovingScale(zmax))  << std::endl;
 
     // Generate the correlation function grid and run the estimator
-    std::vector<XiEntry> xi, xibin;
+    std::vector<tos::XiBin> xi;
     try {
-        healxi(healbins, forests, grid, maxAng, xi, xibin);//, weights, meani, meanj);
+        healxi(healbins, sight_lines, grid, max_ang, xi);
     }
     catch(std::exception const &e) {
         std::cerr << "Error while running the estimator: " << e.what() << std::endl;
@@ -315,14 +277,8 @@ int main(int argc, char **argv) {
         std::ofstream out(outfile.c_str());
         for(int index = 0; index < xi.size(); ++index) {
             grid->getBinCenters(index, binCenters);
-            out << index << ' ' 
-                << binCenters[0] << ' ' 
-                << binCenters[1] << ' ' 
-                << binCenters[2] << ' ' 
-                << xi[index].didj << ' ' 
-                << xi[index].di << ' '
-                << xi[index].dj << ' '
-                << xi[index].wgt << std::endl;
+            out << index << ' ' << binCenters[0] << ' ' << binCenters[1] << ' ' << binCenters[2] << ' ' 
+                << xi[index].didj << ' ' << xi[index].di << ' ' << xi[index].dj << ' ' << xi[index].wgt << std::endl;
         }
         out.close();
     }

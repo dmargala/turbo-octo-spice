@@ -54,6 +54,15 @@ namespace turbooctospice {
             sin_ra = std::sin(ra);
             cos_ra = std::cos(ra);
         } 
+
+        double angularSeparation(Forest const &other) const {
+            return sin_dec*other.sin_dec + cos_dec*other.cos_dec*(sin_ra*other.sin_ra + cos_ra*other.cos_ra);
+        }
+    };
+
+    struct XiBin {
+        double didj, di, dj, wgt;
+        XiBin() : didj(0), di(0), dj(0), wgt(0) {};
     };
 
     class AbsTwoPointGrid;

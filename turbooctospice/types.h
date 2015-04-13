@@ -60,6 +60,7 @@ namespace turbooctospice {
         }
     };
 
+    /// Represents a correlation function bin
     struct XiBin {
         double didj, di, dj, wgt;
         XiBin() : didj(0), di(0), dj(0), wgt(0) {};

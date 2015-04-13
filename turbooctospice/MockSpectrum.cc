@@ -51,14 +51,14 @@ void local::MockSpectrum::loadTarget(bool verbose) {
 local::Forest local::MockSpectrum::getForest(
     int ncombine, float forestlo, float foresthi, float speclo) {
     // init forest pixels
-    Forest forest;
-    double theta((90.0-_dec)*DEG2RAD), phi(_ra*DEG2RAD);
-    forest.phi = phi;
-    forest.theta = theta;
-    forest.sdec = std::sin(_dec*DEG2RAD);
-    forest.cdec = std::cos(_dec*DEG2RAD);
-    forest.sph = std::sin(phi);
-    forest.cph = std::cos(phi);
+    Forest forest(_ra*DEG2RAD, _dec*DEG2RAD);
+    // double theta((90.0-_dec)*DEG2RAD), phi(_ra*DEG2RAD);
+    // forest.phi = phi;
+    // forest.theta = theta;
+    // forest.sdec = std::sin(_dec*DEG2RAD);
+    // forest.cdec = std::cos(_dec*DEG2RAD);
+    // forest.sph = std::sin(phi);
+    // forest.cph = std::cos(phi);
     // Max and min wavelength defined by lyman alpha forest range and spec cutoff
     float minLogLambda(std::log10(std::max(forestlo*(1+_z), speclo)));
     float maxLogLambda(std::log10(foresthi*(1+_z)));

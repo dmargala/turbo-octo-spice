@@ -18,12 +18,15 @@ namespace po = boost::program_options;
 namespace lk = likely;
 namespace tos = turbooctospice;
 
-double angularSeparation(double cdec1, double sdec1, double cph1, double sph1, double cdec2, double sdec2, double cph2, double sph2) {
-    return sdec1*sdec2 + cdec1*cdec2*(sph1*sph2 + cph1*cph2);
-}
+const double piovertwo = std::atan(1.0)*2;
 
-double angularSeparation(tos::Forest const &q1, tos::Forest const &q2) {
-    return angularSeparation(q1.cdec, q1.sdec, q1.cph, q1.sph, q2.cdec, q2.sdec, q2.cph, q2.sph);
+// double angularSeparation(double cdec1, double sdec1, double cph1, double sph1, double cdec2, double sdec2, double cph2, double sph2) {
+//     return sdec1*sdec2 + cdec1*cdec2*(sph1*sph2 + cph1*cph2);
+// }
+
+double angularSeparation(tos::Forest const &f1, tos::Forest const &f2) {
+    return f1.sin_dec*f2.sin_dec + f1.cos_dec*f2.cos_dec*(f1.sin_ra*f2.sin_ra + f1.cos_ra*f2.cos_ra);
+    // return angularSeparation(q1.cdec, q1.sdec, q1.cph, q1.sph, q2.cdec, q2.sdec, q2.cph, q2.sph);
 }
 
 std::vector<std::string> readTargetList(std::string const &infile) {
@@ -90,7 +93,7 @@ std::vector<XiEntry> &xi, std::vector<XiEntry> &xibin) {
         ++show_progress;
         auto qi = forests[i];
         numPixels += qi.pixels.size();
-        auto neighbors = healbins.getBinIndicesWithinRadius(qi.theta, qi.phi, maxAng);
+        auto neighbors = healbins.getBinIndicesWithinRadius(piovertwo-qi.dec, qi.ra, maxAng);
         // search neighboring healpix bins
         for(int neighbor : neighbors) {
             ++numHealpixBinsSearched;
@@ -218,7 +221,7 @@ int main(int argc, char **argv) {
     // set up cosmology
     cosmo::AbsHomogeneousUniversePtr cosmology;
     if(OmegaMatter == 0) OmegaMatter = 1 - OmegaLambda;
-    cosmology.reset(new cosmo::LambdaCdmUniverse(OmegaLambda,OmegaMatter));
+    cosmology.reset(new cosmo::LambdaCdmUniverse(OmegaLambda, OmegaMatter));
 
     // initialize Healpix bins
     tos::HealpixBinsI healbins(order);
@@ -244,7 +247,7 @@ int main(int argc, char **argv) {
         auto los = forests[i].pixels;
 
         totalpixels += los.size();
-        healbins.addItem(forests[i].theta, forests[i].phi, i);
+        healbins.addItem(piovertwo - forests[i].dec, forests[i].ra, i);
 
         // find minimum loglam
         if(los[0].loglam < min_loglam) {

@@ -19,9 +19,6 @@ namespace turbooctospice {
         void addItem(double theta, double phi, const T &item) {
             // Find the healpix bin for this quasar and save it's index
             int binIndex(ang2pix(theta, phi));
-            // std::cout << "Adding " << item << " to bin " << binIndex << " ";
-            // printBinCenter(binIndex);
-            // std::cout << std::endl;
 
             if(_bins.count(binIndex) > 0) {
                 _bins[binIndex].push_back(item);
@@ -32,7 +29,7 @@ namespace turbooctospice {
             ++_nentries;
         };
         // Return bin indices within radius of an angular position
-        std::vector<int> getBinIndicesWithinRadius(double theta, double phi, double radius, int fact = 1) const {
+        std::vector<int> getBinIndicesWithinRadius(double theta, double phi, double radius, int fact = 4) const {
             std::vector<int> neighbors;
             _map.query_disc_inclusive({theta, phi}, radius + _map.max_pixrad(), neighbors, fact);
             return neighbors;

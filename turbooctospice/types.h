@@ -10,6 +10,7 @@
 
 #include "boost/smart_ptr.hpp"
 
+#include <cmath>
 #include <vector>
 
 namespace turbooctospice {
@@ -45,8 +46,14 @@ namespace turbooctospice {
 
     /// Represents a LyA forest sight line
     struct Forest {
-        double theta, phi, sdec, cdec, sph, cph;
+        double dec, ra, sin_dec, cos_dec, sin_ra, cos_ra;
         std::vector<ForestPixel> pixels;
+        Forest(double _ra, double _dec) : ra(_ra), dec(_dec) {
+            sin_dec = std::sin(dec);
+            cos_dec = std::cos(dec);
+            sin_ra = std::sin(ra);
+            cos_ra = std::cos(ra);
+        } 
     };
 
     class AbsTwoPointGrid;

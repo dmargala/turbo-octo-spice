@@ -120,12 +120,8 @@ std::vector<local::Forest> local::HDF5Delta::loadForests(bool keep_ngc, bool kee
             readAttribute(targetGroup, "dec", dec);
             readAttribute(targetGroup, "z", z);
 
-            // Convert radians degrees temporarily
-            ra *= 180.0/PI;
-            dec *= 180.0/PI;
-
-            if( (keep_sgc_kludge && (ra <  60 || ra > 300)) || 
-                (keep_ngc_kludge && (ra > 100 && ra < 270))) {
+            if( (keep_sgc_kludge && (ra <  60*DEG2RAD || ra > 300*DEG2RAD)) || 
+                (keep_ngc_kludge && (ra > 100*DEG2RAD && ra < 270*DEG2RAD))) {
 
                 if((nforests % 10000) == 0) std::cout << nforests << " : " << name << std::endl;
     
@@ -137,14 +133,7 @@ std::vector<local::Forest> local::HDF5Delta::loadForests(bool keep_ngc, bool kee
                 readDataSet(targetGroup, "loglam", loglam);
 
                 // init forest pixels
-                Forest forest;
-                double theta((90.0-dec)*DEG2RAD), phi(ra*DEG2RAD);
-                forest.phi = phi;
-                forest.theta = theta;
-                forest.sdec = std::sin(dec*DEG2RAD);
-                forest.cdec = std::cos(dec*DEG2RAD);
-                forest.sph = std::sin(phi);
-                forest.cph = std::cos(phi);
+                Forest forest(ra, dec);
 
                 // Iterate over pixels
                 for(int i = 0; i < delta.size(); ++i) {

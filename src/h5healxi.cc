@@ -18,8 +18,6 @@ namespace po = boost::program_options;
 namespace lk = likely;
 namespace tos = turbooctospice;
 
-const double piovertwo = 0.5*tos::pi;
-
 void healxi(tos::HealpixBinsI const &healbins, std::vector<tos::Forest> const &sight_lines,
 tos::AbsTwoPointGridPtr const &grid, double max_ang, std::vector<tos::XiBin> &xi) {
 
@@ -49,13 +47,9 @@ tos::AbsTwoPointGridPtr const &grid, double max_ang, std::vector<tos::XiBin> &xi
     // bin index variables
     int binIndex;
 
-    // axis 1
+    // axis binning
     float min_dist(grid->getAxisMin(0)), max_dist(grid->getAxisMax(0)), bin_width(grid->getAxisBinWidth(0)), nbins0(grid->getAxisNBins(0));
     float min_distsq(min_dist*min_dist), max_distsq(max_dist*max_dist);
-    // axis 2
-    // double min_mu(0), max_mu(1), dmu(1.0/3.0), nbins1(3);
-    // axis 3
-    // todo
 
     boost::progress_display show_progress(sight_lines.size());
 
@@ -63,7 +57,7 @@ tos::AbsTwoPointGridPtr const &grid, double max_ang, std::vector<tos::XiBin> &xi
         ++show_progress;
         auto line_of_sight = sight_lines[i];
         numPixels += line_of_sight.pixels.size();
-        auto neighbors = healbins.getBinIndicesWithinRadius(piovertwo-line_of_sight.dec, line_of_sight.ra, max_ang);
+        auto neighbors = healbins.getBinIndicesWithinRadius(line_of_sight.ra, line_of_sight.dec, max_ang);
         // search neighboring healpix bins
         for(int neighbor : neighbors) {
             ++numHealpixBinsSearched;
@@ -93,13 +87,8 @@ tos::AbsTwoPointGridPtr const &grid, double max_ang, std::vector<tos::XiBin> &xi
                         dist = std::sqrt(distSq);
                         binIndex = int((dist - min_dist)/bin_width);
 
-                        // check transverse separation
-                        // mu = std::fabs(pj.distance-pi.distance)/dist;
-                        // if(mu >= max_mu || mu <= min_mu) continue;
-                        // binIndex = int((mu - min_mu)/dmu) + binIndex*nbins1;
-
-                        // check average pair distance
-                        // todo
+                        // todo: check transverse separation
+                        // todo: check average pair distance
 
                         if(binIndex < 0 || binIndex >= nbins) continue;
                         // accumulate pixel pair
@@ -217,7 +206,7 @@ int main(int argc, char **argv) {
         auto los = sight_lines[i].pixels;
 
         totalpixels += los.size();
-        healbins.addItem(piovertwo - sight_lines[i].dec, sight_lines[i].ra, i);
+        healbins.addItem(sight_lines[i].ra, sight_lines[i].dec, i);
 
         // find minimum loglam
         if(los[0].loglam < min_loglam) {

@@ -5,6 +5,8 @@
 
 #include "healpix_map.h"
 
+#include "constants.h"
+
 namespace turbooctospice {
 
     // Represents a map of items that uses HEALPix index for keys
@@ -19,12 +21,12 @@ namespace turbooctospice {
             std::cout << "Max pix rad: " << _map.max_pixrad() << std::endl;
         };
         /// Add an item's index to the bin containing the specified angular position
-        /// @param theta The altitude coordinate in radians (0 < theta < pi). 
-        /// @param phi The azimuth coordinate in radians (0 < phi < 2*pi).
+        /// @param ra Right ascension. The angular distance of a point east of the First Point of Aries, measured along the celestial equator, in radians (0 < ra < 2*pi). 
+        /// @param dec Declination. The angular distance of a point north or south of the celestial equator, in radians (-pi/2 < dec < pi/2).
         /// @param item The item to add
-        void addItem(double theta, double phi, const T &item) {
+        void addItem(double ra, double dec, const T &item) {
             // Find the healpix bin for this quasar and save it's index
-            int binIndex(ang2pix(theta, phi));
+            int binIndex(ang2pix(ra, dec));
 
             if(_bins.count(binIndex) > 0) {
                 _bins[binIndex].push_back(item);
@@ -35,13 +37,13 @@ namespace turbooctospice {
             ++_nentries;
         };
         /// Return bin indices within radius of an angular position
-        /// @param theta The altitude coordinate in radians (0 < theta < pi). 
-        /// @param phi The azimuth coordinate in radians (0 < phi < 2*pi).
+        /// @param ra Right ascension. The angular distance of a point east of the First Point of Aries, measured along the celestial equator, in radians (0 < ra < 2*pi). 
+        /// @param dec Declination. The angular distance of a point north or south of the celestial equator, in radians (-pi/2 < dec < pi/2).
         /// @param radius The angular radius to query in radians.
         /// @param fact HEALPix search precision parameter
-        std::vector<int> getBinIndicesWithinRadius(double theta, double phi, double radius, int fact = 4) const {
+        std::vector<int> getBinIndicesWithinRadius(double ra, double dec, double radius, int fact = 4) const {
             std::vector<int> neighbors;
-            _map.query_disc_inclusive({theta, phi}, radius, neighbors, fact);
+            _map.query_disc_inclusive(radec2pnt(ra, dec), radius, neighbors, fact);
             return neighbors;
         };
         /// Return true if the specified bin index has any contents
@@ -56,17 +58,23 @@ namespace turbooctospice {
             return _bins.at(k);
         };
         /// Return the Healpix bin index containing the specified angular position
-        /// @param theta The altitude coordinate in radians (0 < theta < pi). 
-        /// @param phi The azimuth coordinate in radians (0 < phi < 2*pi).
-        int ang2pix(double theta, double phi) const { 
+        /// @param ra Right ascension. The angular distance of a point east of the First Point of Aries, measured along the celestial equator, in radians (0 < ra < 2*pi). 
+        /// @param dec Declination. The angular distance of a point north or south of the celestial equator, in radians (-pi/2 < dec < pi/2).
+        int ang2pix(double ra, double dec) const { 
             try {
-                return _map.ang2pix( {theta, phi} ); 
+                return _map.ang2pix(radec2pnt(ra, dec)); 
             }
             catch(PlanckError e) {
-                std::cerr << "Invalid (theta,phi): " << theta << ", " << phi << std::endl;
+                std::cerr << "HealBins.ang2pix: " << e.what() << std::endl;
                 return 0;
             }
         };
+        /// Return a HEALPix pointing object corresponding to the specified ra and dec
+        /// @param ra Right ascension. The angular distance of a point east of the First Point of Aries, measured along the celestial equator, in radians (0 < ra < 2*pi). 
+        /// @param dec Declination. The angular distance of a point north or south of the celestial equator, in radians (-pi/2 < dec < pi/2).
+        pointing radec2pnt(double ra, double dec) const {
+            return {0.5*pi - dec, ra};
+        } 
         /// Return the number of bins that contain at least one item
         int getNBins() const { return _bins.size(); };
         /// Return the total number of entries.
@@ -74,7 +82,7 @@ namespace turbooctospice {
         /// Print bin center of specified index
         void printBinCenter(const int index) const {
             auto p = _map.pix2ang(index);
-            std::cout << p.theta << " " << p.phi;
+            std::cout << 0.5*pi - p.theta << " " << p.phi;
         }
     private:
         int _order;

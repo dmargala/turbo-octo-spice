@@ -1,6 +1,7 @@
 <map id="turbooctospice/constants.h" name="turbooctospice/constants.h">
 <area shape="rect" id="node2" href="$_abs_two_point_grid_8h.html" title="turbooctospice/AbsTwoPoint\lGrid.h" alt="" coords="257,81,447,122"/>
 <area shape="rect" id="node6" href="$turbooctospice_8h.html" title="turbooctospice/turbooctospice.h" alt="" coords="228,269,439,296"/>
+<area shape="rect" id="node14" href="$_healpix_bins_8h.html" title="turbooctospice/HealpixBins.h" alt="" coords="471,88,664,115"/>
 <area shape="rect" id="node3" href="$_abs_two_point_grid_8cc.html" title="turbooctospice/AbsTwoPoint\lGrid.cc" alt="" coords="323,171,513,213"/>
 <area shape="rect" id="node4" href="$_cartesian_grid_8h.html" title="turbooctospice/Cartesian\lGrid.h" alt="" coords="538,171,707,213"/>
 <area shape="rect" id="node10" href="$_polar_grid_8h.html" title="turbooctospice/PolarGrid.h" alt="" coords="731,179,911,205"/>

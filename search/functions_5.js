@@ -1,9 +1,13 @@
 var searchData=
 [
+  ['getaxisbinwidth',['getAxisBinWidth',['../classturbooctospice_1_1_abs_two_point_grid.html#a67e60a213146170a394684e9bd614f98',1,'turbooctospice::AbsTwoPointGrid']]],
+  ['getaxismax',['getAxisMax',['../classturbooctospice_1_1_abs_two_point_grid.html#af7ddc81d4132141d3a52e56edaca8d5d',1,'turbooctospice::AbsTwoPointGrid']]],
+  ['getaxismin',['getAxisMin',['../classturbooctospice_1_1_abs_two_point_grid.html#a0d673568682990c9af34fed5c2bf5c22',1,'turbooctospice::AbsTwoPointGrid']]],
+  ['getaxisnbins',['getAxisNBins',['../classturbooctospice_1_1_abs_two_point_grid.html#a885269c60b56134dea7d319817c908af',1,'turbooctospice::AbsTwoPointGrid']]],
   ['getbincenters',['getBinCenters',['../classturbooctospice_1_1_abs_two_point_grid.html#a675249b3e43b91e57e5efa0a2c8eeada',1,'turbooctospice::AbsTwoPointGrid']]],
   ['getbincontents',['getBinContents',['../classturbooctospice_1_1_healpix_bins.html#a25abb8b763ccc146af9c4c619cd7a1f1',1,'turbooctospice::HealpixBins']]],
   ['getbinindex',['getBinIndex',['../classturbooctospice_1_1_abs_two_point_grid.html#a1df03dacd111896312ab2687826570e6',1,'turbooctospice::AbsTwoPointGrid::getBinIndex()'],['../classturbooctospice_1_1_cartesian_grid.html#aa2910fa6f067462830293abfe17efbca',1,'turbooctospice::CartesianGrid::getBinIndex()'],['../classturbooctospice_1_1_polar_grid.html#ae07192727e20902ccf3ee30f85dbdbfb',1,'turbooctospice::PolarGrid::getBinIndex()'],['../classturbooctospice_1_1_quasar_grid.html#ab749b74e7de2ecf455043713ba460464',1,'turbooctospice::QuasarGrid::getBinIndex()']]],
-  ['getbinindiceswithinradius',['getBinIndicesWithinRadius',['../classturbooctospice_1_1_healpix_bins.html#a1e0589f2d2a02bdf2677d274ebccebc9',1,'turbooctospice::HealpixBins']]],
+  ['getbinindiceswithinradius',['getBinIndicesWithinRadius',['../classturbooctospice_1_1_healpix_bins.html#a4de831fed72601100348845b2e1f06a8',1,'turbooctospice::HealpixBins']]],
   ['getcoeff0',['getCoeff0',['../classturbooctospice_1_1_mock_spectrum.html#a6d21421f0d7714e439c335fb7c42f51e',1,'turbooctospice::MockSpectrum']]],
   ['getcoeff1',['getCoeff1',['../classturbooctospice_1_1_mock_spectrum.html#a645cded191582348f70d19dcd946b8c8',1,'turbooctospice::MockSpectrum']]],
   ['getdec',['getDec',['../classturbooctospice_1_1_mock_spectrum.html#a6398ce927a648186132bf7e8c432e706',1,'turbooctospice::MockSpectrum']]],

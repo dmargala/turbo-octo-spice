@@ -50,10 +50,10 @@ tos::AbsTwoPointGridPtr const &grid, double max_ang, std::vector<tos::XiBin> &xi
     int binIndex;
 
     // axis 1
-    float min_dist(0), max_dist(200), bin_width(4), nbins1(50);
+    float min_dist(grid->getAxisMin(0)), max_dist(grid->getAxisMax(0)), bin_width(grid->getAxisBinWidth(0)), nbins0(grid->getAxisNBins(0));
     float min_distsq(min_dist*min_dist), max_distsq(max_dist*max_dist);
     // axis 2
-    // double min_mu(0), max_mu(1), dmu(1.0/3.0), nbins2(3);
+    // double min_mu(0), max_mu(1), dmu(1.0/3.0), nbins1(3);
     // axis 3
     // todo
 
@@ -96,11 +96,12 @@ tos::AbsTwoPointGridPtr const &grid, double max_ang, std::vector<tos::XiBin> &xi
                         // check transverse separation
                         // mu = std::fabs(pj.distance-pi.distance)/dist;
                         // if(mu >= max_mu || mu <= min_mu) continue;
-                        // binIndex = int((mu - min_mu)/dmu) + binIndex*nbins2;
+                        // binIndex = int((mu - min_mu)/dmu) + binIndex*nbins1;
 
                         // check average pair distance
                         // todo
 
+                        if(binIndex < 0 || binIndex >= nbins) continue;
                         // accumulate pixel pair
                         weight = los_pixel.weight*other_pixel.weight;
                         product = weight*los_pixel.value*other_pixel.value;

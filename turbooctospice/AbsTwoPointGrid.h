@@ -51,6 +51,11 @@ namespace turbooctospice {
 
         virtual bool getBinIndex(ForestPixel const &a, ForestPixel const &b, 
             double const &cosij, double const &thetaij, int &binIndex) const = 0;
+
+        int getAxisNBins(int axis) const;
+        double getAxisMax(int axis) const;
+        double getAxisMin(int axis) const;
+        double getAxisBinWidth(int axis, int index=0) const;
     protected:
         std::vector<double> xmin, xmax;
         //enum { LOS = 0, TRANSVERSE = 1, REDSHIFT = 2 };
@@ -64,6 +69,18 @@ namespace turbooctospice {
     }
     inline void AbsTwoPointGrid::getBinCenters(int index, std::vector<double> &binCenters) const {
         return _grid.getBinCenters(index, binCenters);
+    }
+    inline int AbsTwoPointGrid::getAxisNBins(int axis) const {
+        return _grid.getAxisBinning(axis)->getNBins();
+    }
+    inline double AbsTwoPointGrid::getAxisMin(int axis) const {
+        return _grid.getAxisBinning(axis)->getBinLowEdge(0);
+    }
+    inline double AbsTwoPointGrid::getAxisMax(int axis) const {
+        return _grid.getAxisBinning(axis)->getBinHighEdge(getAxisNBins(axis)-1);
+    }
+    inline double AbsTwoPointGrid::getAxisBinWidth(int axis, int index) const {
+        return _grid.getAxisBinning(axis)->getBinWidth(index);
     }
 
 }

@@ -9,7 +9,7 @@
 
 namespace turbooctospice {
 
-    // Represents a map of items that uses HEALPix index for keys
+    /// A map of items that organized by HEALPixels
     template<typename T> class HealpixBins {
     public:
         typedef std::map<int, std::vector<T> > Bins;

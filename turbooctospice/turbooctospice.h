@@ -1,6 +1,7 @@
 // Created 28-Feb-2014 by Daniel Margala (University of California, Irvine) <dmargala@uci.edu>
 #include "types.h"
 #include "constants.h"
+#include "RuntimeError.h"
 
 // #include "Triangle.h"
 // #include "TriangleMesh.h"

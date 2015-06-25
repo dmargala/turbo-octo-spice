@@ -45,8 +45,14 @@ local::HDF5Delta::HDF5Delta(std::string filename) : _filename(filename) {};
 
 std::vector<local::Forest> local::HDF5Delta::loadForests(bool keep_ngc, bool keep_sgc) {
     // open delta field file
-    H5::H5File file(_filename, H5F_ACC_RDONLY);
-    H5::Group grp = file.openGroup("lines_of_sight");
+    H5::Group grp;
+    try {
+        H5::H5File file(_filename, H5F_ACC_RDONLY);
+        grp = file.openGroup("lines_of_sight");
+    }
+    catch(H5::FileIException const &e){
+        throw local::RuntimeError("HDF5Delta: Could not open the specified file.");
+    }
 
     // static float flo(forestlo), fhi(foresthi), slo(speclo);
     static int nforests(0);

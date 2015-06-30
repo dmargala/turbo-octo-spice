@@ -28,7 +28,7 @@ tos::AbsTwoPointGridPtr const &grid, double max_ang, std::vector<tos::XiBin> &xi
     std::cout << "Number of sight lines: " << numLOS << std::endl;
 
     // stat counters
-    unsigned long numHealpixBinsSearched(0), numLOSPairs(0), numLOSPairsUsed(0), 
+    unsigned long numHealpixBinsSearched(0), numLOSPairs(0), numLOSPairsUsed(0),
         numPixels(0), numPixelPairs(0), numPixelPairsUsed(0);
 
     // create internal accumulation vectors
@@ -89,7 +89,7 @@ tos::AbsTwoPointGridPtr const &grid, double max_ang, std::vector<tos::XiBin> &xi
                 if(cos_separation <= cos_max_ang) continue;
                 double separation = std::acos(cos_separation);
                 ++numLOSPairsUsed;
-                // accumulate statistics for pixel pairs 
+                // accumulate statistics for pixel pairs
                 for(auto& los_pixel : line_of_sight.pixels) {
                     los_pixel_dist_sq = los_pixel.distance*los_pixel.distance;
                     los_pixel_projection_times_two = 2*los_pixel.distance*cos_separation;
@@ -97,7 +97,7 @@ tos::AbsTwoPointGridPtr const &grid, double max_ang, std::vector<tos::XiBin> &xi
                         ++numPixelPairs;
                         // check pairs are within our binning grid
 
-                        // check parallel separation 
+                        // check parallel separation
                         distSq = los_pixel_dist_sq + (other_pixel.distance - los_pixel_projection_times_two)*other_pixel.distance;
                         if(distSq >= max_distsq || distSq < min_distsq) continue;
                         dist = std::sqrt(distSq);
@@ -169,7 +169,7 @@ tos::AbsTwoPointGridPtr const &grid, double max_ang, std::vector<tos::XiBin> &xi
     // print stats
     std::cout << "Number of Healpix bins searched: " << numHealpixBinsSearched << std::endl;
 
-    // line of sight pair statistics 
+    // line of sight pair statistics
     unsigned long numLOSPairsTotal = (numLOS*(numLOS-1))/2;
     double fracLOSPairsConsidered = (double) numLOSPairs / numLOSPairsTotal;
     double fracLOSPairsUsed = (double) numLOSPairsUsed / numLOSPairs;
@@ -290,26 +290,26 @@ int main(int argc, char **argv) {
     int numHealBinsOccupied(healbins.getNBins());
     std::cout << "Read " << totalpixels << " from " << sight_lines.size() << " lines of sight (LOS)" << std::endl;
     std::cout << "Average number of pixels per LOS: " <<  static_cast<double>(totalpixels)/sight_lines.size() << std::endl;
-    std::cout << "Number of Healpix bins occupied: " << numHealBinsOccupied 
+    std::cout << "Number of Healpix bins occupied: " << numHealBinsOccupied
         << " (" << static_cast<double>(numHealBinsOccupied)/(12*std::pow(4, order)) << ")" << std::endl;
 
     // create grid for binning
     lk::AbsBinningCPtr bins1 = lk::createBinning(axis1), bins2 = lk::createBinning(axis2), bins3 = lk::createBinning(axis3);
     tos::AbsTwoPointGridPtr grid;
-    if(polar) { 
-        grid.reset(new tos::PolarGrid(bins1, bins2, bins3)); 
-    } 
-    else if (cart) { 
+    if(polar) {
+        grid.reset(new tos::PolarGrid(bins1, bins2, bins3));
+    }
+    else if (cart) {
         std::cerr << "Cartesigna grid implemented yet!" << std::endl;
         return -1;
-        // grid.reset(new tos::CartesianGrid(bins1, bins2, bins3)); 
-    } 
+        // grid.reset(new tos::CartesianGrid(bins1, bins2, bins3));
+    }
     else {
         std::cerr << "Observing grid not implemented yet!" << std::endl;
         return -1;
         // grid.reset(new tos::QuasarGrid(bins1, bins2, bins3));
     }
-    
+
     // the minimum redshift sets the angular scale we will need to consider
     double scale(cosmology->getTransverseComovingScale(zmin));
     double max_ang(grid->maxAngularScale(scale));
@@ -340,14 +340,14 @@ int main(int argc, char **argv) {
         std::ofstream estimator_file(estimator_filename.c_str());
         for(int index = 0; index < xi.size(); ++index) {
             grid->getBinCenters(index, binCenters);
-            estimator_file << index << ' ' << binCenters[0] << ' ' << binCenters[1] << ' ' << binCenters[2] << ' ' 
+            estimator_file << index << ' ' << binCenters[0] << ' ' << binCenters[1] << ' ' << binCenters[2] << ' '
                 << xi[index].didj << ' ' << xi[index].di << ' ' << xi[index].dj << ' ' << xi[index].wgt << std::endl;
         }
         estimator_file.close();
 
         std::string covariance_filename(outfile + ".cov");
         if(verbose) {
-            std::cout << "Saving covariance matrix to: " << estimator_filename << std::endl;
+            std::cout << "Saving covariance matrix to: " << covariance_filename << std::endl;
         }
         std::ofstream covariance_file(covariance_filename.c_str());
         for(int a = 0; a < cov.size(); ++a) {

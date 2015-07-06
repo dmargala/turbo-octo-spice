@@ -18,3 +18,5 @@
 /latex
 /misc
 *.txt
+*.data
+*.cov

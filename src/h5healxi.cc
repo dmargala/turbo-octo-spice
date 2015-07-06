@@ -109,9 +109,6 @@ int main(int argc, char **argv) {
         std::cerr << e.what() << std::endl;
         return -1;
     }
-    catch(std::exception const &e) {
-        std::cerr << "Error while running the estimator: " << e.what() << std::endl;
-    }
 
     return 0;
 }

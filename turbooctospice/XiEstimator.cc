@@ -45,6 +45,7 @@ local::XiEstimator::XiEstimator(int order, std::string infile, cosmo::AbsHomogen
     double zmax(std::pow(10, max_loglam-local::logLyA)-1);
 
     int numHealBinsOccupied(healbins_.getNBins());
+
     std::cout << "Read " << totalpixels << " from " << sightlines_.size() << " lines of sight (LOS)" << std::endl;
     std::cout << "Average number of pixels per LOS: " << static_cast<double>(totalpixels)/sightlines_.size() << std::endl;
     std::cout << "Number of Healpix bins occupied: " << numHealBinsOccupied
@@ -53,6 +54,8 @@ local::XiEstimator::XiEstimator(int order, std::string infile, cosmo::AbsHomogen
     // the minimum redshift sets the angular scale we will need to consider
     double scale(cosmology->getTransverseComovingScale(zmin));
     max_ang_ = grid_->maxAngularScale(scale);
+    cos_max_ang_ = std::cos(max_ang_);
+
     std::cout << "Transverse comoving scale at z = " << zmin <<  " (Mpc/h): " << scale << std::endl;
     std::cout << "Max angular scale at z = " << zmin <<  " (rad): " << max_ang_  << std::endl;
     std::cout << "Transverse comoving scale at z = " << zmax <<  " (Mpc/h): "
@@ -61,6 +64,7 @@ local::XiEstimator::XiEstimator(int order, std::string infile, cosmo::AbsHomogen
         << grid_->maxAngularScale(cosmology->getTransverseComovingScale(zmax))  << std::endl;
 
     // axis binning limits
+    num_xi_bins = grid_->getNBinsTotal();
     r_min = grid_->getAxisMin(0); r_max = grid_->getAxisMax(0); r_spacing = grid_->getAxisBinWidth(0);
     rsq_min = r_min*r_min; rsq_max = r_max*r_max;
     num_mu_bins = grid_->getAxisNBins(1);
@@ -98,21 +102,21 @@ void local::XiEstimator::run(int nthreads) {
     local::ThreadPool pool(nthreads);
     std::list<local::ThreadPool::Task> tasks;
 
+    // Estimate xi, one healpixel at a time
     auto occupied_bins = healbins_.getOccupiedBins();
     for(auto id : occupied_bins) {
         tasks.push_back(boost::bind(&XiEstimator::healxi_task, this, id));
     }
-    show_progress_.restart(sightlines_.size());
+    show_progress_.restart(occupied_bins.size());
     pool.run(tasks);
-    // task_finalize();
     tasks.clear();
 
     // Finalize xi
-    int num_xi_bins = grid_->getNBinsTotal();
     xi_.resize(num_xi_bins);
     for(int i = 0; i < num_xi_bins; ++i) {
         tasks.push_back(boost::bind(&XiEstimator::xi_finalize_task, this, i));
     }
+    show_progress_.restart(num_xi_bins);
     pool.run(tasks);
     tasks.clear();
 
@@ -124,10 +128,13 @@ void local::XiEstimator::run(int nthreads) {
             tasks.push_back(boost::bind(&XiEstimator::cov_task, this, a, b));
         }
     }
-
+    show_progress_.restart(num_xi_bins*num_xi_bins);
+    pool.run(tasks);
+    tasks.clear();
 }
 
 bool local::XiEstimator::xi_finalize_task(int id) {
+    increment_progress();
     for(const auto& healxi_entry : healxis_) {
         xi_[id].didj += healxis_[healxi_entry.first][id].didj;
         xi_[id].wgt += healxis_[healxi_entry.first][id].wgt;
@@ -139,6 +146,7 @@ bool local::XiEstimator::xi_finalize_task(int id) {
 }
 
 bool local::XiEstimator::cov_task(int a, int b) {
+    increment_progress();
     for(const auto& healxi_entry : healxis_) {
         cov_[a][b] += healxis_[healxi_entry.first][a].didj*healxis_[healxi_entry.first][b].didj
             - healxis_[healxi_entry.first][a].wgt*healxis_[healxi_entry.first][b].wgt*xi_[a].didj*xi_[b].didj;
@@ -150,40 +158,40 @@ bool local::XiEstimator::cov_task(int a, int b) {
     return true;
 }
 
-void local::XiEstimator::task_finalize(){
-    int num_xi_bins = grid_->getNBinsTotal();
-    // copy data to output vectors
-    std::vector<local::XiBin> xisum(num_xi_bins, {});
-    for(int index = 0; index < num_xi_bins; ++index) {
-        for(const auto& pair : healxis_) {
-            xisum[index].didj += healxis_[pair.first][index].didj;
-            xisum[index].wgt += healxis_[pair.first][index].wgt;
-        }
-        if(xisum[index].wgt > 0) {
-            xisum[index].didj /= xisum[index].wgt;
-        }
-    }
-    xi_ = xisum;
-
-    // Estimate covariance matrix
-    std::vector<std::vector<double> > cov(num_xi_bins, std::vector<double>(num_xi_bins, 0));
-    for(int a = 0; a < num_xi_bins; ++a){
-        for(int b = 0; b < num_xi_bins; ++b) {
-            for(const auto& pair : healxis_) {
-                cov[a][b] += healxis_[pair.first][a].didj*healxis_[pair.first][b].didj
-                    - healxis_[pair.first][a].wgt*healxis_[pair.first][b].wgt*xisum[a].didj*xisum[b].didj;
-            }
-            double wgt = xisum[a].wgt*xisum[b].wgt;
-            if(wgt > 0) {
-                cov[a][b] /= wgt;
-            }
-        }
-    }
-    cov_ = cov;
-}
+// void local::XiEstimator::task_finalize(){
+//     int num_xi_bins = grid_->getNBinsTotal();
+//     // copy data to output vectors
+//     std::vector<local::XiBin> xisum(num_xi_bins, {});
+//     for(int index = 0; index < num_xi_bins; ++index) {
+//         for(const auto& pair : healxis_) {
+//             xisum[index].didj += healxis_[pair.first][index].didj;
+//             xisum[index].wgt += healxis_[pair.first][index].wgt;
+//         }
+//         if(xisum[index].wgt > 0) {
+//             xisum[index].didj /= xisum[index].wgt;
+//         }
+//     }
+//     xi_ = xisum;
+//
+//     // Estimate covariance matrix
+//     std::vector<std::vector<double> > cov(num_xi_bins, std::vector<double>(num_xi_bins, 0));
+//     for(int a = 0; a < num_xi_bins; ++a){
+//         for(int b = 0; b < num_xi_bins; ++b) {
+//             for(const auto& pair : healxis_) {
+//                 cov[a][b] += healxis_[pair.first][a].didj*healxis_[pair.first][b].didj
+//                     - healxis_[pair.first][a].wgt*healxis_[pair.first][b].wgt*xisum[a].didj*xisum[b].didj;
+//             }
+//             double wgt = xisum[a].wgt*xisum[b].wgt;
+//             if(wgt > 0) {
+//                 cov[a][b] /= wgt;
+//             }
+//         }
+//     }
+//     cov_ = cov;
+// }
 
 void local::XiEstimator::increment_progress() {
-    std::lock_guard<std::mutex> lock(show_progress_mutex_);
+    boost::unique_lock<boost::mutex> scoped_lock(show_progress_mutex_);
     ++show_progress_;
     // show_progress_mutex_ is automatically released when lock
     // goes out of scope
@@ -192,15 +200,12 @@ void local::XiEstimator::increment_progress() {
 bool local::XiEstimator::healxi_task(int id) {
     increment_progress();
     // create internal accumulation vectors
-    int num_xi_bins = grid_->getNBinsTotal();
     std::vector<double> dsum(num_xi_bins,0), wsum(num_xi_bins,0);
-    // to avoid calling trig functions inside loop
-    double cos_max_ang(std::cos(max_ang_));
     // allocate temporary vectors before loop
     std::vector<int> neighbors;
     // task_id's xi container
     std::vector<local::XiBin> xi(num_xi_bins, {});
-        // Iterate over all sight lines in this healpixel
+    // Iterate over all sight lines in this healpixel
     for(int primary_los_index : healbins_.getBinContents(id)) {
         auto primary_los = sightlines_[primary_los_index]; // should probably avoid copy
         // Find healpixels within max angular separation of interest
@@ -216,7 +221,7 @@ bool local::XiEstimator::healxi_task(int id) {
                 auto other_los = sightlines_[pair_los_index];
                 // check angular separation
                 double cos_separation(primary_los.angularSeparation(other_los));
-                if(cos_separation <= cos_max_ang) continue;
+                if(cos_separation <= cos_max_ang_) continue;
                 double separation = std::acos(cos_separation);
                 // accumulate statistics for pixel pairs
                 for(auto& primary_pixel : primary_los.pixels) {
@@ -240,8 +245,7 @@ bool local::XiEstimator::healxi_task(int id) {
                                 if(r_sq >= rsq_max || r_sq < rsq_min) continue;
                                 pair_bin_index = int((r - r_min)/r_spacing);
                                 int mubin = int(mu * num_mu_bins);
-                                if(mubin < 0) mubin = 0;
-                                if(mubin >= num_mu_bins) mubin = num_mu_bins-1;
+                                if(mubin >= num_mu_bins || mubin < 0) continue;
                                 pair_bin_index = mubin + pair_bin_index*num_mu_bins;
                             }
                             else if(coordinate_type_ == CartesianCoordinates) {

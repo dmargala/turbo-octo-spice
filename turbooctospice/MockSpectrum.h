@@ -12,7 +12,7 @@ namespace turbooctospice {
 
 	class MockSpectrum {
 	public:
-	    MockSpectrum(std::string target, bool verbose=false);
+	    MockSpectrum(std::string target, int id, bool verbose=false);
 
 	    float getZ();
 	    float getRA();
@@ -24,6 +24,7 @@ namespace turbooctospice {
 	    	int ncombine=4, float forestlo=1040, float foresthi=1200, float speclo=3650);
 	private:
 		void loadTarget(bool verbose);
+		int _id;
 	    float _z, _ra, _dec, _coeff0, _coeff1;
 	    std::string _target;
 	    std::vector<float> _frac;

@@ -18,8 +18,8 @@ namespace local = turbooctospice;
 const double PI = std::atan(1.0)*4;
 const double DEG2RAD = PI/180.0;
 
-local::MockSpectrum::MockSpectrum(std::string target, bool verbose) : 
-_target(target) {
+local::MockSpectrum::MockSpectrum(std::string target, int id, bool verbose) :
+_target(target), _id(id) {
     loadTarget(verbose);
 }
 
@@ -44,14 +44,14 @@ void local::MockSpectrum::loadTarget(bool verbose) {
         table.column("f").read(_frac, 1, table.rows());
     }
     catch (CCfits::FitsException& e) {
-        std::cerr << "CCfits Exception Thrown :" << e.message();       
+        std::cerr << "CCfits Exception Thrown :" << e.message();
     }
 }
 
 local::Forest local::MockSpectrum::getForest(
     int ncombine, float forestlo, float foresthi, float speclo) {
     // init forest pixels
-    Forest forest(_ra*DEG2RAD, _dec*DEG2RAD);
+    Forest forest(_ra*DEG2RAD, _dec*DEG2RAD, _id);
     // double theta((90.0-_dec)*DEG2RAD), phi(_ra*DEG2RAD);
     // forest.phi = phi;
     // forest.theta = theta;

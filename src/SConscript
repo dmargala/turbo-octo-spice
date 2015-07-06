@@ -2,8 +2,16 @@ import os
 
 Import('env')
 
+healCppPath = ['/Users/daniel/source/Healpix_3.20/src/cxx/osx/include']
+healLibPath = ['/Users/daniel/source/Healpix_3.20/src/cxx/osx/lib']
+healLibs = ['healpix_cxx', 'cxxsupport']
+
 ## Build turbooctospice library
-env.Library('turbooctospice', Glob('#turbooctospice/*.cc'), LIBS=['hdf5','hdf5_cpp'])
+env.Library('turbooctospice', Glob('#turbooctospice/*.cc'),
+    LIBS=['hdf5','hdf5_cpp']+healLibs,
+    LIBPATH=healLibPath,
+    CPPPATH=healCppPath,
+    CPPDEFINES = ['HAVE_LIBHEAL'])
 
 tos = ['turbooctospice']
 tosCppPath = ['../turbooctospice']
@@ -19,9 +27,6 @@ bucketxi = env.Program('bucketxi', 'bucketxi.cc', LIBS=common)
 #kdtreetest = env.Program('kdtreetest', 'kdtreetest.cc', LIBS=common+['kdtree'])
 
 ### Requires HealPix library
-healCppPath = ['/Users/daniel/source/Healpix_3.20/src/cxx/osx/include']
-healLibPath = ['/Users/daniel/source/Healpix_3.20/src/cxx/osx/lib']
-healLibs = ['healpix_cxx', 'cxxsupport']
 # healOptions = {'LIBS':healLibs, 'LIBPATH':healLibs, 'CPPPATH':healCppPath}
 
 h5Libs = ['hdf5','hdf5_cpp']
@@ -36,6 +41,12 @@ box2los_text = env.Program('box2los_text', 'box2los_text.cc', LIBS=common)
 ### Requires tos library
 #bucketsky = env.Program('bucketsky', 'bucketsky.cc', LIBS=common+tos, LIBPATH=tosLibPath, CPPPATH=tosCppPath)
 
+tpool = env.Program('tpool', 'tpool.cc',
+    LIBS=common+tos+healLibs,
+    LIBPATH=tosLibPath+healLibPath,
+    CPPPATH=tosCppPath+healCppPath,
+    CPPDEFINES = ['HAVE_LIBHEAL'])
+
 h5healxi = env.Program('h5healxi', 'h5healxi.cc',
     LIBS=common+tos+healLibs+h5Libs+['cfitsio','CCfits'],
     LIBPATH=tosLibPath+healLibPath,
@@ -43,14 +54,14 @@ h5healxi = env.Program('h5healxi', 'h5healxi.cc',
     CPPDEFINES = ['HAVE_LIBHEAL'])
 
 # templatexi = env.Program('templatexi', 'templatexi.cc',
-# 	LIBS=common+tos+healLibs, 
-# 	LIBPATH=tosLibPath+healLibPath, 
+# 	LIBS=common+tos+healLibs,
+# 	LIBPATH=tosLibPath+healLibPath,
 # 	CPPPATH=tosCppPath+healCppPath,
 # 	CPPDEFINES = ['HAVE_LIBHEAL','BOOST_COROUTINES_UNIDIRECT'])
 
 ### Requires fits / ccfits libraries
 cfitsLibs = ['cfitsio','CCfits']
-mockdata = env.Program('mockdata', 'mockdata.cc', LIBS=common+tos+cfitsLibs, LIBPATH=tosLibPath, CPPPATH=tosCppPath)
+# mockdata = env.Program('mockdata', 'mockdata.cc', LIBS=common+tos+cfitsLibs, LIBPATH=tosLibPath, CPPPATH=tosCppPath)
 
 ## Compile CUDA programs
 
@@ -69,16 +80,16 @@ cudaEnv.Program('deviceQuery', 'deviceQuery.cu')
 
 # cudaEnv.Program('gpuxi', 'gpuxi.cu')#, 'boost_program_options'])
 # cudaEnv.Program('gpuxi', ['gpuxi.cu','#gpu/brute.cu'],
-#     LIBS=['cuda','cudart'], 
+#     LIBS=['cuda','cudart'],
 #     LIBPATH=['/usr/local/cuda/lib','#/build'],
 #     CPPPATH=['/usr/local/cuda/include', '#/gpu'])
 
 # testEnv = Environment(CXX='clang++', CCFLAGS=['-stdlib=libstdc++'])
 # testEnv.Append(CCFLAGS=['-O2', '-g3'])
 
-# gpuxi = testEnv.Program('gpuxi', 'gpuxi.cc', 
-#     LIBS=['cuda','cudart','gpubrute'], 
-#     LIBPATH=['/usr/local/cuda/lib','#/build'], 
+# gpuxi = testEnv.Program('gpuxi', 'gpuxi.cc',
+#     LIBS=['cuda','cudart','gpubrute'],
+#     LIBPATH=['/usr/local/cuda/lib','#/build'],
 #     CPPPATH=['/usr/local/cuda/include', '#/gpu'])
 
 # Custom install directory

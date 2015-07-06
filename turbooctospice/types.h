@@ -9,6 +9,7 @@
 // #include "boost/coroutine/coroutine.hpp"
 
 #include "boost/smart_ptr.hpp"
+#include "HealpixBins.h"
 
 #include <cmath>
 #include <vector>
@@ -37,10 +38,10 @@ namespace turbooctospice {
 
  //    typedef std::vector<Pixel> Pixels;
 
-    /// Represents a LyA forest pixel 
+    /// Represents a LyA forest pixel
     struct ForestPixel {
         float value, loglam, weight, distance;
-        ForestPixel(float val, float loglambda, float wgt, float dist) 
+        ForestPixel(float val, float loglambda, float wgt, float dist)
         : value(val), loglam(loglambda), weight(wgt), distance(dist) {};
     };
 
@@ -48,16 +49,19 @@ namespace turbooctospice {
     struct Forest {
         double dec, ra, sin_dec, cos_dec, sin_ra, cos_ra;
         std::vector<ForestPixel> pixels;
-        Forest(double _ra, double _dec) : ra(_ra), dec(_dec) {
+        int forest_id;
+        Forest(double _ra, double _dec, int _forest_id) :
+        ra(_ra), dec(_dec), forest_id(_forest_id) {
             sin_dec = std::sin(dec);
             cos_dec = std::cos(dec);
             sin_ra = std::sin(ra);
             cos_ra = std::cos(ra);
-        } 
+        }
 
         double angularSeparation(Forest const &other) const {
             return sin_dec*other.sin_dec + cos_dec*other.cos_dec*(sin_ra*other.sin_ra + cos_ra*other.cos_ra);
         }
+        
     };
 
     /// Represents a correlation function bin
@@ -68,8 +72,6 @@ namespace turbooctospice {
 
     class AbsTwoPointGrid;
     typedef boost::shared_ptr<AbsTwoPointGrid> AbsTwoPointGridPtr;
-
-
 }
 
 #endif

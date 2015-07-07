@@ -37,7 +37,7 @@ template<typename T> void readAttribute(H5::Group& grp, const std::string& name,
 
 local::HDF5Delta::HDF5Delta(std::string filename) : _filename(filename) {};
 
-std::vector<local::Forest> local::HDF5Delta::loadForests(bool keep_ngc, bool keep_sgc) {
+std::vector<local::Forest> local::HDF5Delta::loadForests() {
     // Open delta field file
     H5::Group grp;
     try {
@@ -49,7 +49,6 @@ std::vector<local::Forest> local::HDF5Delta::loadForests(bool keep_ngc, bool kee
     }
 
     static int nforests(0);
-    static bool keep_ngc_kludge(keep_ngc), keep_sgc_kludge(keep_sgc);
     struct kludge {
         static herr_t load_delta_los(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *opdata) {
             H5::Group targetGroup;
@@ -58,27 +57,24 @@ std::vector<local::Forest> local::HDF5Delta::loadForests(bool keep_ngc, bool kee
             readAttribute(targetGroup, "ra", ra);
             readAttribute(targetGroup, "dec", dec);
             readAttribute(targetGroup, "z", z);
-            if( (keep_sgc_kludge && (ra <  60*deg2rad || ra > 300*deg2rad)) ||
-                (keep_ngc_kludge && (ra > 100*deg2rad && ra < 270*deg2rad))) {
-                // Display progress
-                if((nforests % 10000) == 0) std::cout << nforests << " : " << name << std::endl;
-                // Read datasets
-                std::vector<float> delta, r_comov, weight, loglam;
-                readDataSet(targetGroup, "delta", delta);
-                readDataSet(targetGroup, "weight", weight);
-                readDataSet(targetGroup, "r_comov", r_comov);
-                readDataSet(targetGroup, "loglam", loglam);
-                // Init forest pixels
-                Forest forest(ra, dec, nforests);
-                // Iterate over pixels
-                for(int i = 0; i < delta.size(); ++i) {
-                    // Save the pixel
-                    forest.pixels.push_back( {delta[i], loglam[i], weight[i], r_comov[i]} );
-                }
-                // Save forest
-                ((std::vector<Forest>*) opdata)->push_back(forest);
-                nforests++;
+            // Display progress
+            if((nforests % 10000) == 0) std::cout << nforests << " : " << name << std::endl;
+            // Read datasets
+            std::vector<float> delta, r_comov, weight, loglam;
+            readDataSet(targetGroup, "delta", delta);
+            readDataSet(targetGroup, "weight", weight);
+            readDataSet(targetGroup, "r_comov", r_comov);
+            readDataSet(targetGroup, "loglam", loglam);
+            // Init forest pixels
+            Forest forest(ra, dec, nforests);
+            // Iterate over pixels
+            for(int i = 0; i < delta.size(); ++i) {
+                // Save the pixel
+                forest.pixels.push_back( {delta[i], loglam[i], weight[i], r_comov[i]} );
             }
+            // Save forest
+            ((std::vector<Forest>*) opdata)->push_back(forest);
+            nforests++;
             targetGroup.close();
             return 0;
         }

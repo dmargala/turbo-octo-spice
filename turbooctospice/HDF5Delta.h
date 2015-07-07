@@ -3,7 +3,6 @@
 #ifndef TURBOOCTOSPICE_HDF5_DELTA
 #define TURBOOCTOSPICE_HDF5_DELTA
 
-#include "H5Cpp.h"
 #include "types.h"
 
 #include <vector>
@@ -19,7 +18,7 @@ namespace turbooctospice {
         /// Loads forest sightlines from file
         /// @param keep_ngc specifies whether or not to include sight lines from the northern galactic cap
         /// @param keep_sgc specifies whether or not to include sight lines from the southern galactic cap
-        std::vector<Forest> loadForests(bool keep_ngc=true, bool keep_sgc=true);
+        std::vector<Forest> loadForests();
         // std::vector<Forest> loadForests(int ncombine, float forestlo, float foresthi, float speclo, bool debug=false);
     private:
         std::string _filename;

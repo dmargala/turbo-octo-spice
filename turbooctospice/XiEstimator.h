@@ -17,8 +17,8 @@ namespace turbooctospice {
     class XiEstimator {
     public:
         enum BinningCoordinateType { PolarCoordinates, CartesianCoordinates, ObservingCoordinates };
-        XiEstimator(int order, std::string infile, cosmo::AbsHomogeneousUniversePtr cosmology,
-            AbsTwoPointGridPtr grid, BinningCoordinateType type, bool skip_ngc=false, bool skip_sgc=false);
+        XiEstimator(int order, cosmo::AbsHomogeneousUniversePtr cosmology,
+            AbsTwoPointGridPtr grid, BinningCoordinateType type, std::vector<Forest> sightlines);
         void run(int nthreads);
         void save_results(std::string outfile);
     private:
@@ -40,9 +40,8 @@ namespace turbooctospice {
         std::map<int, std::vector<XiBin> > healxis_;
         std::vector<XiBin> xi_;
         std::vector<std::vector<double> > cov_;
-        boost::progress_display show_progress_;
+        std::unique_ptr<boost::progress_display> show_progress_;
         boost::mutex show_progress_mutex_; // protects show_progress_
-
     };
 } // turbooctospice
 

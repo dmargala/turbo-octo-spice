@@ -61,13 +61,42 @@ namespace turbooctospice {
         double angularSeparation(Forest const &other) const {
             return sin_dec*other.sin_dec + cos_dec*other.cos_dec*(sin_ra*other.sin_ra + cos_ra*other.cos_ra);
         }
-        
+
     };
 
     /// Represents a correlation function bin
     struct XiBin {
-        double didj, di, dj, wgt;
-        XiBin() : didj(0), di(0), dj(0), wgt(0) {};
+        double didj, di, dj, wgt, wi, wj;
+        long num_pairs;
+        XiBin() : didj(0), di(0), dj(0), wgt(0), wi(0), wj(0), num_pairs(0) {};
+        void accumulate_pair(ForestPixel const &i, ForestPixel const &j) {
+            float wdi(i.weight*i.value), wdj(j.weight*j.value);
+            didj += wdi*wdj;
+            di += wdi;
+            dj += wdj;
+            wgt += i.weight*j.weight;
+            wi += i.weight;
+            wj += j.weight;
+            ++num_pairs;
+        }
+        void finalize() {
+            if(wgt > 0) didj /= wgt;
+            if(wi > 0) di /= wi;
+            if(wj > 0) dj /= wj;
+        }
+        XiBin& operator+=(const XiBin& rhs) {
+            didj += rhs.didj;
+            di += rhs.di;
+            dj += rhs.dj;
+            wgt += rhs.wgt;
+            wi += rhs.wi;
+            wj += rhs.wj;
+            num_pairs += rhs.num_pairs;
+            return *this;
+        }
+        friend XiBin operator+(XiBin lhs, const XiBin& rhs){
+            return lhs += rhs;
+        }
     };
 
     class AbsTwoPointGrid;

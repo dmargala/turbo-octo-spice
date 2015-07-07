@@ -1,4 +1,4 @@
-// Created 16-May-2014 by David Kirkby (University of California, Irvine) <dkirkby@uci.edu>
+// Created 16-May-2014 by Daniel Margala (University of California, Irvine) <dmargala@uci.edu>
 
 #include "ThreadPool.h"
 #include "RuntimeError.h"

@@ -43,11 +43,9 @@ int main(int argc, char **argv) {
         ("axis2", po::value<std::string>(&axis2)->default_value("[0:1]*1"),
             "Axis-2 binning, r_perp (Mpc/h), mu (r_par/r), or dtheta (arcmin)")
         ("axis3", po::value<std::string>(&axis3)->default_value("[0.46:.65]*1"),
-            "Axis-3 binning, log10(z+1)")
+            "Axis-3 binning, log10(1+z)")
         ("polar", "(r,mu,z) binning")
         ("cart", "(r_perp,r_par,z) binning")
-        ("skip-ngc", "only use sgc sight lines")
-        ("skip-sgc", "only use ngc sight lines")
         ;
     // do the command line parsing now
     po::variables_map vm;
@@ -71,11 +69,6 @@ int main(int argc, char **argv) {
         return -1;
     }
 
-    if(skip_ngc && skip_sgc) {
-        std::cerr << "Can't specify options '--skip-sgc' and '--skip-ngc' together. Use one or neither." << std::endl;
-        return -1;
-    }
-
     // set up cosmology
     cosmo::AbsHomogeneousUniversePtr cosmology;
     if(OmegaMatter == 0) OmegaMatter = 1 - OmegaLambda;
@@ -95,13 +88,15 @@ int main(int argc, char **argv) {
     }
     else {
         type = tos::XiEstimator::ObservingCoordinates;
-        // std::cerr << "Observing coordinate grid not implemented yet!" << std::endl;
-        // return -1;
         grid.reset(new tos::QuasarGrid(bins1, bins2, bins3));
     }
 
+    // load forest sight lines
+    tos::HDF5Delta file(infile);
+    std::vector<tos::Forest> sightlines(file.loadForests());
+
     try {
-        tos::XiEstimator xiest(order, infile, cosmology, grid, type, skip_ngc, skip_sgc);
+        tos::XiEstimator xiest(order, cosmology, grid, type, sightlines);
         xiest.run(nthreads);
         xiest.save_results(outfile);
     }

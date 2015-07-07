@@ -1,4 +1,4 @@
-// Created 16-May-2014 by David Kirkby (University of California, Irvine) <dkirkby@uci.edu>
+// Created 16-May-2014 by Daniel Margala (University of California, Irvine) <dmargala@uci.edu>
 
 #include "XiEstimator.h"
 #include "HDF5Delta.h"
@@ -13,13 +13,9 @@
 
 namespace local = turbooctospice;
 
-local::XiEstimator::XiEstimator(int order, std::string infile, cosmo::AbsHomogeneousUniversePtr cosmology,
-    local::AbsTwoPointGridPtr grid, local::XiEstimator::BinningCoordinateType type, bool skip_ngc, bool skip_sgc):
-    healbins_(local::HealpixBinsI(order)), grid_(grid), coordinate_type_(type), show_progress_(0) {
-
-    // load forest sight lines
-    local::HDF5Delta file(infile);
-    sightlines_ = file.loadForests(!skip_ngc, !skip_sgc);
+local::XiEstimator::XiEstimator(int order, cosmo::AbsHomogeneousUniversePtr cosmology,
+    local::AbsTwoPointGridPtr grid, local::XiEstimator::BinningCoordinateType type, std::vector<Forest> sightlines):
+    healbins_(local::HealpixBinsI(order)), grid_(grid), coordinate_type_(type), sightlines_(sightlines) {
 
     // add sight lines to healpix bins
     unsigned long totalpixels(0);
@@ -103,24 +99,27 @@ void local::XiEstimator::run(int nthreads) {
     std::list<local::ThreadPool::Task> tasks;
 
     // Estimate xi, one healpixel at a time
+    std::cout << "Estimating xi..." << std::endl;
     auto occupied_bins = healbins_.getOccupiedBins();
     for(auto id : occupied_bins) {
         tasks.push_back(boost::bind(&XiEstimator::healxi_task, this, id));
     }
-    show_progress_.restart(occupied_bins.size());
+    show_progress_.reset(new boost::progress_display(occupied_bins.size()));
     pool.run(tasks);
     tasks.clear();
 
     // Finalize xi
+    std::cout << "Finalizing xi estimate..." << std::endl;
     xi_.resize(num_xi_bins);
     for(int i = 0; i < num_xi_bins; ++i) {
         tasks.push_back(boost::bind(&XiEstimator::xi_finalize_task, this, i));
     }
-    show_progress_.restart(num_xi_bins);
+    show_progress_.reset(new boost::progress_display(num_xi_bins));
     pool.run(tasks);
     tasks.clear();
 
     // Estimate covariance
+    std::cout << "Estimating covariance..." << std::endl;
     cov_.resize(num_xi_bins);
     for(int a = 0; a < num_xi_bins; ++a) {
         cov_[a].resize(num_xi_bins);
@@ -128,7 +127,7 @@ void local::XiEstimator::run(int nthreads) {
             tasks.push_back(boost::bind(&XiEstimator::cov_task, this, a, b));
         }
     }
-    show_progress_.restart(num_xi_bins*num_xi_bins);
+    show_progress_.reset(new boost::progress_display(num_xi_bins*num_xi_bins));
     pool.run(tasks);
     tasks.clear();
 }
@@ -136,12 +135,9 @@ void local::XiEstimator::run(int nthreads) {
 bool local::XiEstimator::xi_finalize_task(int id) {
     increment_progress();
     for(const auto& healxi_entry : healxis_) {
-        xi_[id].didj += healxis_[healxi_entry.first][id].didj;
-        xi_[id].wgt += healxis_[healxi_entry.first][id].wgt;
+        xi_[id] += healxis_[healxi_entry.first][id];
     }
-    if(xi_[id].wgt > 0) {
-        xi_[id].didj /= xi_[id].wgt;
-    }
+    xi_[id].finalize();
     return true;
 }
 
@@ -192,7 +188,7 @@ bool local::XiEstimator::cov_task(int a, int b) {
 
 void local::XiEstimator::increment_progress() {
     boost::unique_lock<boost::mutex> scoped_lock(show_progress_mutex_);
-    ++show_progress_;
+    ++(*show_progress_);
     // show_progress_mutex_ is automatically released when lock
     // goes out of scope
 }
@@ -276,39 +272,34 @@ bool local::XiEstimator::healxi_task(int id) {
                             throw local::RuntimeError("invalid bin index");
                         }
                         // accumulate pixel pair
-                        float weight = primary_pixel.weight*other_pixel.weight;
-                        float product = weight*primary_pixel.value*other_pixel.value;
-                        xi[pair_bin_index].didj += product;
-                        xi[pair_bin_index].wgt += weight;
-                        // accumulate di, dj ???
+                        xi[pair_bin_index].accumulate_pair(primary_pixel, other_pixel);
                     }
                 }
             }
         }
     }
-    healxis_[id] = xi; // potentially not thread safe
+    healxis_[id] = xi; // thread safe as long as id is unique
     return true;
 };
 
 void local::XiEstimator::save_results(std::string outfile) {
-    std::vector<double> xi_bin_centers(3);
-
     std::string estimator_filename(outfile + ".dat");
     std::cout << "Saving correlation function to: " << estimator_filename << std::endl;
     std::ofstream estimator_file(estimator_filename.c_str());
-    for(int index = 0; index < xi_.size(); ++index) {
-        grid_->getBinCenters(index, xi_bin_centers);
-        estimator_file << index << ' ' << xi_bin_centers[0] << ' ' << xi_bin_centers[1] << ' ' << xi_bin_centers[2] << ' '
-            << xi_[index].didj << ' ' << xi_[index].di << ' ' << xi_[index].dj << ' ' << xi_[index].wgt << std::endl;
+    std::vector<double> xi_bin_centers(3);
+    for(int i = 0; i < num_xi_bins; ++i) {
+        grid_->getBinCenters(i, xi_bin_centers);
+        estimator_file << i << ' ' << xi_bin_centers[0] << ' ' << xi_bin_centers[1] << ' ' << xi_bin_centers[2] << ' '
+            << xi_[i].didj << ' ' << xi_[i].di << ' ' << xi_[i].dj << ' ' << xi_[i].wgt << ' ' << xi_[i].num_pairs << std::endl;
     }
     estimator_file.close();
 
     std::string covariance_filename(outfile + ".cov");
     std::cout << "Saving covariance matrix to: " << covariance_filename << std::endl;
     std::ofstream covariance_file(covariance_filename.c_str());
-    for(int a = 0; a < cov_.size(); ++a) {
-        for(int b = 0; b < cov_[0].size(); ++b) {
-            covariance_file << b + cov_[0].size()*a << ' ' << a << ' ' << b << ' ' << cov_[a][b] << std::endl;
+    for(int i = 0; i < num_xi_bins; ++i) {
+        for(int j = i; j < num_xi_bins; ++j) {
+            covariance_file << j + num_xi_bins*i << ' ' << i << ' ' << j << ' ' << cov_[i][j] << std::endl;
         }
     }
     covariance_file.close();

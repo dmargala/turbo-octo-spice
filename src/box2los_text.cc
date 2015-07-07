@@ -1,4 +1,4 @@
-// Created 23-Dec-2011 by David Kirkby (University of California, Irvine) <dkirkby@uci.edu>
+// Created 23-Dec-2014 by Daniel Margala (University of California, Irvine) <dmargala@uci.edu>
 // A tri-cubic 3D interpolation algorithm test program.
 
 #include "likely/likely.h"

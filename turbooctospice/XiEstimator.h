@@ -16,22 +16,27 @@ namespace turbooctospice {
 
     class XiEstimator {
     public:
-        enum BinningCoordinateType { PolarCoordinates, CartesianCoordinates, ObservingCoordinates };
-        XiEstimator(int order, cosmo::AbsHomogeneousUniversePtr cosmology,
-            AbsTwoPointGridPtr grid, BinningCoordinateType type, std::vector<Forest> sightlines);
+        enum BinningCoordinateType {
+            PolarCoordinates, CartesianCoordinates, ObservingCoordinates
+        };
+        XiEstimator(int order, cosmo::AbsHomogeneousUniversePtr cosmology, AbsTwoPointGridPtr grid,
+            BinningCoordinateType type, std::vector<Forest> sightlines);
         void run(int nthreads);
         void save_results(std::string outfile);
+        void save_subsamples(std::string outfile_base);
+        void print_stats();
     private:
-        // void task_finalize();
         void increment_progress();
         bool healxi_task(int id);
         bool xi_finalize_task(int id);
         bool cov_task(int a, int b);
-
-        int num_xi_bins, num_mu_bins, num_rperp_bins, num_sep_bins, num_z_bins;
-        float r_min, r_max, r_spacing, rsq_min, rsq_max,
-            rperp_min, rperp_max, rperp_spacing, sep_min, sep_spacing,
-            z_min, z_max, z_spacing;
+        void accumulate_stats(unsigned long const &num_sightline_pairs,
+            unsigned long const &num_sightline_pairs_used, unsigned long const &num_pixel_pairs,
+            unsigned long const &num_pixel_pairs_used);
+        unsigned num_xi_bins;
+        unsigned long num_pixels_, num_sightlines_,
+            num_sightline_pairs_, num_sightline_pairs_used_,
+            num_pixel_pairs_, num_pixel_pairs_used_;
         double max_ang_, cos_max_ang_;
         BinningCoordinateType coordinate_type_;
         HealpixBinsI healbins_;
@@ -42,6 +47,7 @@ namespace turbooctospice {
         std::vector<std::vector<double> > cov_;
         std::unique_ptr<boost::progress_display> show_progress_;
         boost::mutex show_progress_mutex_; // protects show_progress_
+        boost::mutex pair_stats_mutex_;
     };
 } // turbooctospice
 

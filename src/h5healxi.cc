@@ -46,6 +46,8 @@ int main(int argc, char **argv) {
             "Axis-3 binning, log10(1+z)")
         ("polar", "(r,mu,z) binning")
         ("cart", "(r_perp,r_par,z) binning")
+        ("debug", "debug flag")
+        ("save-subsamples", "save xi estimates on individual subsamples")
         ;
     // do the command line parsing now
     po::variables_map vm;
@@ -61,8 +63,8 @@ int main(int argc, char **argv) {
         std::cout << cli << std::endl;
         return 1;
     }
-    bool verbose(vm.count("verbose")), polar(vm.count("polar")), cart(vm.count("cart")), fits(vm.count("fits")),
-         skip_ngc(vm.count("skip-ngc")), skip_sgc(vm.count("skip-sgc"));
+    bool verbose(vm.count("verbose")), polar(vm.count("polar")), cart(vm.count("cart")),
+        debug(vm.count("debug")), save_subsamples(vm.count("save-subsamples"));
 
     if (infile.size() == 0) {
         std::cerr << "Must specify input file." << std::endl;
@@ -95,10 +97,21 @@ int main(int argc, char **argv) {
     tos::HDF5Delta file(infile);
     std::vector<tos::Forest> sightlines(file.loadForests());
 
+    if(debug){
+        std::vector<tos::Forest>::const_iterator first = sightlines.begin();
+        std::vector<tos::Forest>::const_iterator last = sightlines.begin() + 10000;
+        std::vector<tos::Forest> first10k(first, last);
+        sightlines = first10k;
+    }
+
     try {
         tos::XiEstimator xiest(order, cosmology, grid, type, sightlines);
         xiest.run(nthreads);
+        xiest.print_stats();
         xiest.save_results(outfile);
+        if(save_subsamples) {
+            xiest.save_subsamples(outfile);
+        }
     }
     catch(tos::RuntimeError const &e) {
         std::cerr << e.what() << std::endl;

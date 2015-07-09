@@ -1,22 +1,38 @@
+# SConstruct is python -*-Python-*-
 import os
+import distutils.sysconfig
 
-env = Environment(CXX='g++',
-	CCFLAGS=['-std=c++11', '-stdlib=libc++'],
-	LIBPATH=['/usr/local/lib'],
-	CPPPATH=['/usr/local/include'])
+# initialize our build enviroment
+env = Environment(CCFLAGS=['-std=c++11'], CPPPATH=['/usr/local/include'],LIBPATH=['/usr/local/lib'])
 
-# useC11 = False
+# take PATH and LD_LIBRARY_PATH from the environment so currently configured
+# build tools are used
+if 'PATH' in os.environ:
+   env['ENV']['PATH'] = os.environ['PATH']
+if 'LD_LIBRARY_PATH' in os.environ:
+   env['ENV']['LD_LIBRARY_PATH'] = os.environ['LD_LIBRARY_PATH']
 
-# if useC11:
-#     env = Environment(ENV={'PATH' : os.environ['PATH']})
-#     env.Replace(CXX='clang++')
-#     env.Append(CCFLAGS = ['-std=c++11'])
+# take CC and CXX from the current environment if they are defined
+if 'CC' in os.environ:
+   env['CC'] = os.environ['CC']
+   print 'Using CC =',env['CC']
+if 'CXX' in os.environ:
+   env['CXX'] = os.environ['CXX']
+   print 'Using CXX =',env['CXX']
+
+# configure the environment to find the packages we need
+conf = Configure(env)
+
+# copy any library paths defined in $LDFLAGS to LIBPATH
+if 'LDFLAGS' in os.environ:
+   for token in os.environ['LDFLAGS'].split():
+      if token[:2] == '-L':
+         conf.env.Append(LIBPATH=[token[2:]])
 
 env.Append(CCFLAGS=['-O3', '-g3', '-ffast-math'], CPPPATH='#turbooctospice', LIBPATH='#turbooctospice')
 
 # # Check for required libraries unless we're cleaning up
 if not env.GetOption('clean'):
-    conf = Configure(env)
     if not conf.CheckLib('hdf5', language='cxx'):
     	print 'Did not find hdf5!'
     	Exit(1)

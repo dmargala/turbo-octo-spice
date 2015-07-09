@@ -1,8 +1,8 @@
 import os
 
-env = Environment(CXX='clang++', 
-	CCFLAGS=['-std=c++11', '-stdlib=libc++'], 
-	LIBPATH=['/usr/local/lib'], 
+env = Environment(CXX='g++',
+	CCFLAGS=['-std=c++11', '-stdlib=libc++'],
+	LIBPATH=['/usr/local/lib'],
 	CPPPATH=['/usr/local/include'])
 
 # useC11 = False

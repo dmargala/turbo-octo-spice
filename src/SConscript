@@ -73,7 +73,7 @@ cudaEnv.Replace(CC='nvcc')
 cudaEnv.Append(CCFLAGS=['-O2'])
 # Atomic add requires minimum architecture
 cudaEnv.Append(LINKFLAGS=['-m64', '-arch=sm_20'])#,'-D__int128=long -DBOOST_NOINLINE=__attribute__ ((noinline))'])
-cudaEnv.Program('deviceQuery', 'deviceQuery.cu')
+# cudaEnv.Program('deviceQuery', 'deviceQuery.cu')
 
 # cudaEnv.Object('brute.o', '#gpu/brute.cu', CXXFILESUFFIX=['.cu'])
 # cudaEnv.Library('gpubrute', Glob('#gpu/*.cu'))

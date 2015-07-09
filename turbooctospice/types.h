@@ -10,6 +10,7 @@
 
 #include "boost/smart_ptr.hpp"
 #include "HealpixBins.h"
+#include "RuntimeError.h"
 
 #include <cmath>
 #include <vector>
@@ -79,10 +80,16 @@ namespace turbooctospice {
             wj += j.weight;
             ++num_pairs;
         }
+        double getMeanProduct() {
+            if(wgt <= 0) {
+                throw RuntimeError("XiBin: wgt <= 0");
+            }
+            return didj/wgt;
+        }
         void finalize() {
-            if(wgt > 0) didj /= wgt;
-            if(wi > 0) di /= wi;
-            if(wj > 0) dj /= wj;
+            (wgt > 0) ? didj /= wgt : didj = 0;
+            (wi > 0) ? di /= wi : di = 0;
+            (wj > 0) ? dj /= wj : dj = 0;
         }
         XiBin& operator+=(const XiBin& rhs) {
             didj += rhs.didj;

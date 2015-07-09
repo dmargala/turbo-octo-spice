@@ -98,16 +98,28 @@ void local::XiEstimator::run(int nthreads) {
 
     // Estimate covariance
     std::cout << "Estimating covariance..." << std::endl;
-    cov_.resize(num_xi_bins);
-    for(int i = 0; i < num_xi_bins; ++i) {
-        cov_[i].resize(num_xi_bins);
-        for(int j = i; j < num_xi_bins; ++j) {
-            tasks.push_back(boost::bind(&XiEstimator::cov_task, this, i, j));
+    likely::CovarianceAccumulator cov_accum(num_xi_bins);
+    for(const auto& healxi_entry : healxis_) {
+        std::vector<double> xi(num_xi_bins);
+        double weight(healbins_.getBinContents(healxi_entry.first).size());
+        bool valid(true);
+        for(int i = 0; i < num_xi_bins; ++i) {
+            if (healxi_entry.second[i].wgt > 0) {
+                xi[i] = healxi_entry.second[i].didj/healxi_entry.second[i].wgt;
+                weight += healxi_entry.second[i].wgt;
+            }
         }
+        cov_accum.accumulate(xi, weight);
     }
-    show_progress_.reset(new boost::progress_display(tasks.size()));
-    pool.run(tasks);
-    tasks.clear();
+    cov_matrix_ = cov_accum.getCovariance();
+    std::cout << "is pos def: " << boost::lexical_cast<std::string>(cov_matrix_->isPositiveDefinite()) << std::endl;
+    try {
+        double detC = cov_matrix_->getLogDeterminant();
+        std::cout << "log(|C|): " << boost::lexical_cast<std::string>(detC) << std::endl;
+    }
+    catch(likely::RuntimeError const &e) {
+        std::cerr << e.what() << std::endl;
+    }
     std::cout << "Covariance estimation complete!" << std::endl;
     std::cout << std::endl;
 
@@ -249,23 +261,6 @@ bool local::XiEstimator::xi_finalize_task(int id) {
     return true;
 }
 
-bool local::XiEstimator::cov_task(int i, int j) {
-    increment_progress();
-    double w(0), wsum(0), wcovsum(0);
-    for(const auto& healxi_entry : healxis_) {
-        w = healxi_entry.second[i].wgt*healxi_entry.second[j].wgt;
-        wsum += w;
-        wcovsum += w*healxi_entry.second[i].didj*healxi_entry.second[j].didj;
-    }
-    if(wsum > 0) {
-        cov_[i][j] = wcovsum/wsum - xi_[i].didj*xi_[j].didj;
-    }
-    else{
-        cov_[i][j] = 0;
-    }
-    return true;
-}
-
 void local::XiEstimator::save_results(std::string outfile) {
     std::string estimator_filename(outfile + ".data");
     std::cout << "Saving correlation function to: " << estimator_filename << std::endl;
@@ -286,13 +281,26 @@ void local::XiEstimator::save_results(std::string outfile) {
     std::string covariance_filename(outfile + ".cov");
     std::cout << "Saving covariance matrix to: " << covariance_filename << std::endl;
     std::ofstream covariance_file(covariance_filename.c_str());
-    for(int i = 0; i < num_xi_bins; ++i) {
-        for(int j = i; j < num_xi_bins; ++j) {
-            covariance_file << j + num_xi_bins*i << ' ' << i << ' ' << j << ' '
-                << boost::lexical_cast<std::string>(cov_[i][j]) << std::endl;
+    for(int col = 0; col < num_xi_bins; ++col) {
+        for(int row = 0; row <= col; ++row) {
+            double value = cov_matrix_->getCovariance(row,col);
+            // print matrix elements with full precision
+            covariance_file << row << ' ' << col << ' '
+                << boost::lexical_cast<std::string>(value) << std::endl;
         }
     }
     covariance_file.close();
+
+    std::string weight_filename(outfile + ".wgt");
+    std::cout << "Saving weights matrix to: " << weight_filename << std::endl;
+    std::ofstream weight_file(weight_filename.c_str());
+    for(int col = 0; col < num_xi_bins; ++col) {
+            double value = 1.0/xi_[col].wgt;
+            // print matrix elements with full precision
+            weight_file << col << ' ' << col << ' '
+                << boost::lexical_cast<std::string>(value) << std::endl;
+    }
+    weight_file.close();
 };
 
 void local::XiEstimator::save_subsamples(std::string outfile_base) {

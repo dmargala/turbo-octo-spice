@@ -8,6 +8,7 @@
 #include <boost/thread/mutex.hpp>
 
 #include "cosmo/cosmo.h"
+#include "likely/likely.h"
 
 #include "types.h"
 #include "constants.h"
@@ -48,6 +49,8 @@ namespace turbooctospice {
         std::unique_ptr<boost::progress_display> show_progress_;
         boost::mutex show_progress_mutex_; // protects show_progress_
         boost::mutex pair_stats_mutex_;
+        boost::mutex debug_mutex_;
+        likely::CovarianceMatrixCPtr cov_matrix_;
     };
 } // turbooctospice
 

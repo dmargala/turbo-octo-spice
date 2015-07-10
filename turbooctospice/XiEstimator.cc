@@ -151,7 +151,7 @@ bool local::XiEstimator::healxi_task(int id) {
     unsigned long num_sightline_pairs(0), num_sightline_pairs_used(0),
         num_pixel_pairs(0), num_pixel_pairs_used(0);
     // task_id's xi container
-    std::vector<local::XiBin> xi(num_xi_bins, {});
+    std::vector<local::XiBin> xi(num_xi_bins);
 
     const float
         r_min(grid_->getAxisMin(0)), r_max(grid_->getAxisMax(0)), one_over_dr(1.0/grid_->getAxisBinWidth(0)),

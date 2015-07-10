@@ -9,7 +9,7 @@
 #include "constants.h"
 
 namespace turbooctospice {
-    /// Represents a grid for binning two point functions for LyA BAO analyses. 
+    /// Represents a grid for binning two point functions for LyA BAO analyses.
     class AbsTwoPointGrid {
     public:
         /// Creates a new grid with three axes.
@@ -39,17 +39,17 @@ namespace turbooctospice {
         /// transervse comving scale.
         /// @param scale Transverse comoving distance (Mpc/h) at minimum redshift
         virtual double maxAngularScale(double scale) const = 0;
-        /// Tests if the pair of pixels are binable and fills the vector provided 
+        /// Tests if the pair of pixels are binable and fills the vector provided
         /// with coordinate values along each axis.
         /// @param a First ForestPixel of pair
         /// @param b Second ForestPixel of pair
         /// @param cosij Cosine of the angular separation between the line of sights to each pixel
         /// @param thetaij Angular separation between the line of sights to each pixel
         /// @param separation Output vector containing the separation of the pixel pairs along each axis
-        virtual bool getSeparation(ForestPixel const &a, ForestPixel const &b, 
+        virtual bool getSeparation(ForestPixel const &a, ForestPixel const &b,
             double const &cosij, double const &thetaij, std::vector<double> &separation) const = 0;
 
-        virtual bool getBinIndex(ForestPixel const &a, ForestPixel const &b, 
+        virtual bool getBinIndex(ForestPixel const &a, ForestPixel const &b,
             double const &cosij, double const &thetaij, int &binIndex) const = 0;
 
         int getAxisNBins(int axis) const;
@@ -64,8 +64,9 @@ namespace turbooctospice {
     };
 
     inline int AbsTwoPointGrid::getNBinsTotal() const { return _grid.getNBinsTotal(); }
-    inline int AbsTwoPointGrid::getIndexNoCheck(std::vector<double> const &values,  std::vector<int> &binIndices) const { 
-        return _grid.getIndexNoCheck(values, binIndices); 
+    inline int AbsTwoPointGrid::getIndexNoCheck(std::vector<double> const &values,  std::vector<int> &binIndices) const {
+        //return _grid.getIndexNoCheck(values, binIndices);
+        return _grid.getIndex(values);
     }
     inline void AbsTwoPointGrid::getBinCenters(int index, std::vector<double> &binCenters) const {
         return _grid.getBinCenters(index, binCenters);

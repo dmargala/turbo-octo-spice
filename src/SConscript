@@ -2,13 +2,18 @@ import os
 
 Import('env')
 
+#healCppPath = ['/home/dmargala/source/Healpix_3.20/src/cxx/generic_gcc/include']
+#healLibPath = ['/home/dmargala/source/Healpix_3.20/src/cxx/generic_gcc/lib']
 healCppPath = ['/Users/daniel/source/Healpix_3.20/src/cxx/osx/include']
 healLibPath = ['/Users/daniel/source/Healpix_3.20/src/cxx/osx/lib']
 healLibs = ['healpix_cxx', 'cxxsupport']
 
+common = ['likely', 'cosmo', 'boost_program_options', 'boost_system', 'boost_thread', 'boost_coroutine']
+h5Libs = ['hdf5','hdf5_cpp']
+
 ## Build turbooctospice library
-env.Library('turbooctospice', Glob('#turbooctospice/*.cc'),
-    LIBS=['hdf5','hdf5_cpp']+healLibs,
+env.SharedLibrary('turbooctospice', Glob('#turbooctospice/*.cc'),
+    LIBS=common+h5Libs+healLibs,
     LIBPATH=healLibPath,
     CPPPATH=healCppPath,
     CPPDEFINES = ['HAVE_LIBHEAL'])
@@ -16,8 +21,6 @@ env.Library('turbooctospice', Glob('#turbooctospice/*.cc'),
 tos = ['turbooctospice']
 tosCppPath = ['../turbooctospice']
 tosLibPath = ['../build']
-
-common = ['likely', 'cosmo', 'boost_program_options', 'boost_system', 'boost_thread', 'boost_coroutine']
 
 vartest = env.Program('vartest', 'vartest.cc', LIBS=common)
 ### Common libs only

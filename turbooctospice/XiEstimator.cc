@@ -48,22 +48,35 @@ local::XiEstimator::XiEstimator(int order, cosmo::AbsHomogeneousUniversePtr cosm
 
     int numHealBinsOccupied(healbins_.getNBins());
 
-    std::cout << "Read " << num_pixels_ << " from " << num_sightlines_ << " lines of sight (LOS)" << std::endl;
-    std::cout << "Average number of pixels per LOS: " << static_cast<double>(num_pixels_)/num_sightlines_ << std::endl;
-    std::cout << "Number of Healpix bins occupied: " << numHealBinsOccupied
-        << " (" << static_cast<double>(numHealBinsOccupied)/(12*std::pow(4, order)) << ")" << std::endl;
+    std::cout << "Read " << num_pixels_ << " from "
+        << num_sightlines_ << " lines of sight (LOS)" << std::endl;
+    double avg_pixels_per_los(static_cast<double>(num_pixels_)/num_sightlines_);
+    std::cout << "Average number of pixels per LOS: "
+        << boost::lexical_cast<std::string>(avg_pixels_per_los) << std::endl;
+    double frac_healpix_occupied(numHealBinsOccupied/(12.0*std::pow(4, order)));
+    std::cout << "Number of Healpix bins occupied: " << numHealBinsOccupied << " ("
+        << boost::lexical_cast<std::string>(frac_healpix_occupied) << ")" << std::endl;
 
     // the minimum redshift sets the angular scale we will need to consider
     double scale(cosmology->getTransverseComovingScale(zmin));
     max_ang_ = grid_->maxAngularScale(scale);
     cos_max_ang_ = std::cos(max_ang_);
 
-    std::cout << "Transverse comoving scale at z = " << zmin <<  " (Mpc/h): " << scale << std::endl;
-    std::cout << "Max angular scale at z = " << zmin <<  " (rad): " << max_ang_  << std::endl;
-    std::cout << "Transverse comoving scale at z = " << zmax <<  " (Mpc/h): "
-        << cosmology->getTransverseComovingScale(zmax) << std::endl;
-    std::cout << "Max angular scale at z = " << zmax <<  " (rad): "
-        << grid_->maxAngularScale(cosmology->getTransverseComovingScale(zmax))  << std::endl;
+    double min_transverse_scale(cosmology->getTransverseComovingScale(zmax));
+    double min_ang = grid_->maxAngularScale(min_transverse_scale);
+
+    std::cout << "Transverse comoving scale at z = "
+        << boost::lexical_cast<std::string>(zmin) <<  " : "
+        << boost::lexical_cast<std::string>(scale) << " (Mpc/h)" << std::endl;
+    std::cout << "Max angular scale at z = "
+        << boost::lexical_cast<std::string>(zmin) <<  " : "
+        << boost::lexical_cast<std::string>(max_ang_) << " (rad)" << std::endl;
+    std::cout << "Transverse comoving scale at z = "
+        << boost::lexical_cast<std::string>(zmax) <<  " : "
+        << boost::lexical_cast<std::string>(min_transverse_scale) << " (Mpc/h)" << std::endl;
+    std::cout << "Max angular scale at z = "
+        << boost::lexical_cast<std::string>(zmax) <<  " : "
+        << boost::lexical_cast<std::string>(min_ang) << " (rad)" << std::endl;
 
     // axis binning limits
     num_xi_bins = grid_->getNBinsTotal();
@@ -112,7 +125,8 @@ void local::XiEstimator::run(int nthreads) {
         cov_accum.accumulate(xi, weight);
     }
     cov_matrix_ = cov_accum.getCovariance();
-    std::cout << "is pos def: " << boost::lexical_cast<std::string>(cov_matrix_->isPositiveDefinite()) << std::endl;
+    std::cout << "is pos def: "
+        << boost::lexical_cast<std::string>(cov_matrix_->isPositiveDefinite()) << std::endl;
     try {
         double detC = cov_matrix_->getLogDeterminant();
         std::cout << "log(|C|): " << boost::lexical_cast<std::string>(detC) << std::endl;

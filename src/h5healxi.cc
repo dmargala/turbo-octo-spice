@@ -93,18 +93,19 @@ int main(int argc, char **argv) {
         grid.reset(new tos::QuasarGrid(bins1, bins2, bins3));
     }
 
-    // load forest sight lines
-    tos::HDF5Delta file(infile);
-    std::vector<tos::Forest> sightlines(file.loadForests());
-
-    if(debug){
-        std::vector<tos::Forest>::const_iterator first = sightlines.begin();
-        std::vector<tos::Forest>::const_iterator last = sightlines.begin() + 10000;
-        std::vector<tos::Forest> first10k(first, last);
-        sightlines = first10k;
-    }
-
     try {
+        // load forest sight lines
+        tos::HDF5Delta file(infile);
+
+        std::vector<tos::Forest> sightlines(file.loadForests());
+
+        if(debug){
+            std::vector<tos::Forest>::const_iterator first = sightlines.begin();
+            std::vector<tos::Forest>::const_iterator last = sightlines.begin() + 10000;
+            std::vector<tos::Forest> first10k(first, last);
+            sightlines = first10k;
+        }
+
         tos::XiEstimator xiest(order, cosmology, grid, type, sightlines);
         xiest.run(nthreads);
         xiest.print_stats();

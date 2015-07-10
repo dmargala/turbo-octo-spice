@@ -46,7 +46,6 @@ std::vector<local::Forest> local::HDF5Delta::loadForests() {
     }
     catch(H5::FileIException const &e){
         throw local::RuntimeError("HDF5Delta: Could not open the specified file.");
-        return -1;
     }
 
     static int nforests(0);

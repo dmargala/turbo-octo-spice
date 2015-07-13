@@ -109,6 +109,8 @@ void local::XiEstimator::run(int nthreads) {
     std::cout << "Xi estimation complete!" << std::endl;
     std::cout << std::endl;
 
+    print_stats();
+
     // Estimate covariance
     std::cout << "Estimating covariance..." << std::endl;
     likely::CovarianceAccumulator cov_accum(num_xi_bins);
@@ -208,6 +210,7 @@ bool local::XiEstimator::healxi_task(int id) {
                         ++num_pixel_pairs;
                         // check pairs are within our binning grid
                         unsigned pair_bin_index;
+                        // pair_bin_index = grid_.getBinIndex(primary_pixel, other_pixel, cos_separation, separation);
                         // scope for determining xi bin
                         {
                             // check parallel separation
@@ -218,6 +221,7 @@ bool local::XiEstimator::healxi_task(int id) {
                             const float mu = (r == 0 ? 0 : std::fabs(primary_pixel.distance-other_pixel.distance)/r);
                             // check average pair distance
                             const float z = 0.5*(primary_pixel.loglam + other_pixel.loglam) - local::logLyA;
+                            // const float z = std::pow(10, 0.5*(primary_pixel.loglam + other_pixel.loglam) - local::logLyA) - 1.0;
                             if(coordinate_type_ == PolarCoordinates) {
                                 // if(r_sq >= rsq_max || r_sq < rsq_min) continue;
                                 pair_bin_index = static_cast<unsigned>((r - r_min)*one_over_dr);
@@ -237,7 +241,7 @@ bool local::XiEstimator::healxi_task(int id) {
                             else {
                                 // Observing coordinates
                                 // not finished
-                                pair_bin_index = std::fabs(primary_pixel.loglam - other_pixel.loglam);
+                                pair_bin_index = static_cast<unsigned>(std::fabs(primary_pixel.loglam - other_pixel.loglam)*one_over_dr);
                                 const unsigned sep_bin_index = static_cast<unsigned>((separation - sep_min)/sep_spacing);
                                 pair_bin_index = sep_bin_index + pair_bin_index*num_sep_bins;
                             }
@@ -245,13 +249,21 @@ bool local::XiEstimator::healxi_task(int id) {
                             pair_bin_index = zbin + pair_bin_index*num_z_bins;
                         }
                         // this should never happen, useful for debugging though
-                        // if(!(pair_bin_index < num_xi_bins)) {
-                        //     printf("%d %.8g %.8g %.8g %.8g %.8g %.8g %.8g %.8g\n", pair_bin_index,
-                        //         primary_pixel.distance, primary_los.ra, primary_los.dec,
-                        //         other_pixel.distance, other_los.ra, other_los.dec,
-                        //         cos_separation, separation);
-                        //     throw local::RuntimeError("invalid bin index");
-                        // }
+                        if(pair_bin_index >= num_xi_bins) {
+                            std::cout << boost::lexical_cast<std::string>(pair_bin_index) << " "
+                                << boost::lexical_cast<std::string>(primary_pixel.distance) << " "
+                                << boost::lexical_cast<std::string>(primary_pixel.loglam) << " "
+                                << boost::lexical_cast<std::string>(primary_los.ra) << " "
+                                << boost::lexical_cast<std::string>(primary_los.dec) << " "
+                                << boost::lexical_cast<std::string>(other_pixel.distance) << " "
+                                << boost::lexical_cast<std::string>(other_pixel.loglam) << " "
+                                << boost::lexical_cast<std::string>(other_los.ra) << " "
+                                << boost::lexical_cast<std::string>(other_los.dec) << " "
+                                << boost::lexical_cast<std::string>(cos_separation) << " "
+                                << boost::lexical_cast<std::string>(separation) << " "
+                                << std::endl;
+                            throw local::RuntimeError("invalid bin index");
+                        }
                         // accumulate pixel pair
                         ++num_pixel_pairs_used;
                         xi[pair_bin_index].accumulate_pair(primary_pixel, other_pixel);

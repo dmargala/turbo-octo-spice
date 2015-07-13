@@ -108,7 +108,6 @@ int main(int argc, char **argv) {
 
         tos::XiEstimator xiest(order, cosmology, grid, type, sightlines);
         xiest.run(nthreads);
-        xiest.print_stats();
         xiest.save_results(outfile);
         if(save_subsamples) {
             xiest.save_subsamples(outfile);

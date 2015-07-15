@@ -51,7 +51,7 @@ void local::MockSpectrum::loadTarget(bool verbose) {
 local::Forest local::MockSpectrum::getForest(
     int ncombine, float forestlo, float foresthi, float speclo) {
     // init forest pixels
-    Forest forest(_ra*DEG2RAD, _dec*DEG2RAD, _id);
+    Forest forest(_ra*DEG2RAD, _dec*DEG2RAD, _id, 0);
     // double theta((90.0-_dec)*DEG2RAD), phi(_ra*DEG2RAD);
     // forest.phi = phi;
     // forest.theta = theta;

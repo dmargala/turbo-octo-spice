@@ -54,9 +54,11 @@ std::vector<local::Forest> local::HDF5Delta::loadForests() {
             H5::Group targetGroup;
             targetGroup = H5Gopen2(loc_id, name, H5P_DEFAULT);
             double ra, dec, z;
+            int plate;
             readAttribute(targetGroup, "ra", ra);
             readAttribute(targetGroup, "dec", dec);
             readAttribute(targetGroup, "z", z);
+            readAttribute(targetGroup, "plate", plate);
             // Display progress
             if((nforests % 10000) == 0) std::cout << nforests << " : " << name << std::endl;
             // Read datasets
@@ -66,7 +68,7 @@ std::vector<local::Forest> local::HDF5Delta::loadForests() {
             readDataSet(targetGroup, "r_comov", r_comov);
             readDataSet(targetGroup, "loglam", loglam);
             // Init forest pixels
-            Forest forest(ra, dec, nforests);
+            Forest forest(ra, dec, nforests, plate);
             // Iterate over pixels
             for(int i = 0; i < delta.size(); ++i) {
                 // Save the pixel

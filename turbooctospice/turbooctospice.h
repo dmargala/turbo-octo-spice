@@ -13,6 +13,9 @@
 #include "PolarGrid.h"
 #include "QuasarGrid.h"
 
+#include "SkyBins.h"
+#include "PlateBins.h"
+
 #ifdef HAVE_LIBHEAL
 #include "HealpixBins.h"
 #include "XiEstimator.h"

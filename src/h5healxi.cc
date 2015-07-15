@@ -17,9 +17,9 @@ namespace tos = turbooctospice;
 
 int main(int argc, char **argv) {
 
-    int order, nthreads;
+    int order, nthreads, num_sightlines;
     double OmegaLambda, OmegaMatter;
-    std::string infile, outfile, axis1, axis2, axis3, covfile;
+    std::string infile, outfile, axis1, axis2, axis3, covfile, platelist_filename;
     po::options_description cli("Correlation function estimator");
     cli.add_options()
         ("help,h", "Prints this info and exits.")
@@ -48,6 +48,10 @@ int main(int argc, char **argv) {
         ("cart", "(r_perp,r_par,z) binning")
         ("debug", "debug flag")
         ("save-subsamples", "save xi estimates on individual subsamples")
+        ("num-sightlines,n", po::value<int>(&num_sightlines)->default_value(0),
+            "number of sightlines to use.")
+        ("platelist-filename", po::value<std::string>(&platelist_filename)->default_value("/data/sas/dr12/boss/spectro/redux/v5_7_0/platelist.fits"),
+            "platelist filename")
         ;
     // do the command line parsing now
     po::variables_map vm;
@@ -70,6 +74,9 @@ int main(int argc, char **argv) {
         std::cerr << "Must specify input file." << std::endl;
         return -1;
     }
+
+    tos::SkyBinsIPtr skybins;
+    skybins.reset(new tos::PlateBinsI(platelist_filename));
 
     // set up cosmology
     cosmo::AbsHomogeneousUniversePtr cosmology;
@@ -99,14 +106,14 @@ int main(int argc, char **argv) {
 
         std::vector<tos::Forest> sightlines(file.loadForests());
 
-        if(debug){
+        if(num_sightlines > 0 && num_sightlines < sightlines.size()){
             std::vector<tos::Forest>::const_iterator first = sightlines.begin();
-            std::vector<tos::Forest>::const_iterator last = sightlines.begin() + 10000;
-            std::vector<tos::Forest> first10k(first, last);
-            sightlines = first10k;
+            std::vector<tos::Forest>::const_iterator last = sightlines.begin() + num_sightlines;
+            std::vector<tos::Forest> selection(first, last);
+            sightlines = selection;
         }
 
-        tos::XiEstimator xiest(order, cosmology, grid, type, sightlines);
+        tos::XiEstimator xiest(order, cosmology, grid, type, sightlines, skybins);
         xiest.run(nthreads);
         xiest.save_results(outfile);
         if(save_subsamples) {

@@ -12,6 +12,7 @@
 
 #include "types.h"
 #include "constants.h"
+#include "PlateBins.h"
 
 namespace turbooctospice {
 
@@ -21,7 +22,7 @@ namespace turbooctospice {
             PolarCoordinates, CartesianCoordinates, ObservingCoordinates
         };
         XiEstimator(int order, cosmo::AbsHomogeneousUniversePtr cosmology, AbsTwoPointGridPtr grid,
-            BinningCoordinateType type, std::vector<Forest> sightlines);
+            BinningCoordinateType type, std::vector<Forest> sightlines, SkyBinsIPtr skybins);
         void run(int nthreads);
         void save_results(std::string outfile);
         void save_subsamples(std::string outfile_base);
@@ -41,6 +42,7 @@ namespace turbooctospice {
         double max_ang_, cos_max_ang_;
         BinningCoordinateType coordinate_type_;
         HealpixBinsI healbins_;
+        SkyBinsIPtr skybins_;
         AbsTwoPointGridPtr grid_;
         std::vector<Forest> sightlines_;
         std::map<int, std::vector<XiBin> > healxis_;

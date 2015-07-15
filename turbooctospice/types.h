@@ -39,6 +39,27 @@ namespace turbooctospice {
 
  //    typedef std::vector<Pixel> Pixels;
 
+     struct SkyObject {
+         double ra, dec, sin_dec, cos_dec, sin_ra, cos_ra;
+         SkyObject(double ra_, double dec_) :
+         ra(ra_), dec(dec_) {
+             sin_dec = std::sin(dec);
+             cos_dec = std::cos(dec);
+             sin_ra = std::sin(ra);
+             cos_ra = std::cos(ra);
+         }
+         SkyObject(const SkyObject& other) {
+             ra = other.ra; dec = other.dec;
+             sin_dec = other.sin_dec; cos_dec = other.cos_dec;
+             sin_ra = other.sin_ra; cos_ra = other.cos_ra;
+         };
+         SkyObject() {};
+
+         double angularSeparation(SkyObject const &other) const {
+             return sin_dec*other.sin_dec + cos_dec*other.cos_dec*(sin_ra*other.sin_ra + cos_ra*other.cos_ra);
+         }
+     };
+
     /// Represents a LyA forest pixel
     struct ForestPixel {
         float value, loglam, weight, distance;
@@ -47,22 +68,12 @@ namespace turbooctospice {
     };
 
     /// Represents a LyA forest sight line
-    struct Forest {
-        double dec, ra, sin_dec, cos_dec, sin_ra, cos_ra;
+    struct Forest : SkyObject {
         std::vector<ForestPixel> pixels;
-        int forest_id;
-        Forest(double _ra, double _dec, int _forest_id) :
-        ra(_ra), dec(_dec), forest_id(_forest_id) {
-            sin_dec = std::sin(dec);
-            cos_dec = std::cos(dec);
-            sin_ra = std::sin(ra);
-            cos_ra = std::cos(ra);
-        }
-
-        double angularSeparation(Forest const &other) const {
-            return sin_dec*other.sin_dec + cos_dec*other.cos_dec*(sin_ra*other.sin_ra + cos_ra*other.cos_ra);
-        }
-
+        int forest_id, plate;
+        Forest(double _ra, double _dec, int _forest_id, int _plate) :
+        SkyObject(_ra, _dec), forest_id(_forest_id), plate(_plate) {
+        };
     };
 
     /// Represents a correlation function bin
@@ -108,6 +119,9 @@ namespace turbooctospice {
 
     class AbsTwoPointGrid;
     typedef boost::shared_ptr<AbsTwoPointGrid> AbsTwoPointGridPtr;
+
+    template<typename T> class SkyBins;
+    typedef boost::shared_ptr<SkyBins<int> > SkyBinsIPtr;
 }
 
 #endif

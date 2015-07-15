@@ -75,42 +75,50 @@ int main(int argc, char **argv) {
         return -1;
     }
 
-    tos::SkyBinsIPtr skybins;
-    if(order > 0) {
-        skybins.reset(new tos::HealpixBinsI(order));
-    }
-    else {
-        skybins.reset(new tos::PlateBinsI(platelist_filename));
-    }
-
     // set up cosmology
     cosmo::AbsHomogeneousUniversePtr cosmology;
     if(OmegaMatter == 0) OmegaMatter = 1 - OmegaLambda;
-    cosmology.reset(new cosmo::LambdaCdmUniverse(OmegaLambda, OmegaMatter));
+    try {
+        cosmology.reset(new cosmo::LambdaCdmUniverse(OmegaLambda, OmegaMatter));
+    }
+    catch(cosmo::RuntimeError const &e) {
+        std::cerr << e.what() << std::endl;
+        return -1;
+    }
 
     // create grid for binning
-    lk::AbsBinningCPtr bins1 = lk::createBinning(axis1), bins2 = lk::createBinning(axis2), bins3 = lk::createBinning(axis3);
     tos::AbsTwoPointGridPtr grid;
     tos::XiEstimator::BinningCoordinateType type;
-    if(polar) {
-        type = tos::XiEstimator::PolarCoordinates;
-        grid.reset(new tos::PolarGrid(bins1, bins2, bins3));
+
+    try {
+        lk::AbsBinningCPtr bins1 = lk::createBinning(axis1), bins2 = lk::createBinning(axis2), bins3 = lk::createBinning(axis3);
+        if(polar) {
+            type = tos::XiEstimator::PolarCoordinates;
+            grid.reset(new tos::PolarGrid(bins1, bins2, bins3));
+        }
+        else if(cart) {
+            type = tos::XiEstimator::CartesianCoordinates;
+            grid.reset(new tos::CartesianGrid(bins1, bins2, bins3));
+        }
+        else {
+            type = tos::XiEstimator::ObservingCoordinates;
+            grid.reset(new tos::QuasarGrid(bins1, bins2, bins3));
+        }
+        for(int axis = 0; axis < 3; ++axis) {
+            std::cout << grid->getAxisMin(axis) << " " << grid->getAxisMax(axis) << " "
+                << grid->getAxisBinWidth(axis) << " " << grid->getAxisNBins(axis) << std::endl;
+        }
     }
-    else if(cart) {
-        type = tos::XiEstimator::CartesianCoordinates;
-        grid.reset(new tos::CartesianGrid(bins1, bins2, bins3));
-    }
-    else {
-        type = tos::XiEstimator::ObservingCoordinates;
-        grid.reset(new tos::QuasarGrid(bins1, bins2, bins3));
+    catch(likely::RuntimeError const &e) {
+        std::cerr << e.what() << std::endl;
+        return -1;
     }
 
     try {
         // load forest sight lines
         tos::HDF5Delta file(infile);
-
         std::vector<tos::Forest> sightlines(file.loadForests());
-
+        // trim sample, if requested
         if(num_sightlines > 0 && num_sightlines < sightlines.size()){
             std::vector<tos::Forest>::const_iterator first = sightlines.begin();
             std::vector<tos::Forest>::const_iterator last = sightlines.begin() + num_sightlines;
@@ -119,17 +127,24 @@ int main(int argc, char **argv) {
         }
         num_sightlines = sightlines.size();
 
-        // add sight lines to healpix bins
-        unsigned num_pixels(0);
+        // create sky bins
+        tos::SkyBinsIPtr skybins;
+        // which sky binning are we using?
+        if(order > 0) {
+            skybins.reset(new tos::HealpixBinsI(order));
+        }
+        else {
+            skybins.reset(new tos::PlateBinsI(platelist_filename));
+        }
 
+        // add sightlines to sky bins
+        unsigned num_pixels(0);
         double min_loglam(sightlines[0].pixels[0].loglam), max_loglam(sightlines[0].pixels[0].loglam);
         for(auto &sightline : sightlines) {
             int npixels = sightline.pixels.size();
             num_pixels += npixels;
-
-            // addItem(SkyObject)
+            // add sightline to sky bins
             skybins->addItem(sightline, sightline.forest_id);
-
             // find minimum loglam
             auto loglam_first(sightline.pixels[0].loglam);
             if(loglam_first < min_loglam) {
@@ -142,44 +157,32 @@ int main(int argc, char **argv) {
             }
         }
 
-        double zmin(std::pow(10, min_loglam-tos::logLyA)-1);
-        double zmax(std::pow(10, max_loglam-tos::logLyA)-1);
-
-        int numSkyBinsOccupied(skybins->getNBins());
-
-        std::cout << "Read " << num_pixels << " from "
-            << num_sightlines << " lines of sight (LOS)" << std::endl;
+        // sightline/pixel stats
         double avg_pixels_per_los(static_cast<double>(num_pixels)/num_sightlines);
-        std::cout << "Average number of pixels per LOS: "
-            << boost::lexical_cast<std::string>(avg_pixels_per_los) << std::endl;
-
-        std::cout << "Number of sky bins occupied: " << numSkyBinsOccupied << std::endl;
-        // double frac_healpix_occupied(numHealBinsOccupied/(12.0*std::pow(4, order)));
-        // std::cout << "Number of Healpix bins occupied: " << numHealBinsOccupied << " ("
-        //     << boost::lexical_cast<std::string>(frac_healpix_occupied) << ")" << std::endl;
+        std::cout << "Read " << num_pixels << " from " << num_sightlines << " lines of sight (LOS)" << std::endl;
+        std::cout << "Average number of pixels per LOS: " << boost::lexical_cast<std::string>(avg_pixels_per_los) << std::endl;
+        unsigned num_skybins_occupied(skybins->getNBins());
+        std::cout << "Number of sky bins occupied: " << num_skybins_occupied << std::endl;
 
         // the minimum redshift sets the angular scale we will need to consider
-        double scale(cosmology->getTransverseComovingScale(zmin));
-        double max_ang = grid->maxAngularScale(scale);
-        double cos_max_ang = std::cos(max_ang);
-
-        double min_transverse_scale(cosmology->getTransverseComovingScale(zmax));
-        double min_ang = grid->maxAngularScale(min_transverse_scale);
-
-        std::cout << "Transverse comoving scale at z = "
-            << boost::lexical_cast<std::string>(zmin) <<  " : "
-            << boost::lexical_cast<std::string>(scale) << " (Mpc/h)" << std::endl;
-        std::cout << "Max angular scale at z = "
-            << boost::lexical_cast<std::string>(zmin) <<  " : "
+        double zmin(std::pow(10, min_loglam-tos::logLyA)-1);
+        double max_transverse_scale(cosmology->getTransverseComovingScale(zmin));
+        double max_ang(grid->maxAngularScale(max_transverse_scale));
+        std::cout << "Transverse comoving scale at z = " << boost::lexical_cast<std::string>(zmin) <<  " : "
+            << boost::lexical_cast<std::string>(max_transverse_scale) << " (Mpc/h)" << std::endl;
+        std::cout << "Max angular scale at z = " << boost::lexical_cast<std::string>(zmin) <<  " : "
             << boost::lexical_cast<std::string>(max_ang) << " (rad)" << std::endl;
-        std::cout << "Transverse comoving scale at z = "
-            << boost::lexical_cast<std::string>(zmax) <<  " : "
+        // for curiosity's sake
+        double zmax(std::pow(10, max_loglam-tos::logLyA)-1);
+        double min_transverse_scale(cosmology->getTransverseComovingScale(zmax));
+        double min_ang(grid->maxAngularScale(min_transverse_scale));
+        std::cout << "Transverse comoving scale at z = " << boost::lexical_cast<std::string>(zmax) <<  " : "
             << boost::lexical_cast<std::string>(min_transverse_scale) << " (Mpc/h)" << std::endl;
-        std::cout << "Max angular scale at z = "
-            << boost::lexical_cast<std::string>(zmax) <<  " : "
+        std::cout << "Max angular scale at z = " << boost::lexical_cast<std::string>(zmax) <<  " : "
             << boost::lexical_cast<std::string>(min_ang) << " (rad)" << std::endl;
 
-        tos::XiEstimator xiest(scale, grid, type, sightlines, skybins);
+        // run the estimator
+        tos::XiEstimator xiest(max_transverse_scale, grid, type, sightlines, skybins);
         xiest.run(nthreads);
         xiest.save_results(outfile);
         if(save_subsamples) {

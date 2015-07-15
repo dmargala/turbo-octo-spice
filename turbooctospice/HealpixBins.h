@@ -22,7 +22,7 @@ namespace turbooctospice {
         /// @param order The HEALPix resolution order
         HealpixBins(int order) : SkyBins<T>() {
             map_ = HealpixMap(order, RING);
-            std::cout << "Max pix rad: " << map_.max_pixrad() << std::endl;
+            std::cout << "Healpix bin angular \"radius\": " << map_.max_pixrad() << std::endl;
         };
         /// Add an item's index to the bin containing the specified angular position
         /// @param ra Right ascension. The angular distance of a point east of the First Point of Aries, measured along the celestial equator, in radians (0 < ra < 2*pi).

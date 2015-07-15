@@ -27,9 +27,8 @@ namespace turbooctospice {
         void print_stats();
     private:
         void increment_progress();
-        bool healxi_task(int id);
-        bool xi_finalize_task(int id);
-        bool cov_task(int a, int b);
+        bool skybin_xi_task(int skybin_index);
+        bool xi_finalize_task(int xi_bin_index);
         void accumulate_stats(unsigned long const &num_sightline_pairs,
             unsigned long const &num_sightline_pairs_used, unsigned long const &num_pixel_pairs,
             unsigned long const &num_pixel_pairs_used, unsigned long const &num_pixels);
@@ -42,7 +41,7 @@ namespace turbooctospice {
         SkyBinsIPtr skybins_;
         AbsTwoPointGridPtr grid_;
         std::vector<Forest> sightlines_;
-        std::map<int, std::vector<XiBin> > healxis_;
+        std::map<int, std::vector<XiBin> > skybin_xis_;
         std::vector<XiBin> xi_;
         std::vector<std::vector<double> > cov_;
         std::unique_ptr<boost::progress_display> show_progress_;

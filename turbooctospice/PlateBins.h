@@ -1,4 +1,4 @@
-// Created 4-Feb-2015 by Daniel Margala (University of California, Irvine) <dmargala@uci.edu>
+// Created 14-Jul-2015 by Daniel Margala (University of California, Irvine) <dmargala@uci.edu>
 
 #ifndef TURBOOCTOSPICE_PLATE_BINS
 #define TURBOOCTOSPICE_PLATE_BINS

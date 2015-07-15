@@ -13,17 +13,15 @@
 
 namespace local = turbooctospice;
 
-local::XiEstimator::XiEstimator(double scale,
-    local::AbsTwoPointGridPtr grid, local::XiEstimator::BinningCoordinateType type,
+local::XiEstimator::XiEstimator(double scale, local::AbsTwoPointGridPtr grid, local::XiEstimator::BinningCoordinateType type,
     std::vector<Forest> sightlines, SkyBinsIPtr skybins):
     grid_(grid), coordinate_type_(type),
     sightlines_(sightlines), skybins_(skybins),
     num_pixels_(0), num_sightline_pairs_(0), num_sightline_pairs_used_(0),
     num_pixel_pairs_(0), num_pixel_pairs_used_(0) {
-
+    // angular separation for neighboring sky bin searches
     max_ang_ = grid_->maxAngularScale(scale);
     cos_max_ang_ = std::cos(max_ang_);
-
     // axis binning limits
     num_xi_bins_ = grid_->getNBinsTotal();
 };
@@ -32,11 +30,11 @@ void local::XiEstimator::run(int nthreads) {
     local::ThreadPool pool(nthreads);
     std::list<local::ThreadPool::Task> tasks;
 
-    // Estimate xi, one healpixel at a time
+    // Estimate xi, one sky bin at a time
     std::cout << "Estimating xi..." << std::endl;
     auto occupied_bins = skybins_->getOccupiedBins();
-    for(auto id : occupied_bins) {
-        tasks.push_back(boost::bind(&XiEstimator::healxi_task, this, id));
+    for(auto sky_bin_index : occupied_bins) {
+        tasks.push_back(boost::bind(&XiEstimator::skybin_xi_task, this, sky_bin_index));
     }
     show_progress_.reset(new boost::progress_display(tasks.size()));
     pool.run(tasks);
@@ -46,31 +44,32 @@ void local::XiEstimator::run(int nthreads) {
     // Finalize xi
     std::cout << "Finalizing xi estimate..." << std::endl;
     xi_.resize(num_xi_bins_);
-    for(int i = 0; i < num_xi_bins_; ++i) {
-        tasks.push_back(boost::bind(&XiEstimator::xi_finalize_task, this, i));
+    for(int xi_bin_index = 0; xi_bin_index < num_xi_bins_; ++xi_bin_index) {
+        tasks.push_back(boost::bind(&XiEstimator::xi_finalize_task, this, xi_bin_index));
     }
     show_progress_.reset(new boost::progress_display(tasks.size()));
     pool.run(tasks);
     tasks.clear();
     std::cout << "Xi estimation complete!" << std::endl;
     std::cout << std::endl;
-
     print_stats();
 
     // Estimate covariance
     std::cout << "Estimating covariance..." << std::endl;
     try {
         likely::CovarianceAccumulator cov_accum(num_xi_bins_);
-        for(const auto& healxi_entry : healxis_) {
+        // accumatelate each skybin_xi as samples
+        for(const auto& skybin_xi : skybin_xis_) {
             std::vector<double> xi(num_xi_bins_);
-            double weight(0);//Sky.getBinContents(healxi_entry.first).size());
-            bool valid(true);
-            for(int i = 0; i < num_xi_bins_; ++i) {
-                if (healxi_entry.second[i].wgt > 0) {
-                    xi[i] = healxi_entry.second[i].didj/healxi_entry.second[i].wgt;
-                    weight += healxi_entry.second[i].wgt;
+            double weight(0);//skybins_.getBinContents(skybin_xi.first).size());
+            // skybin_xis are not finalized so do this before accumulating
+            for(int xi_bin_index = 0; xi_bin_index < num_xi_bins_; ++xi_bin_index) {
+                if (skybin_xi.second[xi_bin_index].wgt > 0) {
+                    xi[xi_bin_index] = skybin_xi.second[xi_bin_index].didj/skybin_xi.second[xi_bin_index].wgt;
+                    weight += skybin_xi.second[xi_bin_index].wgt;
                 }
             }
+            // accumulate sample
             cov_accum.accumulate(xi, weight);
         }
         cov_matrix_ = cov_accum.getCovariance();
@@ -109,7 +108,7 @@ void local::XiEstimator::accumulate_stats(unsigned long const &num_sightline_pai
     // goes out of scope
 }
 
-bool local::XiEstimator::healxi_task(int id) {
+bool local::XiEstimator::skybin_xi_task(int skybin_index) {
     increment_progress();
     // create internal accumulation vectors
     std::vector<double> dsum(num_xi_bins_,0), wsum(num_xi_bins_,0);
@@ -131,15 +130,15 @@ bool local::XiEstimator::healxi_task(int id) {
 
     const float rsq_min(r_min*r_min), rsq_max(r_max*r_max);
 
-    // Iterate over all sight lines in this healpixel
-    for(int primary_los_index : skybins_->getBinContents(id)) {
-        auto primary_los = sightlines_[primary_los_index]; // should probably avoid copy
+    // Iterate over all sight lines in this sky bin
+    for(int primary_los_index : skybins_->getBinContents(skybin_index)) {
+        auto primary_los = sightlines_[primary_los_index];
         num_pixels += primary_los.pixels.size();
-        // Find healpixels within max angular separation of interest
+        // Find sky bins within max angular separation of interest
         auto neighbors = skybins_->getBinIndicesWithinRadius(primary_los.ra, primary_los.dec, max_ang_);
-        // Iterate over all neighboring healpixels
+        // Iterate over all neighboring sky bins
         for(int neighbor : neighbors) {
-            // Check that if there are sightlines in the neighboring healpixel
+            // Check that if there are sightlines in the neighboring sky bin
             if(!skybins_->checkBinExists(neighbor)) continue;
             // Iterate over candidate sightline pairs
             for(int pair_los_index : skybins_->getBinContents(neighbor)) {
@@ -222,18 +221,18 @@ bool local::XiEstimator::healxi_task(int id) {
             }
         }
     }
-    healxis_[id] = xi; // thread safe as long as id is unique? do we need a mutex/lock here?
+    skybin_xis_[skybin_index] = xi; // thread safe as long as skybin_index is unique? do we need a mutex/lock here?
     accumulate_stats(num_sightline_pairs, num_sightline_pairs_used,
         num_pixel_pairs, num_pixel_pairs_used, num_pixels);
     return true;
 };
 
-bool local::XiEstimator::xi_finalize_task(int id) {
+bool local::XiEstimator::xi_finalize_task(int xi_bin_index) {
     increment_progress();
-    for(const auto& healxi_entry : healxis_) {
-        xi_[id] += healxi_entry.second[id];
+    for(const auto& skybin_xi_entry : skybin_xis_) {
+        xi_[xi_bin_index] += skybin_xi_entry.second[xi_bin_index];
     }
-    xi_[id].finalize();
+    xi_[xi_bin_index].finalize();
     return true;
 }
 
@@ -242,14 +241,14 @@ void local::XiEstimator::save_results(std::string outfile) {
     std::cout << "Saving correlation function to: " << estimator_filename << std::endl;
     std::ofstream estimator_file(estimator_filename.c_str());
     std::vector<double> xi_bin_centers(3);
-    for(int i = 0; i < num_xi_bins_; ++i) {
-        grid_->getBinCenters(i, xi_bin_centers);
-        estimator_file << i << ' ' << xi_bin_centers[0] << ' ' << xi_bin_centers[1] << ' ' << xi_bin_centers[2] << ' '
-            << boost::lexical_cast<std::string>(xi_[i].didj) << ' '
-            << boost::lexical_cast<std::string>(xi_[i].di) << ' '
-            << boost::lexical_cast<std::string>(xi_[i].dj) << ' '
-            << boost::lexical_cast<std::string>(xi_[i].wgt) << ' '
-            << boost::lexical_cast<std::string>(xi_[i].num_pairs)
+    for(int xi_bin_index = 0; xi_bin_index < num_xi_bins_; ++xi_bin_index) {
+        grid_->getBinCenters(xi_bin_index, xi_bin_centers);
+        estimator_file << xi_bin_index << ' ' << xi_bin_centers[0] << ' ' << xi_bin_centers[1] << ' ' << xi_bin_centers[2] << ' '
+            << boost::lexical_cast<std::string>(xi_[xi_bin_index].didj) << ' '
+            << boost::lexical_cast<std::string>(xi_[xi_bin_index].di) << ' '
+            << boost::lexical_cast<std::string>(xi_[xi_bin_index].dj) << ' '
+            << boost::lexical_cast<std::string>(xi_[xi_bin_index].wgt) << ' '
+            << boost::lexical_cast<std::string>(xi_[xi_bin_index].num_pairs)
             << std::endl;
     }
     estimator_file.close();
@@ -280,11 +279,11 @@ void local::XiEstimator::save_results(std::string outfile) {
 };
 
 void local::XiEstimator::save_subsamples(std::string outfile_base) {
-    for(const auto& healxi_entry : healxis_) {
-        std::string estimator_filename(outfile_base + "-" + boost::lexical_cast<std::string>(healxi_entry.first) + ".data");
+    for(const auto& skybin_xi_entry : skybin_xis_) {
+        std::string estimator_filename(outfile_base + "-" + boost::lexical_cast<std::string>(skybin_xi_entry.first) + ".data");
         std::ofstream estimator_file(estimator_filename.c_str());
-        for(int i = 0; i < num_xi_bins_; ++i) {
-            estimator_file << i << ' ' << boost::lexical_cast<std::string>(healxi_entry.second[i].didj) << std::endl;
+        for(int xi_bin_index = 0; xi_bin_index < num_xi_bins_; ++xi_bin_index) {
+            estimator_file << xi_bin_index << ' ' << boost::lexical_cast<std::string>(skybin_xi_entry.second[xi_bin_index].didj) << std::endl;
         }
         estimator_file.close();
     }

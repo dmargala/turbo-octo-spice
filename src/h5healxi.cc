@@ -104,9 +104,12 @@ int main(int argc, char **argv) {
             type = tos::XiEstimator::ObservingCoordinates;
             grid.reset(new tos::QuasarGrid(bins1, bins2, bins3));
         }
-        for(int axis = 0; axis < 3; ++axis) {
-            std::cout << grid->getAxisMin(axis) << " " << grid->getAxisMax(axis) << " "
-                << grid->getAxisBinWidth(axis) << " " << grid->getAxisNBins(axis) << std::endl;
+        if(verbose) {
+            std::cout << "Binning grid configuration: "
+            for(int axis = 0; axis < 3; ++axis) {
+                std::cout << " axis" << axis+1 << " : " << grid->getAxisMin(axis) << " " << grid->getAxisMax(axis) << " "
+                    << grid->getAxisBinWidth(axis) << " " << grid->getAxisNBins(axis) << std::endl;
+            }
         }
     }
     catch(likely::RuntimeError const &e) {
@@ -158,28 +161,31 @@ int main(int argc, char **argv) {
         }
 
         // sightline/pixel stats
-        double avg_pixels_per_los(static_cast<double>(num_pixels)/num_sightlines);
         std::cout << "Read " << num_pixels << " from " << num_sightlines << " lines of sight (LOS)" << std::endl;
-        std::cout << "Average number of pixels per LOS: " << boost::lexical_cast<std::string>(avg_pixels_per_los) << std::endl;
-        unsigned num_skybins_occupied(skybins->getNBins());
-        std::cout << "Number of sky bins occupied: " << num_skybins_occupied << std::endl;
-
+        if(verbose) {
+            double avg_pixels_per_los(static_cast<double>(num_pixels)/num_sightlines);
+            std::cout << "Average number of pixels per LOS: " << boost::lexical_cast<std::string>(avg_pixels_per_los) << std::endl;
+            unsigned num_skybins_occupied(skybins->getNBins());
+            std::cout << "Number of sky bins occupied: " << num_skybins_occupied << std::endl;
+        }
         // the minimum redshift sets the angular scale we will need to consider
         double zmin(std::pow(10, min_loglam-tos::logLyA)-1);
         double max_transverse_scale(cosmology->getTransverseComovingScale(zmin));
-        double max_ang(grid->maxAngularScale(max_transverse_scale));
-        std::cout << "Transverse comoving scale at z = " << boost::lexical_cast<std::string>(zmin) <<  " : "
-            << boost::lexical_cast<std::string>(max_transverse_scale) << " (Mpc/h)" << std::endl;
-        std::cout << "Max angular scale at z = " << boost::lexical_cast<std::string>(zmin) <<  " : "
-            << boost::lexical_cast<std::string>(max_ang) << " (rad)" << std::endl;
-        // for curiosity's sake
-        double zmax(std::pow(10, max_loglam-tos::logLyA)-1);
-        double min_transverse_scale(cosmology->getTransverseComovingScale(zmax));
-        double min_ang(grid->maxAngularScale(min_transverse_scale));
-        std::cout << "Transverse comoving scale at z = " << boost::lexical_cast<std::string>(zmax) <<  " : "
-            << boost::lexical_cast<std::string>(min_transverse_scale) << " (Mpc/h)" << std::endl;
-        std::cout << "Max angular scale at z = " << boost::lexical_cast<std::string>(zmax) <<  " : "
-            << boost::lexical_cast<std::string>(min_ang) << " (rad)" << std::endl;
+        if(verbose) {
+            double max_ang(grid->maxAngularScale(max_transverse_scale));
+            std::cout << "Transverse comoving scale at z = " << boost::lexical_cast<std::string>(zmin) <<  " : "
+                << boost::lexical_cast<std::string>(max_transverse_scale) << " (Mpc/h)" << std::endl;
+            std::cout << "Max angular scale at z = " << boost::lexical_cast<std::string>(zmin) <<  " : "
+                << boost::lexical_cast<std::string>(max_ang) << " (rad)" << std::endl;
+            // for curiosity's sake
+            double zmax(std::pow(10, max_loglam-tos::logLyA)-1);
+            double min_transverse_scale(cosmology->getTransverseComovingScale(zmax));
+            double min_ang(grid->maxAngularScale(min_transverse_scale));
+            std::cout << "Transverse comoving scale at z = " << boost::lexical_cast<std::string>(zmax) <<  " : "
+                << boost::lexical_cast<std::string>(min_transverse_scale) << " (Mpc/h)" << std::endl;
+            std::cout << "Max angular scale at z = " << boost::lexical_cast<std::string>(zmax) <<  " : "
+                << boost::lexical_cast<std::string>(min_ang) << " (rad)" << std::endl;
+        }
 
         // run the estimator
         tos::XiEstimator xiest(max_transverse_scale, grid, type, sightlines, skybins);

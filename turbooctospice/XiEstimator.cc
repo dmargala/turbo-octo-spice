@@ -240,10 +240,18 @@ void local::XiEstimator::save_results(std::string outfile) {
     std::string estimator_filename(outfile + ".data");
     std::cout << "Saving correlation function to: " << estimator_filename << std::endl;
     std::ofstream estimator_file(estimator_filename.c_str());
+    for(int xi_bin_index = 0; xi_bin_index < num_xi_bins_; ++xi_bin_index) {
+        estimator_file << xi_bin_index  << ' ' << boost::lexical_cast<std::string>(xi_[xi_bin_index].didj) << std::endl;
+    }
+    estimator_file.close();
+
+    std::string details_filename(outfile + ".details");
+    std::cout << "Saving correlation function details to: " << details_filename << std::endl;
+    std::ofstream details_file(details_filename.c_str());
     std::vector<double> xi_bin_centers(3);
     for(int xi_bin_index = 0; xi_bin_index < num_xi_bins_; ++xi_bin_index) {
         grid_->getBinCenters(xi_bin_index, xi_bin_centers);
-        estimator_file << xi_bin_index << ' ' << xi_bin_centers[0] << ' ' << xi_bin_centers[1] << ' ' << xi_bin_centers[2] << ' '
+        details_file << xi_bin_index << ' ' << xi_bin_centers[0] << ' ' << xi_bin_centers[1] << ' ' << xi_bin_centers[2] << ' '
             << boost::lexical_cast<std::string>(xi_[xi_bin_index].didj) << ' '
             << boost::lexical_cast<std::string>(xi_[xi_bin_index].di) << ' '
             << boost::lexical_cast<std::string>(xi_[xi_bin_index].dj) << ' '
@@ -251,7 +259,7 @@ void local::XiEstimator::save_results(std::string outfile) {
             << boost::lexical_cast<std::string>(xi_[xi_bin_index].num_pairs)
             << std::endl;
     }
-    estimator_file.close();
+    details_file.close();
 
     std::string covariance_filename(outfile + ".cov");
     std::cout << "Saving covariance matrix to: " << covariance_filename << std::endl;

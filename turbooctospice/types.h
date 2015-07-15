@@ -9,7 +9,6 @@
 // #include "boost/coroutine/coroutine.hpp"
 
 #include "boost/smart_ptr.hpp"
-#include "HealpixBins.h"
 #include "RuntimeError.h"
 
 #include <cmath>

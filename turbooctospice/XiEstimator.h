@@ -7,12 +7,10 @@
 #include <boost/timer.hpp>
 #include <boost/thread/mutex.hpp>
 
-#include "cosmo/cosmo.h"
 #include "likely/likely.h"
 
 #include "types.h"
 #include "constants.h"
-#include "PlateBins.h"
 
 namespace turbooctospice {
 
@@ -21,7 +19,7 @@ namespace turbooctospice {
         enum BinningCoordinateType {
             PolarCoordinates, CartesianCoordinates, ObservingCoordinates
         };
-        XiEstimator(int order, cosmo::AbsHomogeneousUniversePtr cosmology, AbsTwoPointGridPtr grid,
+        XiEstimator(double scale, AbsTwoPointGridPtr grid,
             BinningCoordinateType type, std::vector<Forest> sightlines, SkyBinsIPtr skybins);
         void run(int nthreads);
         void save_results(std::string outfile);
@@ -34,14 +32,13 @@ namespace turbooctospice {
         bool cov_task(int a, int b);
         void accumulate_stats(unsigned long const &num_sightline_pairs,
             unsigned long const &num_sightline_pairs_used, unsigned long const &num_pixel_pairs,
-            unsigned long const &num_pixel_pairs_used);
-        unsigned num_xi_bins;
+            unsigned long const &num_pixel_pairs_used, unsigned long const &num_pixels);
+        unsigned num_xi_bins_;
         unsigned long num_pixels_, num_sightlines_,
             num_sightline_pairs_, num_sightline_pairs_used_,
             num_pixel_pairs_, num_pixel_pairs_used_;
         double max_ang_, cos_max_ang_;
         BinningCoordinateType coordinate_type_;
-        HealpixBinsI healbins_;
         SkyBinsIPtr skybins_;
         AbsTwoPointGridPtr grid_;
         std::vector<Forest> sightlines_;

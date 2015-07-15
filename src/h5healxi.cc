@@ -76,7 +76,12 @@ int main(int argc, char **argv) {
     }
 
     tos::SkyBinsIPtr skybins;
-    skybins.reset(new tos::PlateBinsI(platelist_filename));
+    if(order > 0) {
+        skybins.reset(new tos::HealpixBinsI(order));
+    }
+    else {
+        skybins.reset(new tos::PlateBinsI(platelist_filename));
+    }
 
     // set up cosmology
     cosmo::AbsHomogeneousUniversePtr cosmology;
@@ -112,8 +117,69 @@ int main(int argc, char **argv) {
             std::vector<tos::Forest> selection(first, last);
             sightlines = selection;
         }
+        num_sightlines = sightlines.size();
 
-        tos::XiEstimator xiest(order, cosmology, grid, type, sightlines, skybins);
+        // add sight lines to healpix bins
+        unsigned num_pixels(0);
+
+        double min_loglam(sightlines[0].pixels[0].loglam), max_loglam(sightlines[0].pixels[0].loglam);
+        for(auto &sightline : sightlines) {
+            int npixels = sightline.pixels.size();
+            num_pixels += npixels;
+
+            // addItem(SkyObject)
+            skybins->addItem(sightline, sightline.forest_id);
+
+            // find minimum loglam
+            auto loglam_first(sightline.pixels[0].loglam);
+            if(loglam_first < min_loglam) {
+                min_loglam = loglam_first;
+            }
+            // find maximum loglam
+            auto loglam_last(sightline.pixels[npixels-1].loglam);
+            if(loglam_last > max_loglam) {
+                max_loglam = loglam_last;
+            }
+        }
+
+        double zmin(std::pow(10, min_loglam-tos::logLyA)-1);
+        double zmax(std::pow(10, max_loglam-tos::logLyA)-1);
+
+        int numSkyBinsOccupied(skybins->getNBins());
+
+        std::cout << "Read " << num_pixels << " from "
+            << num_sightlines << " lines of sight (LOS)" << std::endl;
+        double avg_pixels_per_los(static_cast<double>(num_pixels)/num_sightlines);
+        std::cout << "Average number of pixels per LOS: "
+            << boost::lexical_cast<std::string>(avg_pixels_per_los) << std::endl;
+
+        std::cout << "Number of sky bins occupied: " << numSkyBinsOccupied << std::endl;
+        // double frac_healpix_occupied(numHealBinsOccupied/(12.0*std::pow(4, order)));
+        // std::cout << "Number of Healpix bins occupied: " << numHealBinsOccupied << " ("
+        //     << boost::lexical_cast<std::string>(frac_healpix_occupied) << ")" << std::endl;
+
+        // the minimum redshift sets the angular scale we will need to consider
+        double scale(cosmology->getTransverseComovingScale(zmin));
+        double max_ang = grid->maxAngularScale(scale);
+        double cos_max_ang = std::cos(max_ang);
+
+        double min_transverse_scale(cosmology->getTransverseComovingScale(zmax));
+        double min_ang = grid->maxAngularScale(min_transverse_scale);
+
+        std::cout << "Transverse comoving scale at z = "
+            << boost::lexical_cast<std::string>(zmin) <<  " : "
+            << boost::lexical_cast<std::string>(scale) << " (Mpc/h)" << std::endl;
+        std::cout << "Max angular scale at z = "
+            << boost::lexical_cast<std::string>(zmin) <<  " : "
+            << boost::lexical_cast<std::string>(max_ang) << " (rad)" << std::endl;
+        std::cout << "Transverse comoving scale at z = "
+            << boost::lexical_cast<std::string>(zmax) <<  " : "
+            << boost::lexical_cast<std::string>(min_transverse_scale) << " (Mpc/h)" << std::endl;
+        std::cout << "Max angular scale at z = "
+            << boost::lexical_cast<std::string>(zmax) <<  " : "
+            << boost::lexical_cast<std::string>(min_ang) << " (rad)" << std::endl;
+
+        tos::XiEstimator xiest(scale, grid, type, sightlines, skybins);
         xiest.run(nthreads);
         xiest.save_results(outfile);
         if(save_subsamples) {

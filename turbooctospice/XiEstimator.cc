@@ -1,12 +1,10 @@
 // Created 16-May-2014 by Daniel Margala (University of California, Irvine) <dmargala@uci.edu>
 
 #include "XiEstimator.h"
-#include "HDF5Delta.h"
-#include "HealpixBins.h"
 #include "AbsTwoPointGrid.h"
 #include "RuntimeError.h"
 #include "ThreadPool.h"
-#include "PlateBins.h"
+#include "SkyBins.h"
 
 #include "boost/bind.hpp"
 #include "boost/lexical_cast.hpp"
@@ -15,78 +13,19 @@
 
 namespace local = turbooctospice;
 
-local::XiEstimator::XiEstimator(int order, cosmo::AbsHomogeneousUniversePtr cosmology,
+local::XiEstimator::XiEstimator(double scale,
     local::AbsTwoPointGridPtr grid, local::XiEstimator::BinningCoordinateType type,
     std::vector<Forest> sightlines, SkyBinsIPtr skybins):
-    healbins_(local::HealpixBinsI(order)), grid_(grid), coordinate_type_(type),
+    grid_(grid), coordinate_type_(type),
     sightlines_(sightlines), skybins_(skybins),
-    num_pixels_(0), num_sightlines_(0),
-    num_sightline_pairs_(0), num_sightline_pairs_used_(0),
+    num_pixels_(0), num_sightline_pairs_(0), num_sightline_pairs_used_(0),
     num_pixel_pairs_(0), num_pixel_pairs_used_(0) {
 
-    // add sight lines to healpix bins
-    num_sightlines_ = sightlines_.size();
-    double min_loglam(sightlines_[0].pixels[0].loglam), max_loglam(sightlines_[0].pixels[0].loglam);
-    for(auto &sightline : sightlines_) {
-        int npixels = sightline.pixels.size();
-        num_pixels_ += npixels;
-
-        // addItem(SkyObject)
-        healbins_.addItem(sightline.ra, sightline.dec, sightline.forest_id);
-        skybins_->addItem(sightline, sightline.forest_id);
-
-        // find minimum loglam
-        auto loglam_first(sightline.pixels[0].loglam);
-        if(loglam_first < min_loglam) {
-            min_loglam = loglam_first;
-        }
-        // find maximum loglam
-        auto loglam_last(sightline.pixels[npixels-1].loglam);
-        if(loglam_last > max_loglam) {
-            max_loglam = loglam_last;
-        }
-    }
-
-    double zmin(std::pow(10, min_loglam-local::logLyA)-1);
-    double zmax(std::pow(10, max_loglam-local::logLyA)-1);
-
-    int numHealBinsOccupied(healbins_.getNBins());
-    int numPlateBinsOccupied(skybins_->getNBins());
-
-    std::cout << "Read " << num_pixels_ << " from "
-        << num_sightlines_ << " lines of sight (LOS)" << std::endl;
-    double avg_pixels_per_los(static_cast<double>(num_pixels_)/num_sightlines_);
-    std::cout << "Average number of pixels per LOS: "
-        << boost::lexical_cast<std::string>(avg_pixels_per_los) << std::endl;
-    double frac_healpix_occupied(numHealBinsOccupied/(12.0*std::pow(4, order)));
-    std::cout << "Number of Healpix bins occupied: " << numHealBinsOccupied << " ("
-        << boost::lexical_cast<std::string>(frac_healpix_occupied) << ")" << std::endl;
-
-    std::cout << "Number of plate bins occupied: " << numPlateBinsOccupied << std::endl;
-
-    // the minimum redshift sets the angular scale we will need to consider
-    double scale(cosmology->getTransverseComovingScale(zmin));
     max_ang_ = grid_->maxAngularScale(scale);
     cos_max_ang_ = std::cos(max_ang_);
 
-    double min_transverse_scale(cosmology->getTransverseComovingScale(zmax));
-    double min_ang = grid_->maxAngularScale(min_transverse_scale);
-
-    std::cout << "Transverse comoving scale at z = "
-        << boost::lexical_cast<std::string>(zmin) <<  " : "
-        << boost::lexical_cast<std::string>(scale) << " (Mpc/h)" << std::endl;
-    std::cout << "Max angular scale at z = "
-        << boost::lexical_cast<std::string>(zmin) <<  " : "
-        << boost::lexical_cast<std::string>(max_ang_) << " (rad)" << std::endl;
-    std::cout << "Transverse comoving scale at z = "
-        << boost::lexical_cast<std::string>(zmax) <<  " : "
-        << boost::lexical_cast<std::string>(min_transverse_scale) << " (Mpc/h)" << std::endl;
-    std::cout << "Max angular scale at z = "
-        << boost::lexical_cast<std::string>(zmax) <<  " : "
-        << boost::lexical_cast<std::string>(min_ang) << " (rad)" << std::endl;
-
     // axis binning limits
-    num_xi_bins = grid_->getNBinsTotal();
+    num_xi_bins_ = grid_->getNBinsTotal();
 };
 
 void local::XiEstimator::run(int nthreads) {
@@ -106,8 +45,8 @@ void local::XiEstimator::run(int nthreads) {
 
     // Finalize xi
     std::cout << "Finalizing xi estimate..." << std::endl;
-    xi_.resize(num_xi_bins);
-    for(int i = 0; i < num_xi_bins; ++i) {
+    xi_.resize(num_xi_bins_);
+    for(int i = 0; i < num_xi_bins_; ++i) {
         tasks.push_back(boost::bind(&XiEstimator::xi_finalize_task, this, i));
     }
     show_progress_.reset(new boost::progress_display(tasks.size()));
@@ -121,12 +60,12 @@ void local::XiEstimator::run(int nthreads) {
     // Estimate covariance
     std::cout << "Estimating covariance..." << std::endl;
     try {
-        likely::CovarianceAccumulator cov_accum(num_xi_bins);
+        likely::CovarianceAccumulator cov_accum(num_xi_bins_);
         for(const auto& healxi_entry : healxis_) {
-            std::vector<double> xi(num_xi_bins);
+            std::vector<double> xi(num_xi_bins_);
             double weight(0);//Sky.getBinContents(healxi_entry.first).size());
             bool valid(true);
-            for(int i = 0; i < num_xi_bins; ++i) {
+            for(int i = 0; i < num_xi_bins_; ++i) {
                 if (healxi_entry.second[i].wgt > 0) {
                     xi[i] = healxi_entry.second[i].didj/healxi_entry.second[i].wgt;
                     weight += healxi_entry.second[i].wgt;
@@ -159,12 +98,13 @@ void local::XiEstimator::increment_progress() {
 
 void local::XiEstimator::accumulate_stats(unsigned long const &num_sightline_pairs,
     unsigned long const &num_sightline_pairs_used, unsigned long const &num_pixel_pairs,
-    unsigned long const &num_pixel_pairs_used) {
+    unsigned long const &num_pixel_pairs_used, unsigned long const &num_pixels) {
     boost::unique_lock<boost::mutex> scoped_lock(pair_stats_mutex_);
     num_sightline_pairs_ += num_sightline_pairs;
     num_sightline_pairs_used_ += num_sightline_pairs_used;
     num_pixel_pairs_ += num_pixel_pairs;
     num_pixel_pairs_used_ += num_pixel_pairs_used;
+    num_pixels_ += num_pixels;
     // pair_stats_mutex_ is automatically released when lock
     // goes out of scope
 }
@@ -172,11 +112,11 @@ void local::XiEstimator::accumulate_stats(unsigned long const &num_sightline_pai
 bool local::XiEstimator::healxi_task(int id) {
     increment_progress();
     // create internal accumulation vectors
-    std::vector<double> dsum(num_xi_bins,0), wsum(num_xi_bins,0);
+    std::vector<double> dsum(num_xi_bins_,0), wsum(num_xi_bins_,0);
     unsigned long num_sightline_pairs(0), num_sightline_pairs_used(0),
-        num_pixel_pairs(0), num_pixel_pairs_used(0);
+        num_pixel_pairs(0), num_pixel_pairs_used(0), num_pixels(0);
     // task_id's xi container
-    std::vector<local::XiBin> xi(num_xi_bins);
+    std::vector<local::XiBin> xi(num_xi_bins_);
 
     const float
         r_min(grid_->getAxisMin(0)), r_max(grid_->getAxisMax(0)), one_over_dr(1.0/grid_->getAxisBinWidth(0)),
@@ -194,6 +134,7 @@ bool local::XiEstimator::healxi_task(int id) {
     // Iterate over all sight lines in this healpixel
     for(int primary_los_index : skybins_->getBinContents(id)) {
         auto primary_los = sightlines_[primary_los_index]; // should probably avoid copy
+        num_pixels += primary_los.pixels.size();
         // Find healpixels within max angular separation of interest
         auto neighbors = skybins_->getBinIndicesWithinRadius(primary_los.ra, primary_los.dec, max_ang_);
         // Iterate over all neighboring healpixels
@@ -258,7 +199,7 @@ bool local::XiEstimator::healxi_task(int id) {
                             pair_bin_index = zbin + pair_bin_index*num_z_bins;
                         }
                         // this should never happen, useful for debugging though
-                        if(pair_bin_index >= num_xi_bins) {
+                        if(pair_bin_index >= num_xi_bins_) {
                             std::cout << boost::lexical_cast<std::string>(pair_bin_index) << " "
                                 << boost::lexical_cast<std::string>(primary_pixel.distance) << " "
                                 << boost::lexical_cast<std::string>(primary_pixel.loglam) << " "
@@ -283,7 +224,7 @@ bool local::XiEstimator::healxi_task(int id) {
     }
     healxis_[id] = xi; // thread safe as long as id is unique? do we need a mutex/lock here?
     accumulate_stats(num_sightline_pairs, num_sightline_pairs_used,
-        num_pixel_pairs, num_pixel_pairs_used);
+        num_pixel_pairs, num_pixel_pairs_used, num_pixels);
     return true;
 };
 
@@ -301,7 +242,7 @@ void local::XiEstimator::save_results(std::string outfile) {
     std::cout << "Saving correlation function to: " << estimator_filename << std::endl;
     std::ofstream estimator_file(estimator_filename.c_str());
     std::vector<double> xi_bin_centers(3);
-    for(int i = 0; i < num_xi_bins; ++i) {
+    for(int i = 0; i < num_xi_bins_; ++i) {
         grid_->getBinCenters(i, xi_bin_centers);
         estimator_file << i << ' ' << xi_bin_centers[0] << ' ' << xi_bin_centers[1] << ' ' << xi_bin_centers[2] << ' '
             << boost::lexical_cast<std::string>(xi_[i].didj) << ' '
@@ -316,7 +257,7 @@ void local::XiEstimator::save_results(std::string outfile) {
     std::string covariance_filename(outfile + ".cov");
     std::cout << "Saving covariance matrix to: " << covariance_filename << std::endl;
     std::ofstream covariance_file(covariance_filename.c_str());
-    for(int col = 0; col < num_xi_bins; ++col) {
+    for(int col = 0; col < num_xi_bins_; ++col) {
         for(int row = 0; row <= col; ++row) {
             double value = cov_matrix_->getCovariance(row,col);
             // print matrix elements with full precision
@@ -329,7 +270,7 @@ void local::XiEstimator::save_results(std::string outfile) {
     std::string weight_filename(outfile + ".wgt");
     std::cout << "Saving weights matrix to: " << weight_filename << std::endl;
     std::ofstream weight_file(weight_filename.c_str());
-    for(int col = 0; col < num_xi_bins; ++col) {
+    for(int col = 0; col < num_xi_bins_; ++col) {
             double value = 1.0/xi_[col].wgt;
             // print matrix elements with full precision
             weight_file << col << ' ' << col << ' '
@@ -342,7 +283,7 @@ void local::XiEstimator::save_subsamples(std::string outfile_base) {
     for(const auto& healxi_entry : healxis_) {
         std::string estimator_filename(outfile_base + "-" + boost::lexical_cast<std::string>(healxi_entry.first) + ".data");
         std::ofstream estimator_file(estimator_filename.c_str());
-        for(int i = 0; i < num_xi_bins; ++i) {
+        for(int i = 0; i < num_xi_bins_; ++i) {
             estimator_file << i << ' ' << boost::lexical_cast<std::string>(healxi_entry.second[i].didj) << std::endl;
         }
         estimator_file.close();
@@ -351,7 +292,8 @@ void local::XiEstimator::save_subsamples(std::string outfile_base) {
 
 void local::XiEstimator::print_stats() {
     // line of sight pair statistics
-    unsigned long num_sightline_pairs_total = (num_sightlines_*(num_sightlines_-1))/2;
+    unsigned num_sightlines = sightlines_.size();
+    unsigned long num_sightline_pairs_total = (num_sightlines*(num_sightlines-1))/2;
     double frac_sightline_pairs_considered = static_cast<double>(num_sightline_pairs_)/num_sightline_pairs_total;
     double frac_sightline_pairs_used = static_cast<double>(num_sightline_pairs_used_)/num_sightline_pairs_;
 

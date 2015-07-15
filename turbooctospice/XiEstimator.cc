@@ -17,8 +17,8 @@ local::XiEstimator::XiEstimator(double scale, local::AbsTwoPointGridPtr grid, lo
     std::vector<Forest> sightlines, SkyBinsIPtr skybins):
     grid_(grid), coordinate_type_(type),
     sightlines_(sightlines), skybins_(skybins),
-    num_pixels_(0), num_sightline_pairs_(0), num_sightline_pairs_used_(0),
-    num_pixel_pairs_(0), num_pixel_pairs_used_(0) {
+    num_sightline_pairs_(0), num_sightline_pairs_used_(0),
+    num_pixels_(0), num_pixel_pairs_(0), num_pixel_pairs_used_(0) {
     // angular separation for neighboring sky bin searches
     max_ang_ = grid_->maxAngularScale(scale);
     cos_max_ang_ = std::cos(max_ang_);

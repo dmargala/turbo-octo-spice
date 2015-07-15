@@ -32,23 +32,25 @@ namespace turbooctospice {
         void accumulate_stats(unsigned long const &num_sightline_pairs,
             unsigned long const &num_sightline_pairs_used, unsigned long const &num_pixel_pairs,
             unsigned long const &num_pixel_pairs_used, unsigned long const &num_pixels);
-        unsigned num_xi_bins_;
-        unsigned long num_pixels_, num_sightlines_,
-            num_sightline_pairs_, num_sightline_pairs_used_,
-            num_pixel_pairs_, num_pixel_pairs_used_;
+        // private member variables
+        // counters
+        unsigned long num_sightline_pairs_, num_sightline_pairs_used_,
+            num_pixels_, num_pixel_pairs_, num_pixel_pairs_used_;
+        // inputs
         double max_ang_, cos_max_ang_;
         BinningCoordinateType coordinate_type_;
-        SkyBinsIPtr skybins_;
         AbsTwoPointGridPtr grid_;
+        SkyBinsIPtr skybins_;
         std::vector<Forest> sightlines_;
+        // results
+        unsigned num_xi_bins_;
         std::map<int, std::vector<XiBin> > skybin_xis_;
         std::vector<XiBin> xi_;
-        std::vector<std::vector<double> > cov_;
+        likely::CovarianceMatrixCPtr cov_matrix_;
+        // helpers
         std::unique_ptr<boost::progress_display> show_progress_;
         boost::mutex show_progress_mutex_; // protects show_progress_
-        boost::mutex pair_stats_mutex_;
-        boost::mutex debug_mutex_;
-        likely::CovarianceMatrixCPtr cov_matrix_;
+        boost::mutex pair_stats_mutex_; // protects counters
     };
 } // turbooctospice
 

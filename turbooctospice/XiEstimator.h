@@ -28,6 +28,8 @@ namespace turbooctospice {
     private:
         void increment_progress();
         bool skybin_xi_task(int skybin_index);
+        unsigned long accumulate_pixel_pairs(const Forest &primary_los, const Forest &other_los,
+            const double &cos_separation, std::vector<XiBin> &xi);
         bool xi_finalize_task(int xi_bin_index);
         void accumulate_stats(unsigned long const &num_sightline_pairs,
             unsigned long const &num_sightline_pairs_used, unsigned long const &num_pixel_pairs,
@@ -38,7 +40,7 @@ namespace turbooctospice {
             num_pixels_, num_pixel_pairs_, num_pixel_pairs_used_;
         // inputs
         double max_ang_, cos_max_ang_;
-        BinningCoordinateType coordinate_type_;
+        const BinningCoordinateType coordinate_type_;
         AbsTwoPointGridPtr grid_;
         SkyBinsIPtr skybins_;
         std::vector<Forest> sightlines_;

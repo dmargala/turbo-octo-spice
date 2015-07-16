@@ -53,6 +53,7 @@ void local::XiEstimator::run(int nthreads) {
     std::cout << "Xi estimation complete!" << std::endl;
     std::cout << std::endl;
     print_stats();
+    std::cout << std::endl;
 
     // Estimate covariance
     std::cout << "Estimating covariance..." << std::endl;
@@ -110,25 +111,11 @@ void local::XiEstimator::accumulate_stats(unsigned long const &num_sightline_pai
 
 bool local::XiEstimator::skybin_xi_task(int skybin_index) {
     increment_progress();
-    // create internal accumulation vectors
-    std::vector<double> dsum(num_xi_bins_,0), wsum(num_xi_bins_,0);
+    // counters
     unsigned long num_sightline_pairs(0), num_sightline_pairs_used(0),
         num_pixel_pairs(0), num_pixel_pairs_used(0), num_pixels(0);
-    // task_id's xi container
+    // skybin's xi container
     std::vector<local::XiBin> xi(num_xi_bins_);
-
-    const float
-        r_min(grid_->getAxisMin(0)), r_max(grid_->getAxisMax(0)), one_over_dr(1.0/grid_->getAxisBinWidth(0)),
-        rperp_min(grid_->getAxisMin(1)), rperp_max(grid_->getAxisMax(1)), one_over_drperp(1.0/grid_->getAxisBinWidth(1)),
-        sep_min(grid_->getAxisMin(1)), sep_spacing(grid_->getAxisNBins(1)),
-        z_min(grid_->getAxisMin(2)), z_max(grid_->getAxisMax(2)), z_spacing(grid_->getAxisBinWidth(2));
-    const unsigned
-        num_r_bins(grid_->getAxisNBins(0)),
-        num_mu_bins(grid_->getAxisNBins(1)), num_rperp_bins(grid_->getAxisNBins(1)),
-        num_sep_bins(grid_->getAxisNBins(1)),
-        num_z_bins(grid_->getAxisNBins(2));
-
-    const float rsq_min(r_min*r_min), rsq_max(r_max*r_max);
 
     // Iterate over all sight lines in this sky bin
     for(int primary_los_index : skybins_->getBinContents(skybin_index)) {
@@ -150,74 +137,9 @@ bool local::XiEstimator::skybin_xi_task(int skybin_index) {
                 ++num_sightline_pairs;
                 if(cos_separation <= cos_max_ang_) continue;
                 ++num_sightline_pairs_used;
-                const double separation = std::acos(cos_separation);
-                // accumulate statistics for pixel pairs
-                for(const auto& primary_pixel : primary_los.pixels) {
-                    const float primary_pixel_dist_sq = primary_pixel.distance*primary_pixel.distance;
-                    const float primary_pixel_projection_times_two = 2*primary_pixel.distance*cos_separation;
-                    for(const auto& other_pixel : other_los.pixels) {
-                        ++num_pixel_pairs;
-                        // check pairs are within our binning grid
-                        unsigned pair_bin_index;
-                        // pair_bin_index = grid_.getBinIndex(primary_pixel, other_pixel, cos_separation, separation);
-                        // scope for determining xi bin
-                        {
-                            // check parallel separation
-                            const float r_sq = primary_pixel_dist_sq + (other_pixel.distance - primary_pixel_projection_times_two)*other_pixel.distance;
-                            const float r = std::sqrt(r_sq);
-                            // check transverse separation
-                            // why is r == 0 sometimes? these cases also seem to have very close separations.
-                            const float mu = (r == 0 ? 0 : std::fabs(primary_pixel.distance-other_pixel.distance)/r);
-                            // check average pair distance
-                            const float z = 0.5*(primary_pixel.loglam + other_pixel.loglam) - local::logLyA;
-                            // const float z = std::pow(10, 0.5*(primary_pixel.loglam + other_pixel.loglam) - local::logLyA) - 1.0;
-                            if(coordinate_type_ == PolarCoordinates) {
-                                // if(r_sq >= rsq_max || r_sq < rsq_min) continue;
-                                pair_bin_index = static_cast<unsigned>((r - r_min)*one_over_dr);
-                                if(pair_bin_index >= num_r_bins) continue;
-                                const unsigned mubin = static_cast<unsigned>(mu * num_mu_bins);
-                                if(mubin >= num_mu_bins) continue;
-                                pair_bin_index = mubin + pair_bin_index*num_mu_bins;
-                            }
-                            else if(coordinate_type_ == CartesianCoordinates) {
-                                // Cartesian Coordinates
-                                pair_bin_index = static_cast<unsigned>((r*mu - r_min)*one_over_dr);
-                                if(pair_bin_index >= num_r_bins) continue;
-                                const unsigned perp_bin_index = static_cast<unsigned>((r*std::sqrt(1-mu*mu) - rperp_min)*one_over_drperp);
-                                if(perp_bin_index >= num_rperp_bins) continue;
-                                pair_bin_index = perp_bin_index + pair_bin_index*num_rperp_bins;
-                            }
-                            else {
-                                // Observing coordinates
-                                // not finished
-                                pair_bin_index = static_cast<unsigned>(std::fabs(primary_pixel.loglam - other_pixel.loglam)*one_over_dr);
-                                const unsigned sep_bin_index = static_cast<unsigned>((separation - sep_min)/sep_spacing);
-                                pair_bin_index = sep_bin_index + pair_bin_index*num_sep_bins;
-                            }
-                            const unsigned zbin = static_cast<unsigned>((z-z_min)/z_spacing);
-                            pair_bin_index = zbin + pair_bin_index*num_z_bins;
-                        }
-                        // this should never happen, useful for debugging though
-                        if(pair_bin_index >= num_xi_bins_) {
-                            std::cout << boost::lexical_cast<std::string>(pair_bin_index) << " "
-                                << boost::lexical_cast<std::string>(primary_pixel.distance) << " "
-                                << boost::lexical_cast<std::string>(primary_pixel.loglam) << " "
-                                << boost::lexical_cast<std::string>(primary_los.ra) << " "
-                                << boost::lexical_cast<std::string>(primary_los.dec) << " "
-                                << boost::lexical_cast<std::string>(other_pixel.distance) << " "
-                                << boost::lexical_cast<std::string>(other_pixel.loglam) << " "
-                                << boost::lexical_cast<std::string>(other_los.ra) << " "
-                                << boost::lexical_cast<std::string>(other_los.dec) << " "
-                                << boost::lexical_cast<std::string>(cos_separation) << " "
-                                << boost::lexical_cast<std::string>(separation) << " "
-                                << std::endl;
-                            throw local::RuntimeError("invalid bin index");
-                        }
-                        // accumulate pixel pair
-                        ++num_pixel_pairs_used;
-                        xi[pair_bin_index].accumulate_pair(primary_pixel, other_pixel);
-                    }
-                }
+                num_pixel_pairs += primary_los.pixels.size()*other_los.pixels.size();
+                // iterate over pixel pairs
+                num_pixel_pairs_used += accumulate_pixel_pairs(primary_los, other_los, cos_separation, xi);
             }
         }
     }
@@ -226,6 +148,95 @@ bool local::XiEstimator::skybin_xi_task(int skybin_index) {
         num_pixel_pairs, num_pixel_pairs_used, num_pixels);
     return true;
 };
+
+unsigned long local::XiEstimator::accumulate_pixel_pairs(const local::Forest &primary_los, const local::Forest &other_los,
+    const double &cos_separation, std::vector<local::XiBin> &xi) {
+    // counter
+    unsigned long num_pixel_pairs_used(0);
+    // xi bin helpers
+    const float
+        r_min(grid_->getAxisMin(0)), r_max(grid_->getAxisMax(0)), one_over_dr(1.0/grid_->getAxisBinWidth(0)),
+        rperp_min(grid_->getAxisMin(1)), rperp_max(grid_->getAxisMax(1)), one_over_drperp(1.0/grid_->getAxisBinWidth(1)),
+        z_min(grid_->getAxisMin(2)), z_max(grid_->getAxisMax(2)), one_over_dz(1.0/grid_->getAxisBinWidth(2));
+    const unsigned num_r_bins(grid_->getAxisNBins(0)), num_rperp_bins(grid_->getAxisNBins(1)), num_z_bins(grid_->getAxisNBins(2));
+
+    const double separation = std::acos(cos_separation);
+    // accumulate statistics for pixel pairs
+    for(const auto& primary_pixel : primary_los.pixels) {
+        const float primary_pixel_dist_sq = primary_pixel.distance*primary_pixel.distance;
+        const float primary_pixel_projection_times_two = 2*primary_pixel.distance*cos_separation;
+        for(const auto& other_pixel : other_los.pixels) {
+            // check pairs are within our binning grid
+            unsigned pair_bin_index;
+            // bool is_good_pair = grid_.getBinIndex(primary_pixel, other_pixel, cos_separation, separation, pair_bin_index);
+            // if(is_good_pair) {
+            //     ++num_pixel_pairs_used;
+            //     xi[pair_bin_index].accumulate_pair(primary_pixel, other_pixel);
+            // }
+            // scope for determining xi bin
+            {
+                if(coordinate_type_ == PolarCoordinates) {
+                    // check parallel separation
+                    const float r_sq = primary_pixel_dist_sq + (other_pixel.distance - primary_pixel_projection_times_two)*other_pixel.distance;
+                    const float r = std::sqrt(r_sq);
+                    pair_bin_index = static_cast<unsigned>((r - r_min)*one_over_dr);
+                    if(pair_bin_index >= num_r_bins) continue;
+                    // check transverse separation
+                    // why is r == 0 sometimes? these cases also seem to have very close separations.
+                    const float mu = (r == 0 ? 0 : std::fabs(primary_pixel.distance-other_pixel.distance)/r);
+                    const unsigned mubin = static_cast<unsigned>((mu - rperp_min)*one_over_drperp);
+                    if(mubin >= num_rperp_bins) continue;
+                    pair_bin_index = mubin + pair_bin_index*num_rperp_bins;
+                }
+                else if(coordinate_type_ == CartesianCoordinates) {
+                    // check parallel separation
+                    const float r_para = std::fabs(primary_pixel.distance-other_pixel.distance);
+                    pair_bin_index = static_cast<unsigned>((r_para - r_min)*one_over_dr);
+                    if(pair_bin_index >= num_r_bins) continue;
+                    // check transverse separation
+                    const float r_sq = primary_pixel_dist_sq + (other_pixel.distance - primary_pixel_projection_times_two)*other_pixel.distance;
+                    const unsigned perp_bin_index = static_cast<unsigned>((std::sqrt(r_sq - r_para*r_para) - rperp_min)*one_over_drperp);
+                    // const unsigned perp_bin_index = static_cast<unsigned>((r*std::sqrt(1-mu*mu) - rperp_min)*one_over_drperp);
+                    if(perp_bin_index >= num_rperp_bins) continue;
+                    pair_bin_index = perp_bin_index + pair_bin_index*num_rperp_bins;
+                }
+                else {
+                    // check parallel separation
+                    pair_bin_index = static_cast<unsigned>((std::fabs(primary_pixel.loglam - other_pixel.loglam) - r_min)*one_over_dr);
+                    if(pair_bin_index >= num_r_bins) continue;
+                    const unsigned sep_bin_index = static_cast<unsigned>((separation - rperp_min)*one_over_drperp);
+                    // no need to check separation, already checked sight lines
+                    pair_bin_index = sep_bin_index + pair_bin_index*num_rperp_bins;
+                }
+                // check average pair distance
+                const float logz = 0.5*(primary_pixel.loglam + other_pixel.loglam) - local::logLyA;
+                // const float z = std::pow(10, 0.5*(primary_pixel.loglam + other_pixel.loglam) - local::logLyA) - 1.0;
+                const unsigned zbin = static_cast<unsigned>((logz-z_min)*one_over_dz);
+                pair_bin_index = zbin + pair_bin_index*num_z_bins;
+            }
+            // this should never happen, useful for debugging though
+            if(pair_bin_index >= num_xi_bins_) {
+                std::cout << boost::lexical_cast<std::string>(pair_bin_index) << " "
+                    << boost::lexical_cast<std::string>(primary_pixel.distance) << " "
+                    << boost::lexical_cast<std::string>(primary_pixel.loglam) << " "
+                    << boost::lexical_cast<std::string>(primary_los.ra) << " "
+                    << boost::lexical_cast<std::string>(primary_los.dec) << " "
+                    << boost::lexical_cast<std::string>(other_pixel.distance) << " "
+                    << boost::lexical_cast<std::string>(other_pixel.loglam) << " "
+                    << boost::lexical_cast<std::string>(other_los.ra) << " "
+                    << boost::lexical_cast<std::string>(other_los.dec) << " "
+                    << boost::lexical_cast<std::string>(cos_separation) << " "
+                    << boost::lexical_cast<std::string>(separation) << " "
+                    << std::endl;
+                throw local::RuntimeError("invalid bin index");
+            }
+            // accumulate pixel pair
+            ++num_pixel_pairs_used;
+            xi[pair_bin_index].accumulate_pair(primary_pixel, other_pixel);
+        }
+    }
+    return num_pixel_pairs_used;
+}
 
 bool local::XiEstimator::xi_finalize_task(int xi_bin_index) {
     increment_progress();

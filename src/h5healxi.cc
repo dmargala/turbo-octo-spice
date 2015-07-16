@@ -105,7 +105,7 @@ int main(int argc, char **argv) {
             grid.reset(new tos::QuasarGrid(bins1, bins2, bins3));
         }
         if(verbose) {
-            std::cout << "Binning grid configuration: "
+            std::cout << "Binning grid configuration: " << std::endl;
             for(int axis = 0; axis < 3; ++axis) {
                 std::cout << " axis" << axis+1 << " : " << grid->getAxisMin(axis) << " " << grid->getAxisMax(axis) << " "
                     << grid->getAxisBinWidth(axis) << " " << grid->getAxisNBins(axis) << std::endl;
@@ -120,6 +120,9 @@ int main(int argc, char **argv) {
     try {
         // load forest sight lines
         tos::HDF5Delta file(infile);
+        if (verbose) {
+            std::cout << "Loading forest delta fields from " << infile << std::endl;
+        }
         std::vector<tos::Forest> sightlines(file.loadForests());
         // trim sample, if requested
         if(num_sightlines > 0 && num_sightlines < sightlines.size()){
@@ -185,11 +188,13 @@ int main(int argc, char **argv) {
                 << boost::lexical_cast<std::string>(min_transverse_scale) << " (Mpc/h)" << std::endl;
             std::cout << "Max angular scale at z = " << boost::lexical_cast<std::string>(zmax) <<  " : "
                 << boost::lexical_cast<std::string>(min_ang) << " (rad)" << std::endl;
+            std::cout << std::endl;
         }
 
         // run the estimator
         tos::XiEstimator xiest(max_transverse_scale, grid, type, sightlines, skybins);
         xiest.run(nthreads);
+        std::cout << std::endl;
         xiest.save_results(outfile);
         if(save_subsamples) {
             xiest.save_subsamples(outfile);

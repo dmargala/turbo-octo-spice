@@ -17,8 +17,8 @@ local::XiEstimator::XiEstimator(double scale, local::AbsTwoPointGridPtr grid, lo
     std::vector<Forest> sightlines, SkyBinsIPtr skybins):
     grid_(grid), coordinate_type_(type),
     sightlines_(sightlines), skybins_(skybins),
-    max_ang_(grid_->maxAngularScale(scale)), cos_max_ang_(std::cos(max_ang_)),
-    num_xi_bins_(grid_->getNBinsTotal()),
+    max_ang_(grid->maxAngularScale(scale)), cos_max_ang_(std::cos(grid->maxAngularScale(scale))),
+    num_xi_bins_(grid->getNBinsTotal()),
     num_sightline_pairs_(0), num_sightline_pairs_used_(0),
     num_pixels_(0), num_pixel_pairs_(0), num_pixel_pairs_used_(0) {
 };
@@ -56,8 +56,10 @@ void local::XiEstimator::run(int nthreads) {
     std::cout << "Estimating covariance..." << std::endl;
     try {
         likely::CovarianceAccumulator cov_accum(num_xi_bins_);
+        show_progress_.reset(new boost::progress_display(skybin_xis_.size()));
         // accumatelate each skybin_xi as samples
         for(const auto& skybin_xi : skybin_xis_) {
+            increment_progress();
             std::vector<double> xi(num_xi_bins_);
             double weight(0);//skybins_.getBinContents(skybin_xi.first).size());
             // skybin_xis are not finalized so do this before accumulating

@@ -12,7 +12,7 @@ common = ['likely', 'cosmo', 'boost_program_options', 'boost_system', 'boost_thr
 h5Libs = ['hdf5','hdf5_cpp']
 
 ## Build turbooctospice library
-env.SharedLibrary('turbooctospice', Glob('#turbooctospice/*.cc'),
+env.Library('turbooctospice', Glob('#turbooctospice/*.cc'),
     LIBS=common+h5Libs+healLibs,
     LIBPATH=healLibPath,
     CPPPATH=healCppPath,

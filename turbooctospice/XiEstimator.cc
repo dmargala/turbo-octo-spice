@@ -17,13 +17,10 @@ local::XiEstimator::XiEstimator(double scale, local::AbsTwoPointGridPtr grid, lo
     std::vector<Forest> sightlines, SkyBinsIPtr skybins):
     grid_(grid), coordinate_type_(type),
     sightlines_(sightlines), skybins_(skybins),
+    max_ang_(grid_->maxAngularScale(scale)), cos_max_ang_(std::cos(max_ang_)),
+    num_xi_bins_(grid_->getNBinsTotal()),
     num_sightline_pairs_(0), num_sightline_pairs_used_(0),
     num_pixels_(0), num_pixel_pairs_(0), num_pixel_pairs_used_(0) {
-    // angular separation for neighboring sky bin searches
-    max_ang_ = grid_->maxAngularScale(scale);
-    cos_max_ang_ = std::cos(max_ang_);
-    // axis binning limits
-    num_xi_bins_ = grid_->getNBinsTotal();
 };
 
 void local::XiEstimator::run(int nthreads) {
@@ -150,7 +147,7 @@ bool local::XiEstimator::skybin_xi_task(int skybin_index) {
 };
 
 unsigned long local::XiEstimator::accumulate_pixel_pairs(const local::Forest &primary_los, const local::Forest &other_los,
-    const double &cos_separation, std::vector<local::XiBin> &xi) {
+    const double &cos_separation, std::vector<local::XiBin> &xi) const {
     // counter
     unsigned long num_pixel_pairs_used(0);
     // xi bin helpers
@@ -247,7 +244,7 @@ bool local::XiEstimator::xi_finalize_task(int xi_bin_index) {
     return true;
 }
 
-void local::XiEstimator::save_results(std::string outfile) {
+void local::XiEstimator::save_results(std::string outfile) const {
     std::string estimator_filename(outfile + ".data");
     std::cout << "Saving correlation function to: " << estimator_filename << std::endl;
     std::ofstream estimator_file(estimator_filename.c_str());
@@ -297,7 +294,7 @@ void local::XiEstimator::save_results(std::string outfile) {
     weight_file.close();
 };
 
-void local::XiEstimator::save_subsamples(std::string outfile_base) {
+void local::XiEstimator::save_subsamples(std::string outfile_base) const {
     for(const auto& skybin_xi_entry : skybin_xis_) {
         std::string estimator_filename(outfile_base + "-" + boost::lexical_cast<std::string>(skybin_xi_entry.first) + ".data");
         std::ofstream estimator_file(estimator_filename.c_str());
@@ -308,7 +305,7 @@ void local::XiEstimator::save_subsamples(std::string outfile_base) {
     }
 }
 
-void local::XiEstimator::print_stats() {
+void local::XiEstimator::print_stats() const {
     // line of sight pair statistics
     unsigned num_sightlines = sightlines_.size();
     unsigned long num_sightline_pairs_total = (num_sightlines*(num_sightlines-1))/2;

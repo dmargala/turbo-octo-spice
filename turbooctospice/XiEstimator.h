@@ -22,14 +22,14 @@ namespace turbooctospice {
         XiEstimator(double scale, AbsTwoPointGridPtr grid,
             BinningCoordinateType type, std::vector<Forest> sightlines, SkyBinsIPtr skybins);
         void run(int nthreads);
-        void save_results(std::string outfile);
-        void save_subsamples(std::string outfile_base);
-        void print_stats();
+        void save_results(std::string outfile) const;
+        void save_subsamples(std::string outfile_base) const;
+        void print_stats() const;
     private:
         void increment_progress();
         bool skybin_xi_task(int skybin_index);
         unsigned long accumulate_pixel_pairs(const Forest &primary_los, const Forest &other_los,
-            const double &cos_separation, std::vector<XiBin> &xi);
+            const double &cos_separation, std::vector<XiBin> &xi) const;
         bool xi_finalize_task(int xi_bin_index);
         void accumulate_stats(unsigned long const &num_sightline_pairs,
             unsigned long const &num_sightline_pairs_used, unsigned long const &num_pixel_pairs,
@@ -41,11 +41,11 @@ namespace turbooctospice {
         // inputs
         double max_ang_, cos_max_ang_;
         const BinningCoordinateType coordinate_type_;
-        AbsTwoPointGridPtr grid_;
-        SkyBinsIPtr skybins_;
-        std::vector<Forest> sightlines_;
+        const AbsTwoPointGridPtr grid_;
+        const SkyBinsIPtr skybins_;
+        const std::vector<Forest> sightlines_;
+        const unsigned num_xi_bins_;
         // results
-        unsigned num_xi_bins_;
         std::map<int, std::vector<XiBin> > skybin_xis_;
         std::vector<XiBin> xi_;
         likely::CovarianceMatrixCPtr cov_matrix_;

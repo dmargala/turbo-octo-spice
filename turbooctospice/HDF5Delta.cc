@@ -71,12 +71,18 @@ std::vector<local::Forest> local::HDF5Delta::loadForests() {
             Forest forest(ra, dec, nforests, plate);
             // Iterate over pixels
             for(int i = 0; i < delta.size(); ++i) {
-                // Save the pixel
-                forest.pixels.push_back( {delta[i], loglam[i], weight[i], r_comov[i]} );
+                if(std::isfinite(delta[i]) && std::isfinite(weight[i])) {
+                    if((weight[i] > 0)) { //&& (std::abs(delta[i]) < 1000)) {
+                        // Save the pixel
+                        forest.pixels.push_back( {delta[i], loglam[i], weight[i], r_comov[i]} );
+                    }
+                }
             }
             // Save forest
-            ((std::vector<Forest>*) opdata)->push_back(forest);
-            nforests++;
+            if (forest.pixels.size() > 0) {
+                ((std::vector<Forest>*) opdata)->push_back(forest);
+                nforests++;
+            }
             targetGroup.close();
             return 0;
         }

@@ -6,7 +6,7 @@
 #include "AbsTwoPointGrid.h"
 
 namespace turbooctospice {
-    /// Represents a Quasar grid for binning two point functions for LyA BAO analyses. 
+    /// Represents a Quasar grid for binning two point functions for LyA BAO analyses.
     class QuasarGrid : public AbsTwoPointGrid {
     public:
         /// Creates a new grid with three axes.
@@ -23,7 +23,7 @@ namespace turbooctospice {
         /// transervse comving scale.
         /// @param scale Transverse comoving distance (Mpc/h) at minimum redshift
         double maxAngularScale(double scale) const;
-        /// Tests if the pair of pixels are binable and fills the vector provided 
+        /// Tests if the pair of pixels are binable and fills the vector provided
         /// with coordinate values along each axis.
         /// @param a First ForestPixel of pair
         /// @param b Second ForestPixel of pair
@@ -33,13 +33,13 @@ namespace turbooctospice {
         bool getSeparation(ForestPixel const &a, ForestPixel const &b,
             double const &cosij, double const &thetaij, std::vector<double> &separation) const;
 
-        bool getBinIndex(ForestPixel const &a, ForestPixel const &b, 
+        bool getBinIndex(ForestPixel const &a, ForestPixel const &b,
             double const &cosij, double const &thetaij, int &binIndex) const;
     private:
     }; // QuasarGrid
 
-    inline double QuasarGrid::minAngularScale(double scale) const { return xmin[1]/rad2arcmin; }
-    inline double QuasarGrid::maxAngularScale(double scale) const { return xmax[1]/rad2arcmin; }
+    inline double QuasarGrid::minAngularScale(double scale) const { return xmin[1]; }
+    inline double QuasarGrid::maxAngularScale(double scale) const { return xmax[1]; }
 
 } // turbooctospice
 

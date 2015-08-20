@@ -49,6 +49,7 @@ namespace turbooctospice {
         std::map<int, std::vector<XiBin> > skybin_xis_;
         std::vector<XiBin> xi_;
         likely::CovarianceMatrixCPtr cov_matrix_;
+        bool cov_good_;
         // helpers
         std::unique_ptr<boost::progress_display> show_progress_;
         boost::mutex show_progress_mutex_; // protects show_progress_

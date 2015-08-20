@@ -18,7 +18,7 @@ local::XiEstimator::XiEstimator(double scale, local::AbsTwoPointGridPtr grid, lo
     grid_(grid), coordinate_type_(type),
     sightlines_(sightlines), skybins_(skybins),
     max_ang_(grid->maxAngularScale(scale)), cos_max_ang_(std::cos(grid->maxAngularScale(scale))),
-    num_xi_bins_(grid->getNBinsTotal()),
+    num_xi_bins_(grid->getNBinsTotal()), cov_good_(false),
     num_sightline_pairs_(0), num_sightline_pairs_used_(0),
     num_pixels_(0), num_pixel_pairs_(0), num_pixel_pairs_used_(0) {
 };
@@ -71,6 +71,7 @@ void local::XiEstimator::run(int nthreads) {
             }
             // accumulate sample
             cov_accum.accumulate(xi, weight);
+            // cov_accum.accumulate(xi);
         }
         cov_matrix_ = cov_accum.getCovariance();
         bool is_pos_def(cov_matrix_->isPositiveDefinite());
@@ -79,9 +80,11 @@ void local::XiEstimator::run(int nthreads) {
             double detC = cov_matrix_->getLogDeterminant();
             std::cout << "log(|C|): " << boost::lexical_cast<std::string>(detC) << std::endl;
         }
+        cov_good_ = true;
     }
     catch(likely::RuntimeError const &e) {
-        throw RuntimeError(e.what());
+        std::cerr << e.what() << std::endl;
+        // throw RuntimeError(e.what());
     }
     std::cout << "Covariance estimation complete!" << std::endl;
     std::cout << std::endl;
@@ -178,11 +181,15 @@ unsigned long local::XiEstimator::accumulate_pixel_pairs(const local::Forest &pr
                     // check parallel separation
                     const float r_sq = primary_pixel_dist_sq + (other_pixel.distance - primary_pixel_projection_times_two)*other_pixel.distance;
                     const float r = std::sqrt(r_sq);
+                    // TODO: clean up lower limit check
+                    // if r is less than r_min then the unsigned cast will make pair_bin_index very large
+                    // and the if statement on the next line should catch it
                     pair_bin_index = static_cast<unsigned>((r - r_min)*one_over_dr);
                     if(pair_bin_index >= num_r_bins) continue;
                     // check transverse separation
                     // why is r == 0 sometimes? these cases also seem to have very close separations.
-                    const float mu = (r == 0 ? 0 : std::fabs(primary_pixel.distance-other_pixel.distance)/r);
+                    if (r == 0) continue;
+                    const float mu = std::fabs(primary_pixel.distance-other_pixel.distance)/r;
                     const unsigned mubin = static_cast<unsigned>((mu - rperp_min)*one_over_drperp);
                     if(mubin >= num_rperp_bins) continue;
                     pair_bin_index = mubin + pair_bin_index*num_rperp_bins;
@@ -208,7 +215,7 @@ unsigned long local::XiEstimator::accumulate_pixel_pairs(const local::Forest &pr
                     pair_bin_index = sep_bin_index + pair_bin_index*num_rperp_bins;
                 }
                 // check average pair distance
-                const float logz = 0.5*(primary_pixel.loglam + other_pixel.loglam) - local::logLyA;
+                const float logz = 0.5*(primary_pixel.loglam + other_pixel.loglam);
                 // const float z = std::pow(10, 0.5*(primary_pixel.loglam + other_pixel.loglam) - local::logLyA) - 1.0;
                 const unsigned zbin = static_cast<unsigned>((logz-z_min)*one_over_dz);
                 pair_bin_index = zbin + pair_bin_index*num_z_bins;
@@ -239,8 +246,8 @@ unsigned long local::XiEstimator::accumulate_pixel_pairs(const local::Forest &pr
 
 bool local::XiEstimator::xi_finalize_task(int xi_bin_index) {
     increment_progress();
-    for(const auto& skybin_xi_entry : skybin_xis_) {
-        xi_[xi_bin_index] += skybin_xi_entry.second[xi_bin_index];
+    for(const auto& skybin_xi : skybin_xis_) {
+        xi_[xi_bin_index] += skybin_xi.second[xi_bin_index];
     }
     xi_[xi_bin_index].finalize();
     return true;
@@ -266,26 +273,29 @@ void local::XiEstimator::save_results(std::string outfile) const {
             << boost::lexical_cast<std::string>(xi_[xi_bin_index].di) << ' '
             << boost::lexical_cast<std::string>(xi_[xi_bin_index].dj) << ' '
             << boost::lexical_cast<std::string>(xi_[xi_bin_index].wgt) << ' '
-            << boost::lexical_cast<std::string>(xi_[xi_bin_index].num_pairs)
+            << boost::lexical_cast<std::string>(xi_[xi_bin_index].num_pairs) << ' '
+            << boost::lexical_cast<std::string>(xi_[xi_bin_index].z)
             << std::endl;
     }
     details_file.close();
 
-    std::string covariance_filename(outfile + ".cov");
-    std::cout << "Saving covariance matrix to: " << covariance_filename << std::endl;
-    std::ofstream covariance_file(covariance_filename.c_str());
-    for(int col = 0; col < num_xi_bins_; ++col) {
-        for(int row = 0; row <= col; ++row) {
-            double value = cov_matrix_->getCovariance(row,col);
-            // print matrix elements with full precision
-            covariance_file << row << ' ' << col << ' '
-                << boost::lexical_cast<std::string>(value) << std::endl;
+    if(cov_good_) {
+        std::string covariance_filename(outfile + ".cov");
+        std::cout << "Saving covariance matrix to: " << covariance_filename << std::endl;
+        std::ofstream covariance_file(covariance_filename.c_str());
+        for(int col = 0; col < num_xi_bins_; ++col) {
+            for(int row = 0; row <= col; ++row) {
+                double value = cov_matrix_->getCovariance(row,col);
+                // print matrix elements with full precision
+                covariance_file << row << ' ' << col << ' '
+                    << boost::lexical_cast<std::string>(value) << std::endl;
+            }
         }
+        covariance_file.close();
     }
-    covariance_file.close();
 
-    std::string weight_filename(outfile + ".wgt");
-    std::cout << "Saving weights matrix to: " << weight_filename << std::endl;
+    std::string weight_filename(outfile + ".iwgt");
+    std::cout << "Saving inverse diagonal weight matrix to: " << weight_filename << std::endl;
     std::ofstream weight_file(weight_filename.c_str());
     for(int col = 0; col < num_xi_bins_; ++col) {
             double value = 1.0/xi_[col].wgt;
@@ -297,11 +307,19 @@ void local::XiEstimator::save_results(std::string outfile) const {
 };
 
 void local::XiEstimator::save_subsamples(std::string outfile_base) const {
-    for(const auto& skybin_xi_entry : skybin_xis_) {
-        std::string estimator_filename(outfile_base + "-" + boost::lexical_cast<std::string>(skybin_xi_entry.first) + ".data");
+    std::cout << "Saving subsamples correlation functions to: " << outfile_base << "-<id>.data" << std::endl;
+    for(const auto& skybin_xi : skybin_xis_) {
+        std::string estimator_filename(outfile_base + "-" + boost::lexical_cast<std::string>(skybin_xi.first) + ".data");
         std::ofstream estimator_file(estimator_filename.c_str());
         for(int xi_bin_index = 0; xi_bin_index < num_xi_bins_; ++xi_bin_index) {
-            estimator_file << xi_bin_index << ' ' << boost::lexical_cast<std::string>(skybin_xi_entry.second[xi_bin_index].didj) << std::endl;
+            double weight = skybin_xi.second[xi_bin_index].wgt;
+            double value = 0;
+            if(weight > 0) {
+                value = skybin_xi.second[xi_bin_index].didj/weight;
+            }
+            estimator_file << xi_bin_index
+                << ' ' << boost::lexical_cast<std::string>(value)
+                << ' ' << boost::lexical_cast<std::string>(weight) << std::endl;
         }
         estimator_file.close();
     }

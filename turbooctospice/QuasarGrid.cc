@@ -4,7 +4,7 @@
 
 namespace local = turbooctospice;
 
-local::QuasarGrid::QuasarGrid(likely::AbsBinningCPtr axis1, likely::AbsBinningCPtr axis2, 
+local::QuasarGrid::QuasarGrid(likely::AbsBinningCPtr axis1, likely::AbsBinningCPtr axis2,
 likely::AbsBinningCPtr axis3) : AbsTwoPointGrid(axis1, axis2, axis3) { }
 
 local::QuasarGrid::~QuasarGrid() { }

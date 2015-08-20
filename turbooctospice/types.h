@@ -77,9 +77,9 @@ namespace turbooctospice {
 
     /// Represents a correlation function bin
     struct XiBin {
-        double didj, di, dj, wgt, wi, wj;
+        double didj, di, dj, wgt, wi, wj, z;
         long num_pairs;
-        XiBin() : didj(0), di(0), dj(0), wgt(0), wi(0), wj(0), num_pairs(0) {};
+        XiBin() : didj(0), di(0), dj(0), wgt(0), wi(0), wj(0), z(0), num_pairs(0) {};
         void accumulate_pair(ForestPixel const &i, ForestPixel const &j) {
             float wdi(i.weight*i.value), wdj(j.weight*j.value);
             didj += wdi*wdj;
@@ -88,6 +88,7 @@ namespace turbooctospice {
             wgt += i.weight*j.weight;
             wi += i.weight;
             wj += j.weight;
+            z += 0.5*(i.loglam+j.loglam);
             ++num_pairs;
         }
         double getMeanProduct() {
@@ -100,6 +101,7 @@ namespace turbooctospice {
             (wgt > 0) ? didj /= wgt : didj = 0;
             (wi > 0) ? di /= wi : di = 0;
             (wj > 0) ? dj /= wj : dj = 0;
+            (num_pairs > 0) ? z /= num_pairs : z = 0;
         }
         XiBin& operator+=(const XiBin& rhs) {
             didj += rhs.didj;
@@ -108,6 +110,7 @@ namespace turbooctospice {
             wgt += rhs.wgt;
             wi += rhs.wi;
             wj += rhs.wj;
+            z += rhs.z;
             num_pairs += rhs.num_pairs;
             return *this;
         }

@@ -42,8 +42,9 @@ int main(int argc, char **argv) {
         //("axis2", po::value<std::string>(&axis2)->default_value("[5:175]*1"),
         ("axis2", po::value<std::string>(&axis2)->default_value("[0:1]*1"),
             "Axis-2 binning, r_perp (Mpc/h), mu (r_par/r), or dtheta (arcmin)")
-        ("axis3", po::value<std::string>(&axis3)->default_value("[0.46:.65]*1"),
-            "Axis-3 binning, log10(1+z)")
+        // ("axis3", po::value<std::string>(&axis3)->default_value("[0.46:.65]*1"),
+        ("axis3", po::value<std::string>(&axis3)->default_value("[3.556:3.735]*1"),
+            "Axis-3 binning, log10(lya*(1+z))")
         ("polar", "(r,mu,z) binning")
         ("cart", "(r_perp,r_par,z) binning")
         ("debug", "debug flag")
@@ -149,6 +150,13 @@ int main(int argc, char **argv) {
         for(auto &sightline : sightlines) {
             int npixels = sightline.pixels.size();
             num_pixels += npixels;
+            // std::cout << sightline.plate << ' ' << sightline.ra << ' ' << sightline.dec << std::endl;
+            if(sightline.pixels[0].distance == 0) {
+                for(auto &pixel : sightline.pixels){
+                    pixel.distance = cosmology->getLineOfSightComovingDistance(std::pow(10, pixel.loglam-tos::logLyA)-1);
+                }
+            }
+
             // add sightline to sky bins
             skybins->addItem(sightline, sightline.forest_id);
             // find minimum loglam
@@ -164,7 +172,7 @@ int main(int argc, char **argv) {
         }
 
         // sightline/pixel stats
-        std::cout << "Read " << num_pixels << " from " << num_sightlines << " lines of sight (LOS)" << std::endl;
+        std::cout << "Loaded " << num_pixels << " pixels from " << num_sightlines << " lines of sight (LOS)" << std::endl;
         if(verbose) {
             double avg_pixels_per_los(static_cast<double>(num_pixels)/num_sightlines);
             std::cout << "Average number of pixels per LOS: " << boost::lexical_cast<std::string>(avg_pixels_per_los) << std::endl;

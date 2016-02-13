@@ -2,10 +2,16 @@ import os
 
 Import('env')
 
-#healCppPath = ['/home/dmargala/source/Healpix_3.20/src/cxx/generic_gcc/include']
-#healLibPath = ['/home/dmargala/source/Healpix_3.20/src/cxx/generic_gcc/lib']
-healCppPath = ['/Users/daniel/source/Healpix_3.20/src/cxx/osx/include']
-healLibPath = ['/Users/daniel/source/Healpix_3.20/src/cxx/osx/lib']
+healpix_root = os.getenv('HEALPIX', None)
+healpix_target = os.getenv('HEALPIX_TARGET', None)
+healpix_path = os.path.join(healpix_root, 'src', 'cxx', healpix_target)
+healCppPath = [os.path.join(healpix_path,'include')]
+healLibPath = [os.path.join(healpix_path,'lib')]
+
+#healCppPath = ['/home/daniel/source/Healpix_3.30/src/cxx/generic_gcc/include']
+#healLibPath = ['/home/daniel/source/Healpix_3.30/src/cxx/generic_gcc/lib']
+#healCppPath = ['/Users/daniel/source/Healpix_3.20/src/cxx/osx/include']
+#healLibPath = ['/Users/daniel/source/Healpix_3.20/src/cxx/osx/lib']
 healLibs = ['healpix_cxx', 'cxxsupport']
 
 common = ['likely', 'cosmo', 'boost_program_options', 'boost_system', 'boost_thread', 'boost_coroutine']
@@ -32,7 +38,7 @@ bucketxi = env.Program('bucketxi', 'bucketxi.cc', LIBS=common)
 ### Requires HealPix library
 # healOptions = {'LIBS':healLibs, 'LIBPATH':healLibs, 'CPPPATH':healCppPath}
 
-h5Libs = ['hdf5','hdf5_cpp']
+h5Libs = ['hdf5','hdf5_cpp','boost_thread']
 #read_delta = env.Program('read_delta', 'read_delta.cc', LIBS=common+h5Libs)
 
 box2los = env.Program('box2los', 'box2los.cc', LIBS=common+h5Libs)

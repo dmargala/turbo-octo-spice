@@ -15,7 +15,7 @@ namespace local = turbooctospice;
 
 class local::ThreadPool::Implementation {
 public:
-	Implementation(int nthreads,bool verbose=false) : _verbose(verbose) {
+	Implementation(int nthreads, bool verbose=false) : _verbose(verbose) {
 		if(_verbose) std::cout << "Starting " << nthreads << " threads." << std::endl;
 		_work.reset(new boost::asio::io_service::work(_service));
 		for(int i = 0; i < nthreads; ++i) {

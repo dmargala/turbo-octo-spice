@@ -71,6 +71,7 @@ namespace turbooctospice {
             return {0.5*pi - dec, ra};
         }
         /// Print bin center of specified index
+        /// @param index HEALPix index
         void printBinCenter(const int index) const {
             auto p = map_.pix2ang(index);
             std::cout << 0.5*pi - p.theta << " " << p.phi;

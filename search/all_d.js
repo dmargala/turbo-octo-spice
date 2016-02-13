@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['theta',['theta',['../struct_angular_position.html#ad79f4c2b06b73206aea46d6f7ab6775f',1,'AngularPosition']]],
-  ['turbooctospice',['turbooctospice',['../namespaceturbooctospice.html',1,'']]],
-  ['turbooctospice_2eh',['turbooctospice.h',['../turbooctospice_8h.html',1,'']]],
-  ['types_2eh',['types.h',['../types_8h.html',1,'']]]
+  ['quasargrid',['QuasarGrid',['../classturbooctospice_1_1_quasar_grid.html',1,'turbooctospice']]],
+  ['quasargrid',['QuasarGrid',['../classturbooctospice_1_1_quasar_grid.html#a9877f3e49ebf9194d0e89262e4f2b340',1,'turbooctospice::QuasarGrid']]],
+  ['quasargrid_2ecc',['QuasarGrid.cc',['../_quasar_grid_8cc.html',1,'']]],
+  ['quasargrid_2eh',['QuasarGrid.h',['../_quasar_grid_8h.html',1,'']]]
 ];

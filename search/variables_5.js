@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['sin_5fdec',['sin_dec',['../structturbooctospice_1_1_forest.html#a9d7ed13acd3167c5979de1ebf6d39b74',1,'turbooctospice::Forest']]],
-  ['sin_5fra',['sin_ra',['../structturbooctospice_1_1_forest.html#a43446173728488328354ceb3da08f91c',1,'turbooctospice::Forest']]],
-  ['sph',['sph',['../struct_angular_position.html#a4dd5daa5733dc108080924f0d8434f9e',1,'AngularPosition']]],
-  ['sth',['sth',['../struct_angular_position.html#a001b42b4d7765b8cc05e6291c434fb59',1,'AngularPosition']]]
+  ['num_5fentries_5f',['num_entries_',['../classturbooctospice_1_1_sky_bins.html#ab9bb263a97f9b719a2ed6c179b6fbca4',1,'turbooctospice::SkyBins']]],
+  ['num_5fpairs',['num_pairs',['../structturbooctospice_1_1_xi_bin.html#a93d3e05c9bebacead0a96f267aac1081',1,'turbooctospice::XiBin']]]
 ];

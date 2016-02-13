@@ -1,3 +1,6 @@
 <map id="turbooctospice/HealpixBins.h" name="turbooctospice/HealpixBins.h">
-<area shape="rect" id="node3" href="$constants_8h.html" title="constants.h" alt="" coords="139,80,229,107"/>
+<area shape="rect" id="node3" href="$constants_8h.html" title="constants.h" alt="" coords="55,155,144,181"/>
+<area shape="rect" id="node5" href="$types_8h.html" title="types.h" alt="" coords="169,155,233,181"/>
+<area shape="rect" id="node11" href="$_sky_bins_8h.html" title="SkyBins.h" alt="" coords="238,81,319,106"/>
+<area shape="rect" id="node7" href="$_runtime_error_8h.html" title="RuntimeError.h" alt="" coords="295,230,405,255"/>
 </map>

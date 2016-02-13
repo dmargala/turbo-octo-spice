@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['quasargrid',['QuasarGrid',['../classturbooctospice_1_1_quasar_grid.html',1,'turbooctospice']]],
-  ['quasargrid',['QuasarGrid',['../classturbooctospice_1_1_quasar_grid.html#a9877f3e49ebf9194d0e89262e4f2b340',1,'turbooctospice::QuasarGrid']]],
-  ['quasargrid_2ecc',['QuasarGrid.cc',['../_quasar_grid_8cc.html',1,'']]],
-  ['quasargrid_2eh',['QuasarGrid.h',['../_quasar_grid_8h.html',1,'']]]
+  ['num_5fentries_5f',['num_entries_',['../classturbooctospice_1_1_sky_bins.html#ab9bb263a97f9b719a2ed6c179b6fbca4',1,'turbooctospice::SkyBins']]],
+  ['num_5fpairs',['num_pairs',['../structturbooctospice_1_1_xi_bin.html#a93d3e05c9bebacead0a96f267aac1081',1,'turbooctospice::XiBin']]]
 ];

@@ -1,10 +1,14 @@
 <map id="turbooctospice/turbooctospice.h" name="turbooctospice/turbooctospice.h">
-<area shape="rect" id="node2" href="$types_8h.html" title="types.h" alt="" coords="426,229,491,256"/>
-<area shape="rect" id="node6" href="$constants_8h.html" title="constants.h" alt="" coords="183,229,274,256"/>
-<area shape="rect" id="node7" href="$_mock_spectrum_8h.html" title="MockSpectrum.h" alt="" coords="496,155,619,181"/>
-<area shape="rect" id="node9" href="$_h_d_f5_delta_8h.html" title="HDF5Delta.h" alt="" coords="643,155,742,181"/>
-<area shape="rect" id="node11" href="$_abs_two_point_grid_8h.html" title="AbsTwoPointGrid.h" alt="" coords="268,155,404,181"/>
-<area shape="rect" id="node13" href="$_cartesian_grid_8h.html" title="CartesianGrid.h" alt="" coords="32,80,147,107"/>
-<area shape="rect" id="node14" href="$_polar_grid_8h.html" title="PolarGrid.h" alt="" coords="172,80,260,107"/>
-<area shape="rect" id="node15" href="$_quasar_grid_8h.html" title="QuasarGrid.h" alt="" coords="285,80,387,107"/>
+<area shape="rect" id="node2" href="$types_8h.html" title="types.h" alt="" coords="521,230,585,255"/>
+<area shape="rect" id="node4" href="$_runtime_error_8h.html" title="RuntimeError.h" alt="" coords="498,305,608,330"/>
+<area shape="rect" id="node9" href="$constants_8h.html" title="constants.h" alt="" coords="853,230,941,255"/>
+<area shape="rect" id="node10" href="$_thread_pool_8h.html" title="ThreadPool.h" alt="" coords="257,81,359,106"/>
+<area shape="rect" id="node13" href="$_mock_spectrum_8h.html" title="MockSpectrum.h" alt="" coords="126,155,247,181"/>
+<area shape="rect" id="node14" href="$_h_d_f5_delta_8h.html" title="HDF5Delta.h" alt="" coords="4,155,101,181"/>
+<area shape="rect" id="node15" href="$_abs_two_point_grid_8h.html" title="AbsTwoPointGrid.h" alt="" coords="591,155,725,181"/>
+<area shape="rect" id="node17" href="$_cartesian_grid_8h.html" title="CartesianGrid.h" alt="" coords="609,81,724,106"/>
+<area shape="rect" id="node18" href="$_polar_grid_8h.html" title="PolarGrid.h" alt="" coords="748,81,836,106"/>
+<area shape="rect" id="node19" href="$_quasar_grid_8h.html" title="QuasarGrid.h" alt="" coords="433,81,535,106"/>
+<area shape="rect" id="node20" href="$_sky_bins_8h.html" title="SkyBins.h" alt="" coords="1076,155,1156,181"/>
+<area shape="rect" id="node23" href="$_plate_bins_8h.html" title="PlateBins.h" alt="" coords="910,81,999,106"/>
 </map>

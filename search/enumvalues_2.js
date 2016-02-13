@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['transverse',['TRANSVERSE',['../classturbooctospice_1_1_abs_two_point_grid.html#a2d22b380e00ac223f4cba0a8768864b7aff87d2cc79095f2417bcbb9423e5e869',1,'turbooctospice::AbsTwoPointGrid']]]
+  ['polarcoordinates',['PolarCoordinates',['../classturbooctospice_1_1_xi_estimator.html#a0c02595545d362e60054d99ea90b5e8ea5770d2f199a5504b1d70afaa7bc3a59c',1,'turbooctospice::XiEstimator']]]
 ];

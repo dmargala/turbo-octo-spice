@@ -1,3 +1,6 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structturbooctospice_1_1_forest.html" title="Represents a LyA forest sight line. " alt="" coords="6,5,159,32"/>
+<area shape="rect" id="node1" href="$classturbooctospice_1_1_abs_two_point_grid.html" title="Represents a grid for binning two point functions for LyA BAO analyses. " alt="" coords="5,54,224,79"/>
+<area shape="rect" id="node2" href="$classturbooctospice_1_1_cartesian_grid.html" title="Represents a Cartesian grid for binning two point functions for LyA BAO analyses. ..." alt="" coords="272,5,470,30"/>
+<area shape="rect" id="node3" href="$classturbooctospice_1_1_polar_grid.html" title="Represents a Polar grid for binning two point functions for LyA BAO analyses. " alt="" coords="285,54,457,79"/>
+<area shape="rect" id="node4" href="$classturbooctospice_1_1_quasar_grid.html" title="Represents a Quasar grid for binning two point functions for LyA BAO analyses. " alt="" coords="278,103,463,129"/>
 </map>

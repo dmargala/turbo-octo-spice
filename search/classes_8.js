@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['quasargrid',['QuasarGrid',['../classturbooctospice_1_1_quasar_grid.html',1,'turbooctospice']]],
-  ['quasarspectrum',['QuasarSpectrum',['../struct_quasar_spectrum.html',1,'']]]
+  ['runtimeerror',['RuntimeError',['../classturbooctospice_1_1_runtime_error.html',1,'turbooctospice']]]
 ];

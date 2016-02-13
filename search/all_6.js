@@ -13,5 +13,5 @@ var searchData=
   ['healpixbinsi',['HealpixBinsI',['../namespaceturbooctospice.html#ac96bcfc8a9dea36364faf59ca506c926',1,'turbooctospice']]],
   ['healpixmap',['HealpixMap',['../classturbooctospice_1_1_healpix_bins.html#ac86fdc7c5299333d681ec051c72a332e',1,'turbooctospice::HealpixBins']]],
   ['healsearch_2ecc',['healsearch.cc',['../healsearch_8cc.html',1,'']]],
-  ['healxi',['healxi',['../h5healxi_8cc.html#aaddc16668e51a3c7421c07136d3e1227',1,'healxi(tos::HealpixBinsI const &amp;healbins, std::vector&lt; tos::Forest &gt; const &amp;sight_lines, tos::AbsTwoPointGridPtr const &amp;grid, double max_ang, std::vector&lt; tos::XiBin &gt; &amp;xi):&#160;h5healxi.cc'],['../healsearch_8cc.html#af5a4bbfa274315d7b432eee356d2d27d',1,'healxi(tos::HealpixBinsI const &amp;healbins, std::vector&lt; AngularPosition &gt; const &amp;forests, double maxAng):&#160;healsearch.cc']]]
+  ['healxi',['healxi',['../healsearch_8cc.html#af5a4bbfa274315d7b432eee356d2d27d',1,'healsearch.cc']]]
 ];

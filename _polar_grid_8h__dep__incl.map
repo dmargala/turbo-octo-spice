@@ -1,7 +1,8 @@
 <map id="turbooctospice/PolarGrid.h" name="turbooctospice/PolarGrid.h">
-<area shape="rect" id="node2" href="$_polar_grid_8cc.html" title="turbooctospice/PolarGrid.cc" alt="" coords="5,80,189,107"/>
-<area shape="rect" id="node3" href="$turbooctospice_8h.html" title="turbooctospice/turbooctospice.h" alt="" coords="215,80,425,107"/>
-<area shape="rect" id="node4" href="$h5healxi_8cc.html" title="src/h5healxi.cc" alt="" coords="122,155,232,181"/>
-<area shape="rect" id="node5" href="$healsearch_8cc.html" title="src/healsearch.cc" alt="" coords="257,155,383,181"/>
-<area shape="rect" id="node6" href="$mockdata_8cc.html" title="src/mockdata.cc" alt="" coords="407,155,525,181"/>
+<area shape="rect" id="node2" href="$_polar_grid_8cc.html" title="turbooctospice/PolarGrid.cc" alt="" coords="5,81,189,106"/>
+<area shape="rect" id="node3" href="$turbooctospice_8h.html" title="turbooctospice/turbooctospice.h" alt="" coords="214,81,423,106"/>
+<area shape="rect" id="node4" href="$h5healxi_8cc.html" title="src/h5healxi.cc" alt="" coords="49,155,159,181"/>
+<area shape="rect" id="node5" href="$healsearch_8cc.html" title="src/healsearch.cc" alt="" coords="183,155,307,181"/>
+<area shape="rect" id="node6" href="$mockdata_8cc.html" title="src/mockdata.cc" alt="" coords="332,155,449,181"/>
+<area shape="rect" id="node7" href="$tpool_8cc.html" title="src/tpool.cc" alt="" coords="473,155,561,181"/>
 </map>

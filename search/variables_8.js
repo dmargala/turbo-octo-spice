@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['w',['w',['../struct_field_sample.html#a4dafb038db94173eb32123ddf3fed56c',1,'FieldSample']]],
-  ['weight',['weight',['../structturbooctospice_1_1_forest_pixel.html#ab075b3e01e9e155fe649920f14a04041',1,'turbooctospice::ForestPixel']]],
-  ['wgt',['wgt',['../structturbooctospice_1_1_xi_bin.html#a988f61b2052a49560afc44ba52fcce39',1,'turbooctospice::XiBin']]]
+  ['ra',['ra',['../structturbooctospice_1_1_sky_object.html#a25db5189e557775f8dc6d73461babf29',1,'turbooctospice::SkyObject']]],
+  ['rad2arcmin',['rad2arcmin',['../namespaceturbooctospice.html#a27e2148d7f77015974a1739a8e842e32',1,'turbooctospice']]],
+  ['rad2deg',['rad2deg',['../box2los_8cc.html#adf40ec3dbb8479a78c3d408622405a79',1,'rad2deg():&#160;box2los.cc'],['../box2los__text_8cc.html#adf40ec3dbb8479a78c3d408622405a79',1,'rad2deg():&#160;box2los_text.cc']]]
 ];

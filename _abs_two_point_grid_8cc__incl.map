@@ -1,5 +1,6 @@
 <map id="turbooctospice/AbsTwoPointGrid.cc" name="turbooctospice/AbsTwoPointGrid.cc">
-<area shape="rect" id="node2" href="$_abs_two_point_grid_8h.html" title="AbsTwoPointGrid.h" alt="" coords="125,96,261,123"/>
-<area shape="rect" id="node4" href="$types_8h.html" title="types.h" alt="" coords="161,171,225,197"/>
-<area shape="rect" id="node8" href="$constants_8h.html" title="constants.h" alt="" coords="251,171,341,197"/>
+<area shape="rect" id="node2" href="$_abs_two_point_grid_8h.html" title="AbsTwoPointGrid.h" alt="" coords="244,94,379,119"/>
+<area shape="rect" id="node4" href="$types_8h.html" title="types.h" alt="" coords="280,169,344,194"/>
+<area shape="rect" id="node11" href="$constants_8h.html" title="constants.h" alt="" coords="369,169,457,194"/>
+<area shape="rect" id="node6" href="$_runtime_error_8h.html" title="RuntimeError.h" alt="" coords="168,243,279,269"/>
 </map>

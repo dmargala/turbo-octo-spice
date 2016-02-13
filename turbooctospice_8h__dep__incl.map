@@ -1,5 +1,6 @@
 <map id="turbooctospice/turbooctospice.h" name="turbooctospice/turbooctospice.h">
-<area shape="rect" id="node2" href="$h5healxi_8cc.html" title="src/h5healxi.cc" alt="" coords="5,80,115,107"/>
-<area shape="rect" id="node3" href="$healsearch_8cc.html" title="src/healsearch.cc" alt="" coords="140,80,265,107"/>
-<area shape="rect" id="node4" href="$mockdata_8cc.html" title="src/mockdata.cc" alt="" coords="290,80,408,107"/>
+<area shape="rect" id="node2" href="$h5healxi_8cc.html" title="src/h5healxi.cc" alt="" coords="5,81,115,106"/>
+<area shape="rect" id="node3" href="$healsearch_8cc.html" title="src/healsearch.cc" alt="" coords="139,81,263,106"/>
+<area shape="rect" id="node4" href="$mockdata_8cc.html" title="src/mockdata.cc" alt="" coords="288,81,405,106"/>
+<area shape="rect" id="node5" href="$tpool_8cc.html" title="src/tpool.cc" alt="" coords="429,81,517,106"/>
 </map>

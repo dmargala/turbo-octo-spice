@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['redshift',['REDSHIFT',['../classturbooctospice_1_1_abs_two_point_grid.html#a2d22b380e00ac223f4cba0a8768864b7a478140a187d7ef0731ac3afe89fae47e',1,'turbooctospice::AbsTwoPointGrid']]]
+  ['observingcoordinates',['ObservingCoordinates',['../classturbooctospice_1_1_xi_estimator.html#a0c02595545d362e60054d99ea90b5e8ea7ff8dd3e09c9b018b5398a6729096125',1,'turbooctospice::XiEstimator']]]
 ];

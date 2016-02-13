@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['quasargrid',['QuasarGrid',['../classturbooctospice_1_1_quasar_grid.html#a9877f3e49ebf9194d0e89262e4f2b340',1,'turbooctospice::QuasarGrid']]]
+  ['operator_2b_3d',['operator+=',['../structturbooctospice_1_1_xi_bin.html#aa6234f7e96b53be6d0163529074efb23',1,'turbooctospice::XiBin']]]
 ];

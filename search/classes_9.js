@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['searchpolicy',['SearchPolicy',['../class_search_policy.html',1,'']]],
-  ['simplegenerator',['SimpleGenerator',['../class_simple_generator.html',1,'']]]
+  ['skybins',['SkyBins',['../classturbooctospice_1_1_sky_bins.html',1,'turbooctospice']]],
+  ['skyobject',['SkyObject',['../structturbooctospice_1_1_sky_object.html',1,'turbooctospice']]]
 ];

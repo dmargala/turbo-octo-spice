@@ -1,3 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structturbooctospice_1_1_forest_pixel.html" title="Represents a LyA forest pixel. " alt="" coords="6,5,189,32"/>
+<area shape="rect" id="node1" href="$structturbooctospice_1_1_sky_object.html" title="A simple representation of an object in the sky. " alt="" coords="5,5,181,30"/>
+<area shape="rect" id="node2" href="$structturbooctospice_1_1_forest.html" title="Represents a LyA forest sight line. " alt="" coords="230,5,383,30"/>
 </map>

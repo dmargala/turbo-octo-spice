@@ -1,13 +1,10 @@
 <map id="main" name="main">
-<area shape="rect" id="node2" href="$classturbooctospice_1_1_h_d_f5_delta.html#a53a6b49974db8c410e49f532fdb7d548" title="turbooctospice::HDF5Delta\l::loadForests" alt="" coords="106,46,289,87"/>
-<area shape="rect" id="node5" href="$classturbooctospice_1_1_healpix_bins.html#a2e31bd9affc6a266d13a33b9832f11a9" title="turbooctospice::HealpixBins\l::addItem" alt="" coords="104,111,291,153"/>
-<area shape="rect" id="node8" href="$classturbooctospice_1_1_healpix_bins.html#a6cf1ff94c674ec66cc7fe2a7591c5e22" title="Return the number of bins that contain at least one item. " alt="" coords="104,177,291,218"/>
-<area shape="rect" id="node9" href="$h5healxi_8cc.html#aaddc16668e51a3c7421c07136d3e1227" title="healxi" alt="" coords="169,245,226,272"/>
-<area shape="rect" id="node3" href="$_h_d_f5_delta_8cc.html#a06cc94c4b797196fe3befaee0c532707" title="readAttribute" alt="" coords="384,5,483,32"/>
-<area shape="rect" id="node4" href="$_h_d_f5_delta_8cc.html#af4522629973ef16c6c9b5a742e050301" title="readDataSet" alt="" coords="385,56,482,83"/>
-<area shape="rect" id="node6" href="$classturbooctospice_1_1_healpix_bins.html#a59b57993c0293e10ffd24928f627eb98" title="turbooctospice::HealpixBins\l::ang2pix" alt="" coords="340,109,527,150"/>
-<area shape="rect" id="node7" href="$classturbooctospice_1_1_healpix_bins.html#ac17a15614914b4dc3e0e2cb8a742a1c9" title="turbooctospice::HealpixBins\l::radec2pnt" alt="" coords="576,142,763,183"/>
-<area shape="rect" id="node10" href="$classturbooctospice_1_1_healpix_bins.html#a4de831fed72601100348845b2e1f06a8" title="turbooctospice::HealpixBins\l::getBinIndicesWithinRadius" alt="" coords="339,174,527,215"/>
-<area shape="rect" id="node11" href="$classturbooctospice_1_1_healpix_bins.html#a9ade3c79cf11c09dc0af104da03b53a6" title="turbooctospice::HealpixBins\l::checkBinExists" alt="" coords="340,239,527,281"/>
-<area shape="rect" id="node12" href="$classturbooctospice_1_1_healpix_bins.html#a25abb8b763ccc146af9c4c619cd7a1f1" title="turbooctospice::HealpixBins\l::getBinContents" alt="" coords="340,305,527,346"/>
+<area shape="rect" id="node2" href="$classturbooctospice_1_1_h_d_f5_delta.html#a62ced11ae4b0646cd84735734e140f10" title="turbooctospice::HDF5Delta\l::loadForests" alt="" coords="119,45,300,83"/>
+<area shape="rect" id="node5" href="$classturbooctospice_1_1_xi_estimator.html#a434ac8cef53f2fe6ab6962b7a9f2ec32" title="turbooctospice::XiEstimator::run" alt="" coords="104,107,314,133"/>
+<area shape="rect" id="node8" href="$classturbooctospice_1_1_xi_estimator.html#a0e8cea0e7ea3d3bde0b11cce6d576c21" title="turbooctospice::XiEstimator\l::save_results" alt="" coords="118,157,301,195"/>
+<area shape="rect" id="node9" href="$classturbooctospice_1_1_xi_estimator.html#a65e6b4c905d103a0d3d438b493fd2e94" title="turbooctospice::XiEstimator\l::save_subsamples" alt="" coords="118,219,301,258"/>
+<area shape="rect" id="node3" href="$_h_d_f5_delta_8cc.html#a06cc94c4b797196fe3befaee0c532707" title="readAttribute" alt="" coords="419,5,517,30"/>
+<area shape="rect" id="node4" href="$_h_d_f5_delta_8cc.html#af4522629973ef16c6c9b5a742e050301" title="readDataSet" alt="" coords="420,54,516,79"/>
+<area shape="rect" id="node6" href="$classturbooctospice_1_1_thread_pool.html#ae5a3c96eee65aa04bbdbf8f36cb86164" title="turbooctospice::ThreadPool::run" alt="" coords="362,106,574,131"/>
+<area shape="rect" id="node7" href="$classturbooctospice_1_1_xi_estimator.html#abee11ade8646276569727f5d9700ba07" title="Print summary of pixel and pair statistics. " alt="" coords="376,155,560,194"/>
 </map>

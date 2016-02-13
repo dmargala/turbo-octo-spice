@@ -1,7 +1,20 @@
 var searchData=
 [
-  ['sin_5fdec',['sin_dec',['../structturbooctospice_1_1_forest.html#a9d7ed13acd3167c5979de1ebf6d39b74',1,'turbooctospice::Forest']]],
-  ['sin_5fra',['sin_ra',['../structturbooctospice_1_1_forest.html#a43446173728488328354ceb3da08f91c',1,'turbooctospice::Forest']]],
-  ['sph',['sph',['../struct_angular_position.html#a4dd5daa5733dc108080924f0d8434f9e',1,'AngularPosition']]],
-  ['sth',['sth',['../struct_angular_position.html#a001b42b4d7765b8cc05e6291c434fb59',1,'AngularPosition']]]
+  ['phi',['phi',['../struct_angular_position.html#ac605e1fa5c6f560fdba8412be4b76805',1,'AngularPosition']]],
+  ['pi',['PI',['../healsearch_8cc.html#a952eac791b596a61bba0a133a3bb439f',1,'PI():&#160;healsearch.cc'],['../_mock_spectrum_8cc.html#a952eac791b596a61bba0a133a3bb439f',1,'PI():&#160;MockSpectrum.cc'],['../namespaceturbooctospice.html#a099622cb1dd08103ab7a3895509be181',1,'turbooctospice::pi()']]],
+  ['piovertwo',['piovertwo',['../box2los_8cc.html#ab07c565ac65dc25bbe0dc441f08f80e2',1,'piovertwo():&#160;box2los.cc'],['../box2los__text_8cc.html#ab07c565ac65dc25bbe0dc441f08f80e2',1,'piovertwo():&#160;box2los_text.cc']]],
+  ['pixels',['pixels',['../structturbooctospice_1_1_forest.html#aafc1354fae7b781aab2b3dc2ea3e2bec',1,'turbooctospice::Forest']]],
+  ['plate',['plate',['../structturbooctospice_1_1_forest.html#a4e82f76ed3901425f69a51da4cff2f4f',1,'turbooctospice::Forest']]],
+  ['platebins',['PlateBins',['../classturbooctospice_1_1_plate_bins.html#a95960a461595d929fad82555dc912e89',1,'turbooctospice::PlateBins']]],
+  ['platebins',['PlateBins',['../classturbooctospice_1_1_plate_bins.html',1,'turbooctospice']]],
+  ['platebins_2eh',['PlateBins.h',['../_plate_bins_8h.html',1,'']]],
+  ['platebinsi',['PlateBinsI',['../namespaceturbooctospice.html#ad978707dc2e38c2272ec0e2ac0391ed5',1,'turbooctospice']]],
+  ['platelist',['PlateList',['../classturbooctospice_1_1_plate_bins.html#ae2cd214a7f2f18f5813eda47b65e2086',1,'turbooctospice::PlateBins']]],
+  ['polarcoordinates',['PolarCoordinates',['../classturbooctospice_1_1_xi_estimator.html#a0c02595545d362e60054d99ea90b5e8ea5770d2f199a5504b1d70afaa7bc3a59c',1,'turbooctospice::XiEstimator']]],
+  ['polargrid',['PolarGrid',['../classturbooctospice_1_1_polar_grid.html',1,'turbooctospice']]],
+  ['polargrid',['PolarGrid',['../classturbooctospice_1_1_polar_grid.html#a693bfe81bb333df99282ac3c0770f662',1,'turbooctospice::PolarGrid']]],
+  ['polargrid_2ecc',['PolarGrid.cc',['../_polar_grid_8cc.html',1,'']]],
+  ['polargrid_2eh',['PolarGrid.h',['../_polar_grid_8h.html',1,'']]],
+  ['print_5fstats',['print_stats',['../classturbooctospice_1_1_xi_estimator.html#abee11ade8646276569727f5d9700ba07',1,'turbooctospice::XiEstimator']]],
+  ['printbincenter',['printBinCenter',['../classturbooctospice_1_1_healpix_bins.html#ae2a2232cabd2fabcb867fcf204268f34',1,'turbooctospice::HealpixBins::printBinCenter()'],['../classturbooctospice_1_1_plate_bins.html#a2fffd4d835190f1dc2f71605b82fe960',1,'turbooctospice::PlateBins::printBinCenter()'],['../classturbooctospice_1_1_sky_bins.html#a1a5ed180acaea2649360dd7f25d46890',1,'turbooctospice::SkyBins::printBinCenter()']]]
 ];

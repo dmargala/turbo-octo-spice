@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['polargrid',['PolarGrid',['../classturbooctospice_1_1_polar_grid.html',1,'turbooctospice']]]
+  ['mockspectrum',['MockSpectrum',['../classturbooctospice_1_1_mock_spectrum.html',1,'turbooctospice']]]
 ];

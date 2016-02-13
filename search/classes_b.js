@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['triangle',['Triangle',['../classturbooctospice_1_1_triangle.html',1,'turbooctospice']]],
-  ['trianglemesh',['TriangleMesh',['../classturbooctospice_1_1_triangle_mesh.html',1,'turbooctospice']]]
+  ['xibin',['XiBin',['../structturbooctospice_1_1_xi_bin.html',1,'turbooctospice']]],
+  ['xiestimator',['XiEstimator',['../classturbooctospice_1_1_xi_estimator.html',1,'turbooctospice']]]
 ];

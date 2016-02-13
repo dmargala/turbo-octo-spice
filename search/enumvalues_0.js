@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['los',['LOS',['../classturbooctospice_1_1_abs_two_point_grid.html#a2d22b380e00ac223f4cba0a8768864b7ab74a0d6dc2d8e24d7fd35d6694a4a469',1,'turbooctospice::AbsTwoPointGrid']]]
+  ['cartesiancoordinates',['CartesianCoordinates',['../classturbooctospice_1_1_xi_estimator.html#a0c02595545d362e60054d99ea90b5e8ea2cb54e82f9c9d87ca40cc0b75a3c417b',1,'turbooctospice::XiEstimator']]]
 ];

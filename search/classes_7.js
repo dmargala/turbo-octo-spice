@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['xibin',['XiBin',['../structturbooctospice_1_1_xi_bin.html',1,'turbooctospice']]]
+  ['quasargrid',['QuasarGrid',['../classturbooctospice_1_1_quasar_grid.html',1,'turbooctospice']]]
 ];

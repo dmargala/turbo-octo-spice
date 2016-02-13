@@ -1,6 +1,8 @@
 var searchData=
 [
-  ['bins',['Bins',['../classturbooctospice_1_1_healpix_bins.html#abf2b7926a34294cd6ac6f6a27dbfba2a',1,'turbooctospice::HealpixBins']]],
+  ['binningcoordinatetype',['BinningCoordinateType',['../classturbooctospice_1_1_xi_estimator.html#a0c02595545d362e60054d99ea90b5e8e',1,'turbooctospice::XiEstimator']]],
+  ['bins',['Bins',['../classturbooctospice_1_1_sky_bins.html#af6f51f962a8041c3a6720400dd9b8f49',1,'turbooctospice::SkyBins']]],
+  ['bins_5f',['bins_',['../classturbooctospice_1_1_sky_bins.html#a85831434ca7e3e5a69b30b2a3236948c',1,'turbooctospice::SkyBins']]],
   ['box2los_2ecc',['box2los.cc',['../box2los_8cc.html',1,'']]],
   ['box2los_5ftext_2ecc',['box2los_text.cc',['../box2los__text_8cc.html',1,'']]],
   ['brute_2eh',['brute.h',['../brute_8h.html',1,'']]],

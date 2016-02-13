@@ -37,12 +37,12 @@ template<typename T> void readAttribute(H5::Group& grp, const std::string& name,
 
 local::HDF5Delta::HDF5Delta(std::string filename) : _filename(filename) {};
 
-std::vector<local::Forest> local::HDF5Delta::loadForests() {
+std::vector<local::Forest> local::HDF5Delta::loadForests(std::string groupname) {
     // Open delta field file
     H5::Group grp;
     try {
         H5::H5File file(_filename, H5F_ACC_RDONLY);
-        grp = file.openGroup("lines_of_sight");
+        grp = file.openGroup(groupname);
     }
     catch(H5::FileIException const &e){
         throw local::RuntimeError("HDF5Delta: Could not open the specified file.");

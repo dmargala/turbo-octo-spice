@@ -15,11 +15,11 @@ namespace turbooctospice {
         /// Creates a HDF5 delta field file object
         /// @param filename The name of the file
         HDF5Delta(std::string filename);
-        /// Loads forest sightlines from file
-        /// @param keep_ngc specifies whether or not to include sight lines from the northern galactic cap
-        /// @param keep_sgc specifies whether or not to include sight lines from the southern galactic cap
-        std::vector<Forest> loadForests();
-        // std::vector<Forest> loadForests(int ncombine, float forestlo, float foresthi, float speclo, bool debug=false);
+        /// Loads forest sightlines from file. 
+        /// Reads 'ra', 'dec', 'z', and 'plate' attributes from each sightline.
+        /// Reads 'delta', 'weight', 'loglam', and 'r_comov' dataset from each sightline.
+        /// @param groupname The name of the group containing forest sightlines
+        std::vector<Forest> loadForests(std::string groupname);
     private:
         std::string _filename;
     }; // HDF5Delta

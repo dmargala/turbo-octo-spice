@@ -124,7 +124,7 @@ int main(int argc, char **argv) {
         if (verbose) {
             std::cout << "Loading forest delta fields from " << infile << std::endl;
         }
-        std::vector<tos::Forest> sightlines(file.loadForests());
+        std::vector<tos::Forest> sightlines(file.loadForests("lines_of_sight"));
         // trim sample, if requested
         if(num_sightlines > 0 && num_sightlines < sightlines.size()){
             std::vector<tos::Forest>::const_iterator first = sightlines.begin();
@@ -151,11 +151,11 @@ int main(int argc, char **argv) {
             int npixels = sightline.pixels.size();
             num_pixels += npixels;
             // std::cout << sightline.plate << ' ' << sightline.ra << ' ' << sightline.dec << std::endl;
-            if(sightline.pixels[0].distance == 0) {
-                for(auto &pixel : sightline.pixels){
-                    pixel.distance = cosmology->getLineOfSightComovingDistance(std::pow(10, pixel.loglam-tos::logLyA)-1);
-                }
+            // if(sightline.pixels[0].distance == 0) {
+            for(auto &pixel : sightline.pixels){
+                pixel.distance = cosmology->getLineOfSightComovingDistance(std::pow(10, pixel.loglam-tos::logLyA)-1);
             }
+            // }
 
             // add sightline to sky bins
             skybins->addItem(sightline, sightline.forest_id);

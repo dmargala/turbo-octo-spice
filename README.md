@@ -16,13 +16,14 @@ The plot below shows a comparison for generating and analyzing a gaussian random
 Dependencies
 ------------
 
- * libhdf5
- * cfitso
- * ccfits
- * healpix
- * boost
+ * boost (from source)
  * likely
-  * gsl
-  * blas
+  * gsl (from source)
+  * Minuit2 (from source)
  * cosmo
-  * fftw
+  * fftw (from source)
+ * libhdf5 (`sudo apt-get install libhdf5-dev`)
+ * cfitso 
+ * ccfits (`sudo apt-get install libccfits-dev`)
+ * healpix (from source, generic-gcc)
+

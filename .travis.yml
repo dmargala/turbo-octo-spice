@@ -18,7 +18,9 @@ install:
 
 before_script:
   - sudo apt-get install libhdf5-serial-dev libccfits-dev
+  - sudo apt-get install libfftw3-dev libgsl0-dev
   - sudo apt-get install libboost-all-dev
+  - ./install-Minuit2.sh
 
 # command to run tests, e.g. python setup.py test
 script: scons

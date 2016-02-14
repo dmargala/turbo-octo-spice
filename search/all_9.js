@@ -7,5 +7,6 @@ var searchData=
   ['mockspectrum',['MockSpectrum',['../classturbooctospice_1_1_mock_spectrum.html',1,'turbooctospice']]],
   ['mockspectrum',['MockSpectrum',['../classturbooctospice_1_1_mock_spectrum.html#a5f4067968c8332e0c3ee12eed2553e8e',1,'turbooctospice::MockSpectrum']]],
   ['mockspectrum_2ecc',['MockSpectrum.cc',['../_mock_spectrum_8cc.html',1,'']]],
-  ['mockspectrum_2eh',['MockSpectrum.h',['../_mock_spectrum_8h.html',1,'']]]
+  ['mockspectrum_2eh',['MockSpectrum.h',['../_mock_spectrum_8h.html',1,'']]],
+  ['mu',['Mu',['../classturbooctospice_1_1_polar_grid.html#aa763bf7233bc4bf1e990ea2a24c5fcada59de4917e6ad373bbf8372b03b7ac3ce',1,'turbooctospice::PolarGrid']]]
 ];

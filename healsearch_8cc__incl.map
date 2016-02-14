@@ -1,0 +1,15 @@
+<map id="src/healsearch.cc" name="src/healsearch.cc">
+<area shape="rect" id="node8" href="$turbooctospice_8h.html" title="turbooctospice.h" alt="" coords="810,81,928,106"/>
+<area shape="rect" id="node9" href="$types_8h.html" title="types.h" alt="" coords="948,305,1012,330"/>
+<area shape="rect" id="node11" href="$_runtime_error_8h.html" title="RuntimeError.h" alt="" coords="1032,379,1143,405"/>
+<area shape="rect" id="node14" href="$constants_8h.html" title="constants.h" alt="" coords="1037,305,1125,330"/>
+<area shape="rect" id="node15" href="$_thread_pool_8h.html" title="ThreadPool.h" alt="" coords="443,155,544,181"/>
+<area shape="rect" id="node18" href="$_mock_spectrum_8h.html" title="MockSpectrum.h" alt="" coords="294,230,415,255"/>
+<area shape="rect" id="node19" href="$_h_d_f5_delta_8h.html" title="HDF5Delta.h" alt="" coords="439,230,536,255"/>
+<area shape="rect" id="node20" href="$_abs_two_point_grid_8h.html" title="AbsTwoPointGrid.h" alt="" coords="830,230,964,255"/>
+<area shape="rect" id="node22" href="$_cartesian_grid_8h.html" title="CartesianGrid.h" alt="" coords="568,155,683,181"/>
+<area shape="rect" id="node23" href="$_polar_grid_8h.html" title="PolarGrid.h" alt="" coords="706,155,795,181"/>
+<area shape="rect" id="node24" href="$_quasar_grid_8h.html" title="QuasarGrid.h" alt="" coords="819,155,920,181"/>
+<area shape="rect" id="node25" href="$_sky_bins_8h.html" title="SkyBins.h" alt="" coords="1317,230,1397,255"/>
+<area shape="rect" id="node28" href="$_plate_bins_8h.html" title="PlateBins.h" alt="" coords="1170,155,1259,181"/>
+</map>

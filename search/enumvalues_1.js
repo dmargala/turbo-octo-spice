@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['observingcoordinates',['ObservingCoordinates',['../classturbooctospice_1_1_xi_estimator.html#a0c02595545d362e60054d99ea90b5e8ea7ff8dd3e09c9b018b5398a6729096125',1,'turbooctospice::XiEstimator']]]
+  ['dloglam',['DLogLam',['../classturbooctospice_1_1_quasar_grid.html#a21da73030782d82e8dc595a5d834bfe6a4a96bec2b7ad98622efd27a0c651e64e',1,'turbooctospice::QuasarGrid']]]
 ];

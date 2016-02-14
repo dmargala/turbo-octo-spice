@@ -11,9 +11,10 @@
 #include <list>
 #include <iostream>
 
-namespace local = turbooctospice;
 
-class local::ThreadPool::Implementation {
+namespace turbooctospice {
+
+class ThreadPool::Implementation {
 public:
 	Implementation(int nthreads, bool verbose=false) : _verbose(verbose) {
 		if(_verbose) std::cout << "Starting " << nthreads << " threads." << std::endl;
@@ -57,10 +58,12 @@ private:
 	boost::scoped_ptr<boost::asio::io_service::work> _work;
 };
 
-local::ThreadPool::ThreadPool(int nthreads) : _pimpl(new Implementation(nthreads,true)) { }
+ThreadPool::ThreadPool(int nthreads) : _pimpl(new Implementation(nthreads,true)) { }
 
-local::ThreadPool::~ThreadPool() { }
+ThreadPool::~ThreadPool() { }
 
-bool local::ThreadPool::run(std::list<Task> tasks) {
+bool ThreadPool::run(std::list<Task> tasks) {
 	return _pimpl->run(tasks);
 }
+
+} // turbooctospice

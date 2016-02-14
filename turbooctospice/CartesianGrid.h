@@ -9,6 +9,9 @@ namespace turbooctospice {
     /// Represents a Cartesian grid for binning two point functions for LyA BAO analyses. 
     class CartesianGrid : public AbsTwoPointGrid {
     public:
+        enum AxisLabels {
+            RPara, RPerp, LogLya1pz
+        };
         /// Creates a new grid with three axes.
         /// @param axis1 Line of sight separation axis binning : r_par
         /// @param axis2 Transverse separation axis binning : r_perp
@@ -39,8 +42,8 @@ namespace turbooctospice {
         double x1minSq, x1maxSq;
 	}; // CartesianGrid
 
-    inline double CartesianGrid::minAngularScale(double scale) const { return xmin[1]/scale; }
-    inline double CartesianGrid::maxAngularScale(double scale) const { return xmax[1]/scale; }
+    inline double CartesianGrid::minAngularScale(double scale) const { return xmin[RPerp]/scale; }
+    inline double CartesianGrid::maxAngularScale(double scale) const { return xmax[RPerp]/scale; }
 
 } // turbooctospice
 

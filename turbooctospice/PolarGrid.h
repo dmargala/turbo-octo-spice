@@ -9,6 +9,9 @@ namespace turbooctospice {
     /// Represents a Polar grid for binning two point functions for LyA BAO analyses. 
     class PolarGrid : public AbsTwoPointGrid {
     public:
+        enum AxisLabels {
+            R, Mu, LogLya1pz
+        };
         /// Creates a new grid with three axes.
         /// @param axis1 Line of sight separation axis binning : |r|
         /// @param axis2 Transverse separation axis binning : mu
@@ -39,8 +42,8 @@ namespace turbooctospice {
         double x1minSq, x1maxSq;
     }; // PolarGrid
 
-    inline double PolarGrid::minAngularScale(double scale) const { return xmin[0]*std::sqrt(1.0-xmax[1]*xmax[1])/scale; }
-    inline double PolarGrid::maxAngularScale(double scale) const { return xmax[0]*std::sqrt(1.0-xmin[1]*xmin[1])/scale; }
+    inline double PolarGrid::minAngularScale(double scale) const { return xmin[R]*std::sqrt(1.0-xmax[Mu]*xmax[Mu])/scale; }
+    inline double PolarGrid::maxAngularScale(double scale) const { return xmax[R]*std::sqrt(1.0-xmin[Mu]*xmin[Mu])/scale; }
 
 } // turbooctospice
 

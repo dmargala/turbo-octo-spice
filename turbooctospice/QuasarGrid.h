@@ -9,6 +9,9 @@ namespace turbooctospice {
     /// Represents a Quasar grid for binning two point functions for LyA BAO analyses.
     class QuasarGrid : public AbsTwoPointGrid {
     public:
+        enum AxisLabels {
+            DLogLam, Theta, LogLya1pz
+        };
         /// Creates a new grid with three axes.
         /// @param axis1 Line of sight separation axis binning : log(lam1/lam2)
         /// @param axis2 Transverse separation axis binning : angular separation (arcminutes)
@@ -38,8 +41,8 @@ namespace turbooctospice {
     private:
     }; // QuasarGrid
 
-    inline double QuasarGrid::minAngularScale(double scale) const { return xmin[1]; }
-    inline double QuasarGrid::maxAngularScale(double scale) const { return xmax[1]; }
+    inline double QuasarGrid::minAngularScale(double scale) const { return xmin[Theta]; }
+    inline double QuasarGrid::maxAngularScale(double scale) const { return xmax[Theta]; }
 
 } // turbooctospice
 

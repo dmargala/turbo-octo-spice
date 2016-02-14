@@ -1,4 +1,4 @@
 <map id="task" name="task">
-<area shape="rect" id="node2" href="$tpool_8cc.html#a3c04138a5bfe5d72780bb7e82a18e627" title="main" alt="" coords="143,5,193,30"/>
-<area shape="rect" id="node3" href="$classlocal_1_1_thread_pool_1_1_implementation.html#ac416a1397c9560deedfa942d0737f8c0" title="local::ThreadPool::\lImplementation::run" alt="" coords="98,54,238,93"/>
+<area shape="rect" id="node2" href="$tpool_8cc.html#a3c04138a5bfe5d72780bb7e82a18e627" title="main" alt="" coords="166,5,216,30"/>
+<area shape="rect" id="node3" href="$classturbooctospice_1_1_thread_pool_1_1_implementation.html#a8e04433d18108a90ea394859083a3aca" title="turbooctospice::ThreadPool\l::Implementation::run" alt="" coords="98,54,283,93"/>
 </map>

@@ -1,3 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node2" href="$classturbooctospice_1_1_runtime_error.html" title="turbooctospice::RuntimeError" alt="" coords="155,5,349,30"/>
+<area shape="rect" id="node1" href="$classturbooctospice_1_1_sky_bins.html" title="A map of items that organized by Sky Regions. " alt="" coords="6,30,200,55"/>
+<area shape="rect" id="node2" href="$classturbooctospice_1_1_healpix_bins.html" title="A map of items that organized by HEALPixels. " alt="" coords="248,5,464,30"/>
+<area shape="rect" id="node3" href="$classturbooctospice_1_1_plate_bins.html" title="A map of items that organized by BOSS Plates. " alt="" coords="255,54,457,79"/>
 </map>

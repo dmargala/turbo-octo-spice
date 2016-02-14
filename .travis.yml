@@ -17,7 +17,7 @@ install:
   - export CXX="g++-4.8"
 
 before_script:
-  - sudo apt-get install libhdf5-dev libccfits-dev
+  - sudo apt-get install libhdf5-serial-dev libccfits-dev
   - sudo apt-get install libboost-all-dev
 
 # command to run tests, e.g. python setup.py test

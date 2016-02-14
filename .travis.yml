@@ -5,7 +5,7 @@
 language: cpp
 
 compiler:
-  - clang
+  # - clang
   - gcc
 
 before_install:
@@ -15,6 +15,10 @@ before_install:
 install:
   - sudo apt-get install -qq g++-4.8
   - export CXX="g++-4.8"
+
+before_script:
+  - sudo apt-get install libhdf5-dev libccfits-dev
+  - sudo apt-get install libboost-all-dev
 
 # command to run tests, e.g. python setup.py test
 script: scons

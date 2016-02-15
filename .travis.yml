@@ -38,6 +38,9 @@ install:
   - sudo apt-get install libccfits-dev
   # - sudo apt-get install autoconf
   - ./install-Healpix.sh
+  - export HEALPIX=$(pwd)+Healpix_3.30
+  - export HEALPIX_TARGET=auto
+  - ls $HEALPIX/src/cxx/$HEALPIX_TARGET
   # - sudo apt-get install libfftw3-dev libgsl0-dev liblapack-dev libblas-dev
   # - sudo apt-get install libboost1.55-all-dev
   # - grep "#define BOOST_VERSION " /usr/include/boost/version.hpp
@@ -45,6 +48,7 @@ install:
   - ./install-Minuit2.sh
   - ./install-likely.sh
   - ./install-cosmo.sh
+
 
 # command to run tests, e.g. python setup.py test
 script: scons

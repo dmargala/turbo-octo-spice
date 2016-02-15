@@ -29,7 +29,7 @@ install:
   # - sudo apt-get install -qq g++-4.8
   - export CXX="g++-4.8"
   - sudo apt-get install libhdf5-serial-dev libccfits-dev
-  - sudo apt-get install libfftw3-dev libgsl0-dev
+  - sudo apt-get install libfftw3-dev libgsl0-dev liblapack-dev libblas-dev
   # - sudo apt-get install libboost1.55-all-dev
   - grep "#define BOOST_VERSION " /usr/include/boost/version.hpp
   # - sudo apt-get install libroot-math-minuit-dev

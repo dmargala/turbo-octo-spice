@@ -4,22 +4,33 @@
 
 language: cpp
 
+cache:
+  apt: true
+
+addons:
+  apt:
+    sources:
+    - boost-latest
+    - ubuntu-toolchain-r-test
+    packages:
+    - gcc-4.9
+    - g++-4.9
+    - libboost1.55-all-dev
+
 compiler:
   # - clang
   - gcc
 
 before_install:
-  - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+  # - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
   - sudo apt-get update -qq
 
 install:
-  - sudo apt-get install -qq g++-4.8
+  # - sudo apt-get install -qq g++-4.8
   - export CXX="g++-4.8"
-
-before_script:
   - sudo apt-get install libhdf5-serial-dev libccfits-dev
   - sudo apt-get install libfftw3-dev libgsl0-dev
-  - sudo apt-get install libboost1.55-all-dev
+  # - sudo apt-get install libboost1.55-all-dev
   - grep "#define BOOST_VERSION " /usr/include/boost/version.hpp
   # - sudo apt-get install libroot-math-minuit-dev
   - ./install-Minuit2.sh

@@ -1,5 +1,4 @@
 #!/bin/sh
 set -ex
-wget https://github.com/deepzot/cosmo/archive/master.tar.gz 
-tar -xzvf master.tar.gz
+curl -k -L https://github.com/deepzot/cosmo/archive/master.tar.gz | tar xz
 cd cosmo-master/build && ../configure --prefix=/usr && make && sudo make install

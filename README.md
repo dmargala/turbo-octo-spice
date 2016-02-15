@@ -1,7 +1,10 @@
 turbo-octo-spice 
 ================
 
+[![Build Status](https://travis-ci.org/dmargala/turbo-octo-spice.svg?branch=master)](https://travis-ci.org/dmargala/turbo-octo-spice)
+
 Efficient mock generation and analysis of Lyman-alpha forest surveys
+
 
 Motivation
 ----------

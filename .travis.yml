@@ -17,7 +17,7 @@ addons:
     # - g++-4.8
     - libboost1.55-all-dev
     - autoconf
-    - libhdf5-dev
+    - libhdf5-serial-dev
     - libfftw3-dev
     - libgsl0-dev
     - libblas-dev
@@ -40,7 +40,7 @@ install:
   - ./install-Healpix.sh
   # - sudo apt-get install libfftw3-dev libgsl0-dev liblapack-dev libblas-dev
   # - sudo apt-get install libboost1.55-all-dev
-  - grep "#define BOOST_VERSION " /usr/include/boost/version.hpp
+  # - grep "#define BOOST_VERSION " /usr/include/boost/version.hpp
   # - sudo apt-get install libroot-math-minuit-dev
   - ./install-Minuit2.sh
   - ./install-likely.sh

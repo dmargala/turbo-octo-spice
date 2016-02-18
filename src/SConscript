@@ -8,10 +8,6 @@ healpix_path = os.path.join(healpix_root, 'src', 'cxx', healpix_target)
 healCppPath = [os.path.join(healpix_path,'include')]
 healLibPath = [os.path.join(healpix_path,'lib')]
 
-#healCppPath = ['/home/daniel/source/Healpix_3.30/src/cxx/generic_gcc/include']
-#healLibPath = ['/home/daniel/source/Healpix_3.30/src/cxx/generic_gcc/lib']
-#healCppPath = ['/Users/daniel/source/Healpix_3.20/src/cxx/osx/include']
-#healLibPath = ['/Users/daniel/source/Healpix_3.20/src/cxx/osx/lib']
 healLibs = ['healpix_cxx', 'cxxsupport']
 
 common = ['likely', 'cosmo', 'boost_program_options', 'boost_system', 'boost_thread', 'boost_coroutine']

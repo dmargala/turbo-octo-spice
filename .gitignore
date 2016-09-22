@@ -22,3 +22,9 @@
 *.cov
 *.os
 *.wgt
+*.pars
+*.ini
+*.config
+*.details
+*.chisq
+*.pcov

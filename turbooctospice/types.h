@@ -25,6 +25,7 @@ namespace turbooctospice {
             cos_ra = std::cos(ra);
         }
         /// Copy constructor
+        /// @param other The other SkyObject
         SkyObject(const SkyObject& other) {
             ra = other.ra; dec = other.dec;
             sin_dec = other.sin_dec; cos_dec = other.cos_dec;
@@ -56,7 +57,7 @@ namespace turbooctospice {
         int forest_id, plate;
         /// Create a Forest sightline
         /// @param _ra Right ascension. The angular distance of a point east of the First Point of Aries, measured along the celestial equator, in radians (0 < ra < 2*pi).
-        /// @param _dec dec_ Declination. The angular distance of a point north or south of the celestial equator, in radians (-pi/2 < dec < pi/2).
+        /// @param _dec Declination. The angular distance of a point north or south of the celestial equator, in radians (-pi/2 < dec < pi/2).
         /// @param _forest_id A unique identifier for this forest. Often used internally and assigned incrementally (0->num_forests).
         /// @param _plate The BOSS plate id containing this sightline.
         Forest(double _ra, double _dec, int _forest_id, int _plate) :

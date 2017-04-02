@@ -188,7 +188,7 @@ unsigned long local::XiEstimator::accumulate_pixel_pairs(
                 // check transverse separation
                 // why is r == 0 sometimes? these cases also seem to have very close separations.
                 if (r == 0) continue;
-                const double mu = std::fabs(p1.distance-p2.distance)/r;
+                const double mu = std::fabs(p1.distance - p2.distance)/r;
                 const unsigned mubin = static_cast<unsigned>((mu - mu_min)*one_over_dmu);
                 if(mubin >= num_mu_bins) continue;
                 pair_bin_index = mubin + pair_bin_index*num_mu_bins;
@@ -237,7 +237,7 @@ unsigned long local::XiEstimator::accumulate_pixel_pairs(
             for(const auto& p2 : other_los.pixels) {
                 unsigned pair_bin_index;
                 // check parallel separation
-                const double r_para = std::fabs(p1.distance-p2.distance);
+                const double r_para = std::fabs(p1.distance - p2.distance);
                 pair_bin_index = static_cast<unsigned>((r_para - rpara_min)*one_over_drpara);
                 if(pair_bin_index >= num_rpara_bins) continue;
                 // check transverse separation

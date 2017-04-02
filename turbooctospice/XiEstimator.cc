@@ -16,11 +16,13 @@
 
 namespace local = turbooctospice;
 
-local::XiEstimator::XiEstimator(double scale, local::AbsTwoPointGridPtr grid, local::XiEstimator::BinningCoordinateType type,
-    std::vector<Forest> sightlines, SkyBinsIPtr skybins):
+local::XiEstimator::XiEstimator(double scale, local::AbsTwoPointGridPtr grid,
+        local::XiEstimator::BinningCoordinateType type,
+        std::vector<Forest> sightlines, SkyBinsIPtr skybins) :
     grid_(grid), coordinate_type_(type),
     sightlines_(sightlines), skybins_(skybins),
-    max_ang_(grid->maxAngularScale(scale)), cos_max_ang_(std::cos(grid->maxAngularScale(scale))),
+    max_ang_(grid->maxAngularScale(scale)),
+    cos_max_ang_(std::cos(grid->maxAngularScale(scale))),
     num_xi_bins_(grid->getNBinsTotal()), cov_good_(false),
     num_sightline_pairs_(0), num_sightline_pairs_used_(0),
     num_pixels_(0), num_pixel_pairs_(0), num_pixel_pairs_used_(0) {
@@ -154,25 +156,30 @@ bool local::XiEstimator::skybin_xi_task(int skybin_index) {
     return true;
 };
 
-unsigned long local::XiEstimator::accumulate_pixel_pairs(const local::Forest &primary_los, const local::Forest &other_los,
-    const double &cos_separation, std::vector<local::XiBin> &xi) const {
+unsigned long local::XiEstimator::accumulate_pixel_pairs(
+        const local::Forest &primary_los, const local::Forest &other_los,
+        const double &cos_separation, std::vector<local::XiBin> &xi) const {
     // counter
     unsigned long num_pixel_pairs_used(0);
     const double separation = std::acos(cos_separation);
 
     if(coordinate_type_ == PolarCoordinates) {
-        const float r_min(grid_->getAxisMin(local::PolarGrid::R)), one_over_dr(1.0/grid_->getAxisBinWidth(local::PolarGrid::R)),
-                    mu_min(grid_->getAxisMin(local::PolarGrid::Mu)), one_over_dmu(1.0/grid_->getAxisBinWidth(local::PolarGrid::Mu)),
-                    z_min(grid_->getAxisMin(local::PolarGrid::LogLya1pz)), one_over_dz(1.0/grid_->getAxisNBins(local::PolarGrid::LogLya1pz));
-        const unsigned num_r_bins(grid_->getAxisNBins(local::PolarGrid::R)), num_mu_bins(grid_->getAxisNBins(local::PolarGrid::Mu)), 
+        const double r_min(grid_->getAxisMin(local::PolarGrid::R)),
+                     one_over_dr(1.0/grid_->getAxisBinWidth(local::PolarGrid::R)),
+                     mu_min(grid_->getAxisMin(local::PolarGrid::Mu)),
+                     one_over_dmu(1.0/grid_->getAxisBinWidth(local::PolarGrid::Mu)),
+                     z_min(grid_->getAxisMin(local::PolarGrid::LogLya1pz)),
+                     one_over_dz(1.0/grid_->getAxisNBins(local::PolarGrid::LogLya1pz));
+        const unsigned num_r_bins(grid_->getAxisNBins(local::PolarGrid::R)),
+                       num_mu_bins(grid_->getAxisNBins(local::PolarGrid::Mu)),
                        num_z_bins(grid_->getAxisNBins(local::PolarGrid::LogLya1pz));
         for(const auto& p1 : primary_los.pixels) {
-            const float r1_sq = p1.distance*p1.distance;
-            const float two_r1_cos12 = 2*p1.distance*cos_separation;
+            const double r1_sq = p1.distance*p1.distance;
+            const double two_r1_cos12 = 2*p1.distance*cos_separation;
             for(const auto& p2 : other_los.pixels) {
                 unsigned pair_bin_index;
-                const float r_sq = r1_sq + (p2.distance - two_r1_cos12)*p2.distance;
-                const float r = std::sqrt(r_sq);
+                const double r_sq = r1_sq + (p2.distance - two_r1_cos12)*p2.distance;
+                const double r = std::sqrt(r_sq);
                 // TODO: clean up lower limit check
                 // if r is less than r_min then the unsigned cast will make pair_bin_index very large
                 // and the if statement on the next line should catch it
@@ -181,13 +188,13 @@ unsigned long local::XiEstimator::accumulate_pixel_pairs(const local::Forest &pr
                 // check transverse separation
                 // why is r == 0 sometimes? these cases also seem to have very close separations.
                 if (r == 0) continue;
-                const float mu = std::fabs(p1.distance-p2.distance)/r;
+                const double mu = std::fabs(p1.distance-p2.distance)/r;
                 const unsigned mubin = static_cast<unsigned>((mu - mu_min)*one_over_dmu);
                 if(mubin >= num_mu_bins) continue;
                 pair_bin_index = mubin + pair_bin_index*num_mu_bins;
                 // check average pair distance
-                const float log_zp1_times_LyA = 0.5*(p1.loglam + p2.loglam);
-                // const float z = std::pow(10, 0.5*(p1.loglam + p2.loglam) - local::logLyA) - 1.0;
+                const double log_zp1_times_LyA = 0.5*(p1.loglam + p2.loglam);
+                // const double z = std::pow(10, 0.5*(p1.loglam + p2.loglam) - local::logLyA) - 1.0;
                 const unsigned zbin = static_cast<unsigned>((log_zp1_times_LyA - z_min)*one_over_dz);
                 pair_bin_index = zbin + pair_bin_index*num_z_bins;
 
@@ -215,28 +222,32 @@ unsigned long local::XiEstimator::accumulate_pixel_pairs(const local::Forest &pr
         }
     }
     else if(coordinate_type_ == CartesianCoordinates){
-        const float rpara_min(grid_->getAxisMin(local::CartesianGrid::RPara)), one_over_drpara(1.0/grid_->getAxisBinWidth(local::CartesianGrid::RPara)),
-                    rperp_min(grid_->getAxisMin(local::CartesianGrid::RPerp)), one_over_drperp(1.0/grid_->getAxisBinWidth(local::CartesianGrid::RPerp)),
-                    z_min(grid_->getAxisMin(local::CartesianGrid::LogLya1pz)), one_over_dz(1.0/grid_->getAxisNBins(local::CartesianGrid::LogLya1pz));
-        const unsigned num_rpara_bins(grid_->getAxisNBins(local::CartesianGrid::RPara)), num_rperp_bins(grid_->getAxisNBins(local::CartesianGrid::RPerp)), 
+        const double rpara_min(grid_->getAxisMin(local::CartesianGrid::RPara)),
+                    one_over_drpara(1.0/grid_->getAxisBinWidth(local::CartesianGrid::RPara)),
+                    rperp_min(grid_->getAxisMin(local::CartesianGrid::RPerp)),
+                    one_over_drperp(1.0/grid_->getAxisBinWidth(local::CartesianGrid::RPerp)),
+                    z_min(grid_->getAxisMin(local::CartesianGrid::LogLya1pz)),
+                    one_over_dz(1.0/grid_->getAxisNBins(local::CartesianGrid::LogLya1pz));
+        const unsigned num_rpara_bins(grid_->getAxisNBins(local::CartesianGrid::RPara)),
+                       num_rperp_bins(grid_->getAxisNBins(local::CartesianGrid::RPerp)),
                        num_z_bins(grid_->getAxisNBins(local::CartesianGrid::LogLya1pz));
         for(const auto& p1 : primary_los.pixels) {
-            const float r1_sq = p1.distance*p1.distance;
-            const float two_r1_cos12 = 2*p1.distance*cos_separation;
+            const double r1_sq = p1.distance*p1.distance;
+            const double two_r1_cos12 = 2*p1.distance*cos_separation;
             for(const auto& p2 : other_los.pixels) {
                 unsigned pair_bin_index;
                 // check parallel separation
-                const float r_para = std::fabs(p1.distance-p2.distance);
+                const double r_para = std::fabs(p1.distance-p2.distance);
                 pair_bin_index = static_cast<unsigned>((r_para - rpara_min)*one_over_drpara);
                 if(pair_bin_index >= num_rpara_bins) continue;
                 // check transverse separation
-                const float r_sq = r1_sq + (p2.distance - two_r1_cos12)*p2.distance;
-                const unsigned perp_bin_index = static_cast<unsigned>((std::sqrt(r_sq - r_para*r_para) - rperp_min)*one_over_drperp);
+                const double r_sq = r1_sq + (p2.distance - two_r1_cos12)*p2.distance;
+                const unsigned perp_bin_index = static_cast<unsigned>((std::sqrt(std::fabs(r_sq - r_para*r_para)) - rperp_min)*one_over_drperp);
                 if(perp_bin_index >= num_rperp_bins) continue;
                 pair_bin_index = perp_bin_index + pair_bin_index*num_rperp_bins;
                 // check average pair distance
-                const float log_zp1_times_LyA = 0.5*(p1.loglam + p2.loglam);
-                // const float z = std::pow(10, 0.5*(p1.loglam + p2.loglam) - local::logLyA) - 1.0;
+                const double log_zp1_times_LyA = 0.5*(p1.loglam + p2.loglam);
+                // const double z = std::pow(10, 0.5*(p1.loglam + p2.loglam) - local::logLyA) - 1.0;
                 const unsigned zbin = static_cast<unsigned>((log_zp1_times_LyA - z_min)*one_over_dz);
                 pair_bin_index = zbin + pair_bin_index*num_z_bins;
                 // accumulate pixel pair
@@ -247,16 +258,20 @@ unsigned long local::XiEstimator::accumulate_pixel_pairs(const local::Forest &pr
     }
     // Observing Coordinates
     else {
-        const float dloglam_min(grid_->getAxisMin(local::QuasarGrid::DLogLam)), one_over_ddloglam(1.0/grid_->getAxisBinWidth(local::QuasarGrid::DLogLam)),
-                    theta_min(grid_->getAxisMin(local::QuasarGrid::Theta)), one_over_dtheta(1.0/grid_->getAxisBinWidth(local::QuasarGrid::Theta)),
-                    z_min(grid_->getAxisMin(local::QuasarGrid::LogLya1pz)), one_over_dz(1.0/grid_->getAxisNBins(local::QuasarGrid::LogLya1pz));
-        const unsigned num_dloglam_bins(grid_->getAxisNBins(local::QuasarGrid::DLogLam)), num_theta_bins(grid_->getAxisNBins(local::QuasarGrid::Theta)), 
+        const double dloglam_min(grid_->getAxisMin(local::QuasarGrid::DLogLam)),
+                     one_over_ddloglam(1.0/grid_->getAxisBinWidth(local::QuasarGrid::DLogLam)),
+                     theta_min(grid_->getAxisMin(local::QuasarGrid::Theta)),
+                     one_over_dtheta(1.0/grid_->getAxisBinWidth(local::QuasarGrid::Theta)),
+                     z_min(grid_->getAxisMin(local::QuasarGrid::LogLya1pz)),
+                     one_over_dz(1.0/grid_->getAxisNBins(local::QuasarGrid::LogLya1pz));
+        const unsigned num_dloglam_bins(grid_->getAxisNBins(local::QuasarGrid::DLogLam)),
+                       num_theta_bins(grid_->getAxisNBins(local::QuasarGrid::Theta)),
                        num_z_bins(grid_->getAxisNBins(local::QuasarGrid::LogLya1pz));
         // Compute separation bin index, only need to do this once
         const unsigned sep_bin_index = static_cast<unsigned>((separation - theta_min)*one_over_dtheta);
         for(const auto& p1 : primary_los.pixels) {
-            const float r1_sq = p1.distance*p1.distance;
-            const float two_r1_cos12 = 2*p1.distance*cos_separation;
+            const double r1_sq = p1.distance*p1.distance;
+            const double two_r1_cos12 = 2*p1.distance*cos_separation;
             for(const auto& p2 : other_los.pixels) {
                 unsigned pair_bin_index;
                 // check parallel separation
@@ -265,8 +280,8 @@ unsigned long local::XiEstimator::accumulate_pixel_pairs(const local::Forest &pr
                 // no need to check separation, already checked sight lines
                 pair_bin_index = sep_bin_index + pair_bin_index*num_theta_bins;
                 // check average pair distance
-                const float log_zp1_times_LyA = 0.5*(p1.loglam + p2.loglam);
-                // const float z = std::pow(10, 0.5*(p1.loglam + p2.loglam) - local::logLyA) - 1.0;
+                const double log_zp1_times_LyA = 0.5*(p1.loglam + p2.loglam);
+                // const double z = std::pow(10, 0.5*(p1.loglam + p2.loglam) - local::logLyA) - 1.0;
                 const unsigned zbin = static_cast<unsigned>((log_zp1_times_LyA - z_min)*one_over_dz);
                 pair_bin_index = zbin + pair_bin_index*num_z_bins;
                 // accumulate pixel pair
@@ -359,10 +374,14 @@ void local::XiEstimator::save_subsamples(std::string outfile_base) const {
     }
 }
 
+unsigned long compute_num_distinct_pairs(unsigned long n) {
+    return n*(n-1)/2;
+}
+
 void local::XiEstimator::print_stats() const {
     // line of sight pair statistics
     unsigned num_sightlines = sightlines_.size();
-    unsigned long num_sightline_pairs_total = (num_sightlines*(num_sightlines-1))/2;
+    unsigned long num_sightline_pairs_total = compute_num_distinct_pairs(num_sightlines);
     double frac_sightline_pairs_considered = static_cast<double>(num_sightline_pairs_)/num_sightline_pairs_total;
     double frac_sightline_pairs_used = static_cast<double>(num_sightline_pairs_used_)/num_sightline_pairs_;
 
@@ -371,7 +390,7 @@ void local::XiEstimator::print_stats() const {
     std::cout << "used " << num_sightline_pairs_used_ << " of los pairs considered. (" << frac_sightline_pairs_used << ")" << std::endl;
 
     // pixel pair statistics
-    unsigned long num_pixel_pairs_total = (num_pixels_*(num_pixels_-1))/2;
+    unsigned long num_pixel_pairs_total = compute_num_distinct_pairs(num_pixels_);
     double frac_pixel_pairs_considered = static_cast<double>(num_pixel_pairs_)/num_pixel_pairs_total;
     double frac_pixel_pairs_used = static_cast<double>(num_pixel_pairs_used_)/num_pixel_pairs_;
 

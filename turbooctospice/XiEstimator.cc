@@ -361,6 +361,7 @@ void local::XiEstimator::save_subsamples(std::string outfile_base) const {
         std::string estimator_filename(outfile_base + "-" + boost::lexical_cast<std::string>(skybin_xi.first) + ".data");
         std::ofstream estimator_file(estimator_filename.c_str());
         for(int xi_bin_index = 0; xi_bin_index < num_xi_bins_; ++xi_bin_index) {
+            long num_pairs = skybin_xi.second[xi_bin_index].num_pairs;
             double weight = skybin_xi.second[xi_bin_index].wgt;
             double value = 0;
             if(weight > 0) {
@@ -368,7 +369,9 @@ void local::XiEstimator::save_subsamples(std::string outfile_base) const {
             }
             estimator_file << xi_bin_index
                 << ' ' << boost::lexical_cast<std::string>(value)
-                << ' ' << boost::lexical_cast<std::string>(weight) << std::endl;
+                << ' ' << boost::lexical_cast<std::string>(weight)
+                << ' ' << boost::lexical_cast<std::string>(num_pairs)
+                << std::endl;
         }
         estimator_file.close();
     }

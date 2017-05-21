@@ -29,7 +29,7 @@ namespace turbooctospice {
             BinningCoordinateType type, std::vector<Forest> sightlines, SkyBinsIPtr skybins);
         /// Run estimator.
         /// @param nthreads The number of threads to use for calcualtion.
-        void run(int nthreads);
+        void run(int nthreads, bool do_cov=false);
         /// Save results to the specified outfile.
         /// @param outfile The filename to save results to.
         void save_results(std::string outfile) const;

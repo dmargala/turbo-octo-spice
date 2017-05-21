@@ -28,7 +28,7 @@ local::XiEstimator::XiEstimator(double scale, local::AbsTwoPointGridPtr grid,
     num_pixels_(0), num_pixel_pairs_(0), num_pixel_pairs_used_(0) {
 };
 
-void local::XiEstimator::run(int nthreads) {
+void local::XiEstimator::run(int nthreads, bool do_cov) {
     local::ThreadPool pool(nthreads);
     std::list<local::ThreadPool::Task> tasks;
 
@@ -57,42 +57,44 @@ void local::XiEstimator::run(int nthreads) {
     print_stats();
     std::cout << std::endl;
 
-    // Estimate covariance
-    std::cout << "Estimating covariance..." << std::endl;
-    try {
-        likely::CovarianceAccumulator cov_accum(num_xi_bins_);
-        show_progress_.reset(new boost::progress_display(skybin_xis_.size()));
-        // accumatelate each skybin_xi as samples
-        for(const auto& skybin_xi : skybin_xis_) {
-            increment_progress();
-            std::vector<double> xi(num_xi_bins_);
-            double weight(0);//skybins_.getBinContents(skybin_xi.first).size());
-            // skybin_xis are not finalized so do this before accumulating
-            for(int xi_bin_index = 0; xi_bin_index < num_xi_bins_; ++xi_bin_index) {
-                if (skybin_xi.second[xi_bin_index].wgt > 0) {
-                    xi[xi_bin_index] = skybin_xi.second[xi_bin_index].didj/skybin_xi.second[xi_bin_index].wgt;
-                    weight += skybin_xi.second[xi_bin_index].wgt;
+    if (do_cov) {
+        // Estimate covariance
+        std::cout << "Estimating covariance..." << std::endl;
+        try {
+            likely::CovarianceAccumulator cov_accum(num_xi_bins_);
+            show_progress_.reset(new boost::progress_display(skybin_xis_.size()));
+            // accumatelate each skybin_xi as samples
+            for(const auto& skybin_xi : skybin_xis_) {
+                increment_progress();
+                std::vector<double> xi(num_xi_bins_);
+                double weight(0);//skybins_.getBinContents(skybin_xi.first).size());
+                // skybin_xis are not finalized so do this before accumulating
+                for(int xi_bin_index = 0; xi_bin_index < num_xi_bins_; ++xi_bin_index) {
+                    if (skybin_xi.second[xi_bin_index].wgt > 0) {
+                        xi[xi_bin_index] = skybin_xi.second[xi_bin_index].didj/skybin_xi.second[xi_bin_index].wgt;
+                        weight += skybin_xi.second[xi_bin_index].wgt;
+                    }
                 }
+                // accumulate sample
+                cov_accum.accumulate(xi, weight);
+                // cov_accum.accumulate(xi);
             }
-            // accumulate sample
-            cov_accum.accumulate(xi, weight);
-            // cov_accum.accumulate(xi);
+            cov_matrix_ = cov_accum.getCovariance();
+            bool is_pos_def(cov_matrix_->isPositiveDefinite());
+            std::cout << "is pos def: " << boost::lexical_cast<std::string>(is_pos_def) << std::endl;
+            if(is_pos_def) {
+                double detC = cov_matrix_->getLogDeterminant();
+                std::cout << "log(|C|): " << boost::lexical_cast<std::string>(detC) << std::endl;
+            }
+            cov_good_ = true;
         }
-        cov_matrix_ = cov_accum.getCovariance();
-        bool is_pos_def(cov_matrix_->isPositiveDefinite());
-        std::cout << "is pos def: " << boost::lexical_cast<std::string>(is_pos_def) << std::endl;
-        if(is_pos_def) {
-            double detC = cov_matrix_->getLogDeterminant();
-            std::cout << "log(|C|): " << boost::lexical_cast<std::string>(detC) << std::endl;
+        catch(likely::RuntimeError const &e) {
+            std::cerr << e.what() << std::endl;
+            // throw RuntimeError(e.what());
         }
-        cov_good_ = true;
+        std::cout << "Covariance estimation complete!" << std::endl;
+        std::cout << std::endl;
     }
-    catch(likely::RuntimeError const &e) {
-        std::cerr << e.what() << std::endl;
-        // throw RuntimeError(e.what());
-    }
-    std::cout << "Covariance estimation complete!" << std::endl;
-    std::cout << std::endl;
 
 }
 
@@ -317,7 +319,10 @@ void local::XiEstimator::save_results(std::string outfile) const {
     std::vector<double> xi_bin_centers(3);
     for(int xi_bin_index = 0; xi_bin_index < num_xi_bins_; ++xi_bin_index) {
         grid_->getBinCenters(xi_bin_index, xi_bin_centers);
-        details_file << xi_bin_index << ' ' << xi_bin_centers[0] << ' ' << xi_bin_centers[1] << ' ' << xi_bin_centers[2] << ' '
+        details_file << xi_bin_index << ' '
+            << xi_bin_centers[0] << ' '
+            << xi_bin_centers[1] << ' '
+            << xi_bin_centers[2] << ' '
             << boost::lexical_cast<std::string>(xi_[xi_bin_index].didj) << ' '
             << boost::lexical_cast<std::string>(xi_[xi_bin_index].di) << ' '
             << boost::lexical_cast<std::string>(xi_[xi_bin_index].dj) << ' '
